@@ -4,14 +4,22 @@ author: "Łukasz Pięta"
 date: "11/11/2020"
 output: 
   html_document: 
-    df_print: default
+    keep_md: yes
+    df_print: kable
+    code_folding: "hide"
+    toc: true
+    toc_float: true
 ---
 
+```{r setup,include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
 
-```{r setup, include=FALSE}
-#install.packages("readxl")
+
+```{r libraries, include=FALSE}
 library(readxl)
 library(summarytools)
+library(tidyverse)
 library(dplyr)
 library(knitr)
 library(DT)
@@ -29,3 +37,15 @@ df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 kable(as.data.frame(summarytools::descr(df, stats = "common")))
 ```
 
+As you can see, there is no NA in `outcome` column. So every sample has been classified. `0` means that the particular patient has survived. `1` means that patient has died.
+
+## Clean dataset
+```{r, clean_dataset}
+df$gender<-ifelse(df$gender==1, 'Male', 'Female') 
+df <- df %>% mutate(gender = as.factor(gender))
+```
+
+## Age distribution
+```{r, gender_distribution}
+ggplot(df, aes(x=age,color=gender)) + geom_histogram() + facet_grid(. ~ gender)
+```
