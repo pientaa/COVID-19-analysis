@@ -1653,21 +1653,19 @@ df &lt;- df %&gt;% mutate(`Discharge time` =  as.Date(`Discharge time`))</code><
 </div>
 <div id="data-summary" class="section level2">
 <h2>Data summary</h2>
-<pre class="r"><code>#This below does not handle dates well
-no_dates_df &lt;- df %&gt;% select(-c(&#39;Admission time&#39;, &#39;Discharge time&#39;, &#39;RE_DATE&#39; ))
+<pre class="r"><code>no_dates_df &lt;- df %&gt;% select(-c(&#39;Admission time&#39;, &#39;Discharge time&#39;, &#39;RE_DATE&#39; ))
 tbl_summary(
     no_dates_df,
     by = outcome
             ) %&gt;%
     add_n() %&gt;%
-    add_p() %&gt;%
     modify_header(label = &quot;**Variable**&quot;) %&gt;%
     bold_labels() </code></pre>
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#gpyxzuaouv .gt_table {
+#ozvyemkvfj .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -1692,7 +1690,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_heading {
+#ozvyemkvfj .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1704,7 +1702,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_title {
+#ozvyemkvfj .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1714,7 +1712,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#gpyxzuaouv .gt_subtitle {
+#ozvyemkvfj .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1724,13 +1722,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#gpyxzuaouv .gt_bottom_border {
+#ozvyemkvfj .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_col_headings {
+#ozvyemkvfj .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1745,7 +1743,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_col_heading {
+#ozvyemkvfj .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1765,7 +1763,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#gpyxzuaouv .gt_column_spanner_outer {
+#ozvyemkvfj .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1777,15 +1775,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#gpyxzuaouv .gt_column_spanner_outer:first-child {
+#ozvyemkvfj .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#gpyxzuaouv .gt_column_spanner_outer:last-child {
+#ozvyemkvfj .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#gpyxzuaouv .gt_column_spanner {
+#ozvyemkvfj .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1797,7 +1795,7 @@ tbl_summary(
   width: 100%;
 }
 
-#gpyxzuaouv .gt_group_heading {
+#ozvyemkvfj .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1819,7 +1817,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#gpyxzuaouv .gt_empty_group_heading {
+#ozvyemkvfj .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1834,15 +1832,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#gpyxzuaouv .gt_from_md > :first-child {
+#ozvyemkvfj .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#gpyxzuaouv .gt_from_md > :last-child {
+#ozvyemkvfj .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#gpyxzuaouv .gt_row {
+#ozvyemkvfj .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1861,7 +1859,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#gpyxzuaouv .gt_stub {
+#ozvyemkvfj .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1873,7 +1871,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#gpyxzuaouv .gt_summary_row {
+#ozvyemkvfj .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1883,7 +1881,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#gpyxzuaouv .gt_first_summary_row {
+#ozvyemkvfj .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1893,7 +1891,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_grand_summary_row {
+#ozvyemkvfj .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1903,7 +1901,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#gpyxzuaouv .gt_first_grand_summary_row {
+#ozvyemkvfj .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1913,11 +1911,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_striped {
+#ozvyemkvfj .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#gpyxzuaouv .gt_table_body {
+#ozvyemkvfj .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1926,7 +1924,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_footnotes {
+#ozvyemkvfj .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1940,13 +1938,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_footnote {
+#ozvyemkvfj .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#gpyxzuaouv .gt_sourcenotes {
+#ozvyemkvfj .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1960,46 +1958,46 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#gpyxzuaouv .gt_sourcenote {
+#ozvyemkvfj .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#gpyxzuaouv .gt_left {
+#ozvyemkvfj .gt_left {
   text-align: left;
 }
 
-#gpyxzuaouv .gt_center {
+#ozvyemkvfj .gt_center {
   text-align: center;
 }
 
-#gpyxzuaouv .gt_right {
+#ozvyemkvfj .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#gpyxzuaouv .gt_font_normal {
+#ozvyemkvfj .gt_font_normal {
   font-weight: normal;
 }
 
-#gpyxzuaouv .gt_font_bold {
+#ozvyemkvfj .gt_font_bold {
   font-weight: bold;
 }
 
-#gpyxzuaouv .gt_font_italic {
+#ozvyemkvfj .gt_font_italic {
   font-style: italic;
 }
 
-#gpyxzuaouv .gt_super {
+#ozvyemkvfj .gt_super {
   font-size: 65%;
 }
 
-#gpyxzuaouv .gt_footnote_marks {
+#ozvyemkvfj .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="gpyxzuaouv" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="ozvyemkvfj" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
@@ -2007,7 +2005,6 @@ tbl_summary(
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 2,905<sup class="gt_footnote_marks">1</sup></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 3,215<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>p-value</strong><sup class="gt_footnote_marks">2</sup></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
@@ -2016,929 +2013,796 @@ tbl_summary(
       <td class="gt_row gt_center">375</td>
       <td class="gt_row gt_center">288 (245, 332)</td>
       <td class="gt_row gt_center">101 (51, 151)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,731</td>
       <td class="gt_row gt_center">3,014</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">age</td>
       <td class="gt_row gt_center">6,120</td>
       <td class="gt_row gt_center">70 (63, 78)</td>
       <td class="gt_row gt_center">51 (37, 62)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">gender</td>
       <td class="gt_row gt_center">6,120</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">751 (26%)</td>
       <td class="gt_row gt_center">1,639 (51%)</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,154 (74%)</td>
       <td class="gt_row gt_center">1,576 (49%)</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Hypersensitive cardiac troponinI</td>
       <td class="gt_row gt_center">507</td>
       <td class="gt_row gt_center">70 (18, 631)</td>
       <td class="gt_row gt_center">3 (2, 7)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,572</td>
       <td class="gt_row gt_center">3,041</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">hemoglobin</td>
       <td class="gt_row gt_center">975</td>
       <td class="gt_row gt_center">123 (110, 135)</td>
       <td class="gt_row gt_center">127 (116, 138)</td>
-      <td class="gt_row gt_center">0.002</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,438</td>
       <td class="gt_row gt_center">2,707</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Serum chloride</td>
       <td class="gt_row gt_center">975</td>
       <td class="gt_row gt_center">104 (100, 111)</td>
       <td class="gt_row gt_center">101 (99, 103)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,403</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin time</td>
       <td class="gt_row gt_center">662</td>
       <td class="gt_row gt_center">16.3 (15.0, 18.2)</td>
       <td class="gt_row gt_center">13.6 (13.1, 14.1)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,531</td>
       <td class="gt_row gt_center">2,927</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">procalcitonin</td>
       <td class="gt_row gt_center">459</td>
       <td class="gt_row gt_center">0.38 (0.14, 1.13)</td>
       <td class="gt_row gt_center">0.04 (0.02, 0.06)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,681</td>
       <td class="gt_row gt_center">2,980</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">eosinophils(%)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.00 (0.00, 0.10)</td>
       <td class="gt_row gt_center">0.70 (0.00, 1.80)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 2 receptor</td>
       <td class="gt_row gt_center">268</td>
       <td class="gt_row gt_center">1,180 (807, 1,603)</td>
       <td class="gt_row gt_center">529 (400, 742)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,804</td>
       <td class="gt_row gt_center">3,048</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Alkaline phosphatase</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">83 (64, 123)</td>
       <td class="gt_row gt_center">60 (50, 75)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">albumin</td>
       <td class="gt_row gt_center">934</td>
       <td class="gt_row gt_center">28 (24, 31)</td>
       <td class="gt_row gt_center">36 (34, 39)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,444</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">basophil(%)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.10 (0.10, 0.20)</td>
       <td class="gt_row gt_center">0.20 (0.10, 0.40)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 10</td>
       <td class="gt_row gt_center">267</td>
       <td class="gt_row gt_center">11 (6, 17)</td>
       <td class="gt_row gt_center">5 (5, 8)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,805</td>
       <td class="gt_row gt_center">3,048</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Total bilirubin</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">14 (10, 25)</td>
       <td class="gt_row gt_center">8 (6, 12)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Platelet count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">112 (55, 174)</td>
       <td class="gt_row gt_center">229 (176, 290)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">monocytes(%)</td>
       <td class="gt_row gt_center">958</td>
       <td class="gt_row gt_center">3.0 (2.0, 4.7)</td>
       <td class="gt_row gt_center">8.2 (6.3, 10.0)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,719</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">antithrombin</td>
       <td class="gt_row gt_center">330</td>
       <td class="gt_row gt_center">80 (70, 92)</td>
       <td class="gt_row gt_center">93 (86, 103)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,688</td>
       <td class="gt_row gt_center">3,102</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 8</td>
       <td class="gt_row gt_center">268</td>
       <td class="gt_row gt_center">30 (18, 61)</td>
       <td class="gt_row gt_center">11 (7, 19)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,804</td>
       <td class="gt_row gt_center">3,048</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">indirect bilirubin</td>
       <td class="gt_row gt_center">906</td>
       <td class="gt_row gt_center">6.2 (4.2, 9.2)</td>
       <td class="gt_row gt_center">4.9 (3.4, 7.1)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,453</td>
       <td class="gt_row gt_center">2,761</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell distribution width</td>
       <td class="gt_row gt_center">923</td>
       <td class="gt_row gt_center">13.20 (12.40, 14.40)</td>
       <td class="gt_row gt_center">12.20 (11.80, 12.80)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,451</td>
       <td class="gt_row gt_center">2,746</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">neutrophils(%)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">92 (88, 95)</td>
       <td class="gt_row gt_center">66 (56, 76)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">total protein</td>
       <td class="gt_row gt_center">931</td>
       <td class="gt_row gt_center">62 (57, 68)</td>
       <td class="gt_row gt_center">68 (65, 72)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,741</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Quantification of Treponema pallidum antibodies</td>
       <td class="gt_row gt_center">279</td>
       <td class="gt_row gt_center">0.06 (0.04, 0.07)</td>
       <td class="gt_row gt_center">0.05 (0.04, 0.07)</td>
-      <td class="gt_row gt_center">0.031</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,777</td>
       <td class="gt_row gt_center">3,064</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin activity</td>
       <td class="gt_row gt_center">659</td>
       <td class="gt_row gt_center">66 (56, 78)</td>
       <td class="gt_row gt_center">94 (88, 103)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,534</td>
       <td class="gt_row gt_center">2,927</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HBsAg</td>
       <td class="gt_row gt_center">279</td>
       <td class="gt_row gt_center">0.01 (0.00, 0.02)</td>
       <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,776</td>
       <td class="gt_row gt_center">3,065</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular volume</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">91.3 (87.1, 96.4)</td>
       <td class="gt_row gt_center">89.8 (86.8, 91.9)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">hematocrit</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">35.9 (32.5, 39.8)</td>
       <td class="gt_row gt_center">37.1 (34.3, 39.9)</td>
-      <td class="gt_row gt_center">0.003</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">White blood cell count</td>
       <td class="gt_row gt_center">1,127</td>
       <td class="gt_row gt_center">12 (8, 17)</td>
       <td class="gt_row gt_center">6 (4, 8)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,393</td>
       <td class="gt_row gt_center">2,600</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Tumor necrosis factorα</td>
       <td class="gt_row gt_center">268</td>
       <td class="gt_row gt_center">11 (8, 17)</td>
       <td class="gt_row gt_center">8 (6, 10)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,804</td>
       <td class="gt_row gt_center">3,048</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin concentration</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">342 (331, 350)</td>
       <td class="gt_row gt_center">343 (335, 350)</td>
-      <td class="gt_row gt_center">0.066</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">fibrinogen</td>
       <td class="gt_row gt_center">566</td>
       <td class="gt_row gt_center">3.92 (2.44, 5.63)</td>
       <td class="gt_row gt_center">4.40 (3.56, 5.34)</td>
-      <td class="gt_row gt_center">0.004</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,578</td>
       <td class="gt_row gt_center">2,976</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 1β</td>
       <td class="gt_row gt_center">268</td>
       <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
       <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
-      <td class="gt_row gt_center">0.7</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,804</td>
       <td class="gt_row gt_center">3,048</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Urea</td>
       <td class="gt_row gt_center">936</td>
       <td class="gt_row gt_center">11 (7, 17)</td>
       <td class="gt_row gt_center">4 (3, 5)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,430</td>
       <td class="gt_row gt_center">2,754</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">lymphocyte count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.46 (0.31, 0.69)</td>
       <td class="gt_row gt_center">1.25 (0.87, 1.62)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">PH value</td>
       <td class="gt_row gt_center">384</td>
       <td class="gt_row gt_center">6.50 (6.00, 7.41)</td>
       <td class="gt_row gt_center">6.50 (6.00, 7.00)</td>
-      <td class="gt_row gt_center">0.070</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,730</td>
       <td class="gt_row gt_center">3,006</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell count</td>
       <td class="gt_row gt_center">1,127</td>
       <td class="gt_row gt_center">4.0 (3.6, 4.6)</td>
       <td class="gt_row gt_center">4.2 (3.8, 4.7)</td>
-      <td class="gt_row gt_center">0.003</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,393</td>
       <td class="gt_row gt_center">2,600</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Eosinophil count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
       <td class="gt_row gt_center">0.03 (0.00, 0.09)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Corrected calcium</td>
       <td class="gt_row gt_center">914</td>
       <td class="gt_row gt_center">2.35 (2.27, 2.44)</td>
       <td class="gt_row gt_center">2.37 (2.27, 2.44)</td>
-      <td class="gt_row gt_center">0.6</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,453</td>
       <td class="gt_row gt_center">2,753</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Serum potassium</td>
       <td class="gt_row gt_center">980</td>
       <td class="gt_row gt_center">4.60 (4.04, 5.27)</td>
       <td class="gt_row gt_center">4.28 (3.92, 4.62)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,401</td>
       <td class="gt_row gt_center">2,739</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">glucose</td>
       <td class="gt_row gt_center">775</td>
       <td class="gt_row gt_center">9.1 (6.9, 13.3)</td>
       <td class="gt_row gt_center">5.7 (5.0, 7.6)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,535</td>
       <td class="gt_row gt_center">2,810</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">neutrophils count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">10.8 (7.0, 15.2)</td>
       <td class="gt_row gt_center">3.5 (2.4, 5.2)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Direct bilirubin</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">8 (5, 14)</td>
       <td class="gt_row gt_center">4 (2, 5)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Mean platelet volume</td>
       <td class="gt_row gt_center">862</td>
       <td class="gt_row gt_center">11.30 (10.70, 12.20)</td>
       <td class="gt_row gt_center">10.40 (9.90, 11.00)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,533</td>
       <td class="gt_row gt_center">2,725</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">ferritin</td>
       <td class="gt_row gt_center">283</td>
       <td class="gt_row gt_center">1,636 (928, 2,517)</td>
       <td class="gt_row gt_center">504 (235, 834)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,811</td>
       <td class="gt_row gt_center">3,026</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">RBC distribution width SD</td>
       <td class="gt_row gt_center">923</td>
       <td class="gt_row gt_center">43.7 (39.9, 48.5)</td>
       <td class="gt_row gt_center">39.5 (37.6, 41.4)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,451</td>
       <td class="gt_row gt_center">2,746</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Thrombin time</td>
       <td class="gt_row gt_center">566</td>
       <td class="gt_row gt_center">17.30 (15.80, 19.75)</td>
       <td class="gt_row gt_center">16.40 (15.60, 17.30)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,578</td>
       <td class="gt_row gt_center">2,976</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">(%)lymphocyte</td>
       <td class="gt_row gt_center">958</td>
       <td class="gt_row gt_center">4 (2, 7)</td>
       <td class="gt_row gt_center">24 (16, 33)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,719</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HCV antibody quantification</td>
       <td class="gt_row gt_center">279</td>
       <td class="gt_row gt_center">0.07 (0.04, 0.11)</td>
       <td class="gt_row gt_center">0.06 (0.04, 0.08)</td>
-      <td class="gt_row gt_center">0.022</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,776</td>
       <td class="gt_row gt_center">3,065</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">D-D dimer</td>
       <td class="gt_row gt_center">630</td>
       <td class="gt_row gt_center">19 (3, 21)</td>
       <td class="gt_row gt_center">1 (0, 1)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,549</td>
       <td class="gt_row gt_center">2,941</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Total cholesterol</td>
       <td class="gt_row gt_center">931</td>
       <td class="gt_row gt_center">3.32 (2.72, 3.88)</td>
       <td class="gt_row gt_center">3.93 (3.39, 4.48)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,741</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">aspartate aminotransferase</td>
       <td class="gt_row gt_center">935</td>
       <td class="gt_row gt_center">38 (25, 59)</td>
       <td class="gt_row gt_center">21 (17, 29)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,444</td>
       <td class="gt_row gt_center">2,741</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Uric acid</td>
       <td class="gt_row gt_center">934</td>
       <td class="gt_row gt_center">245 (166, 374)</td>
       <td class="gt_row gt_center">240 (193, 304)</td>
-      <td class="gt_row gt_center">0.7</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,432</td>
       <td class="gt_row gt_center">2,754</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HCO3-</td>
       <td class="gt_row gt_center">934</td>
       <td class="gt_row gt_center">21.8 (18.8, 24.7)</td>
       <td class="gt_row gt_center">24.7 (22.8, 26.7)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,432</td>
       <td class="gt_row gt_center">2,754</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">calcium</td>
       <td class="gt_row gt_center">979</td>
       <td class="gt_row gt_center">2.00 (1.90, 2.08)</td>
       <td class="gt_row gt_center">2.17 (2.10, 2.25)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,400</td>
       <td class="gt_row gt_center">2,741</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Amino-terminal brain natriuretic peptide precursor(NT-proBNP)</td>
       <td class="gt_row gt_center">475</td>
       <td class="gt_row gt_center">1,467 (516, 4,578)</td>
       <td class="gt_row gt_center">64 (23, 166)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,586</td>
       <td class="gt_row gt_center">3,059</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Lactate dehydrogenase</td>
       <td class="gt_row gt_center">934</td>
       <td class="gt_row gt_center">593 (431, 840)</td>
       <td class="gt_row gt_center">220 (189, 278)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,444</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">platelet large cell ratio</td>
       <td class="gt_row gt_center">862</td>
       <td class="gt_row gt_center">35 (30, 42)</td>
       <td class="gt_row gt_center">28 (23, 33)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,533</td>
       <td class="gt_row gt_center">2,725</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 6</td>
       <td class="gt_row gt_center">272</td>
       <td class="gt_row gt_center">66 (30, 142)</td>
       <td class="gt_row gt_center">8 (2, 21)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,805</td>
       <td class="gt_row gt_center">3,043</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Fibrin degradation products</td>
       <td class="gt_row gt_center">330</td>
       <td class="gt_row gt_center">114 (18, 150)</td>
       <td class="gt_row gt_center">4 (4, 4)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,688</td>
       <td class="gt_row gt_center">3,102</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">monocytes count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.36 (0.20, 0.58)</td>
       <td class="gt_row gt_center">0.43 (0.32, 0.58)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">PLT distribution width</td>
       <td class="gt_row gt_center">862</td>
       <td class="gt_row gt_center">13.60 (12.10, 15.93)</td>
       <td class="gt_row gt_center">11.70 (10.70, 13.00)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,533</td>
       <td class="gt_row gt_center">2,725</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">globulin</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">34.1 (30.2, 38.2)</td>
       <td class="gt_row gt_center">31.8 (29.5, 35.2)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">γ-glutamyl transpeptidase</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">42 (27, 79)</td>
       <td class="gt_row gt_center">29 (19, 46)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">International standard ratio</td>
       <td class="gt_row gt_center">659</td>
       <td class="gt_row gt_center">1.31 (1.17, 1.48)</td>
       <td class="gt_row gt_center">1.04 (0.99, 1.09)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,534</td>
       <td class="gt_row gt_center">2,927</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">basophil count(#)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.010 (0.010, 0.030)</td>
       <td class="gt_row gt_center">0.010 (0.010, 0.020)</td>
-      <td class="gt_row gt_center">0.009</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">2019-nCoV nucleic acid detection</td>
       <td class="gt_row gt_center">501</td>
-      <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center"></td>
     </tr>
@@ -2947,160 +2811,138 @@ tbl_summary(
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">57 (100%)</td>
       <td class="gt_row gt_center">444 (100%)</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,848</td>
       <td class="gt_row gt_center">2,771</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">31.20 (29.90, 32.70)</td>
       <td class="gt_row gt_center">30.70 (29.60, 31.90)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,443</td>
       <td class="gt_row gt_center">2,720</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Activation of partial thromboplastin time</td>
       <td class="gt_row gt_center">568</td>
       <td class="gt_row gt_center">40 (36, 45)</td>
       <td class="gt_row gt_center">39 (35, 43)</td>
-      <td class="gt_row gt_center">0.043</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,576</td>
       <td class="gt_row gt_center">2,976</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">High sensitivity C-reactive protein</td>
       <td class="gt_row gt_center">737</td>
       <td class="gt_row gt_center">114 (65, 191)</td>
       <td class="gt_row gt_center">7 (2, 35)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,548</td>
       <td class="gt_row gt_center">2,835</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HIV antibody quantification</td>
       <td class="gt_row gt_center">278</td>
       <td class="gt_row gt_center">0.08 (0.07, 0.11)</td>
       <td class="gt_row gt_center">0.09 (0.08, 0.11)</td>
-      <td class="gt_row gt_center">0.055</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,776</td>
       <td class="gt_row gt_center">3,066</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">serum sodium</td>
       <td class="gt_row gt_center">975</td>
       <td class="gt_row gt_center">142 (138, 148)</td>
       <td class="gt_row gt_center">140 (138, 141)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,403</td>
       <td class="gt_row gt_center">2,742</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">thrombocytocrit</td>
       <td class="gt_row gt_center">862</td>
       <td class="gt_row gt_center">0.15 (0.10, 0.21)</td>
       <td class="gt_row gt_center">0.24 (0.19, 0.30)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,533</td>
       <td class="gt_row gt_center">2,725</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">ESR</td>
       <td class="gt_row gt_center">383</td>
       <td class="gt_row gt_center">36 (16, 59)</td>
       <td class="gt_row gt_center">26 (13, 40)</td>
-      <td class="gt_row gt_center">0.003</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,746</td>
       <td class="gt_row gt_center">2,991</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">glutamic-pyruvic transaminase</td>
       <td class="gt_row gt_center">931</td>
       <td class="gt_row gt_center">26 (18, 44)</td>
       <td class="gt_row gt_center">21 (15, 36)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,448</td>
       <td class="gt_row gt_center">2,741</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">eGFR</td>
       <td class="gt_row gt_center">936</td>
       <td class="gt_row gt_center">72 (43, 91)</td>
       <td class="gt_row gt_center">100 (85, 114)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,430</td>
       <td class="gt_row gt_center">2,754</td>
-      <td class="gt_row gt_center"></td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">creatinine</td>
       <td class="gt_row gt_center">936</td>
       <td class="gt_row gt_center">88 (68, 130)</td>
       <td class="gt_row gt_center">64 (54, 83)</td>
-      <td class="gt_row gt_center"><0.001</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
       <td class="gt_row gt_center"></td>
       <td class="gt_row gt_center">2,430</td>
       <td class="gt_row gt_center">2,754</td>
-      <td class="gt_row gt_center"></td>
     </tr>
   </tbody>
   
   <tfoot>
     <tr class="gt_footnotes">
-      <td colspan="5">
+      <td colspan="4">
         <p class="gt_footnote">
           <sup class="gt_footnote_marks">
             <em>1</em>
@@ -3109,967 +2951,10 @@ tbl_summary(
           Statistics presented: Median (IQR); n (%)
           <br />
         </p>
-        <p class="gt_footnote">
-          <sup class="gt_footnote_marks">
-            <em>2</em>
-          </sup>
-           
-          Statistical tests performed: Wilcoxon rank-sum test; chi-square test of independence
-          <br />
-        </p>
       </td>
     </tr>
   </tfoot>
 </table></div>
-<pre class="r"><code>df_1 &lt;- df[0:10]
-df_2 &lt;- df[11:20]
-df_3 &lt;- df[21:30]
-df_4 &lt;- df[31:40]
-df_5 &lt;- df[41:50]
-df_6 &lt;- df[51:60]
-df_7 &lt;- df[61:70]
-df_8 &lt;- df[71:80]
-
-
-kable(as.data.frame(summarytools::descr(df_1, stats = &quot;common&quot;)))</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">age</th>
-<th align="right">hemoglobin</th>
-<th align="right">Hypersensitive cardiac troponinI</th>
-<th align="right">PATIENT_ID</th>
-<th align="right">Serum chloride</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">59.44330</td>
-<td align="right">123.12492</td>
-<td align="right">1223.229980</td>
-<td align="right">188.000000</td>
-<td align="right">103.135692</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">16.37223</td>
-<td align="right">23.73799</td>
-<td align="right">5391.612528</td>
-<td align="right">108.397417</td>
-<td align="right">7.746938</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">18.00000</td>
-<td align="right">6.40000</td>
-<td align="right">1.900000</td>
-<td align="right">1.000000</td>
-<td align="right">71.500000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">62.00000</td>
-<td align="right">125.00000</td>
-<td align="right">20.600000</td>
-<td align="right">188.000000</td>
-<td align="right">102.100000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">95.00000</td>
-<td align="right">178.00000</td>
-<td align="right">50000.000000</td>
-<td align="right">375.000000</td>
-<td align="right">140.400000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">6120.00000</td>
-<td align="right">975.00000</td>
-<td align="right">507.000000</td>
-<td align="right">375.000000</td>
-<td align="right">975.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">100.00000</td>
-<td align="right">15.93137</td>
-<td align="right">8.284314</td>
-<td align="right">6.127451</td>
-<td align="right">15.931373</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_2, stats = &quot;common&quot;)))</code></pre>
-<table>
-<colgroup>
-<col width="5%"></col>
-<col width="6%"></col>
-<col width="12%"></col>
-<col width="7%"></col>
-<col width="8%"></col>
-<col width="8%"></col>
-<col width="13%"></col>
-<col width="8%"></col>
-<col width="8%"></col>
-<col width="10%"></col>
-<col width="9%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">albumin</th>
-<th align="right">Alkaline phosphatase</th>
-<th align="right">basophil(%)</th>
-<th align="right">eosinophils(%)</th>
-<th align="right">Interleukin 10</th>
-<th align="right">Interleukin 2 receptor</th>
-<th align="right">Platelet count</th>
-<th align="right">procalcitonin</th>
-<th align="right">Prothrombin time</th>
-<th align="right">Total bilirubin</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">32.006317</td>
-<td align="right">82.46774</td>
-<td align="right">0.2099269</td>
-<td align="right">0.6289446</td>
-<td align="right">16.068539</td>
-<td align="right">907.164179</td>
-<td align="right">184.31034</td>
-<td align="right">1.106601</td>
-<td align="right">16.674924</td>
-<td align="right">16.69538</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">6.249461</td>
-<td align="right">46.56562</td>
-<td align="right">0.2172857</td>
-<td align="right">1.0668200</td>
-<td align="right">68.441138</td>
-<td align="right">788.009337</td>
-<td align="right">104.48167</td>
-<td align="right">4.663411</td>
-<td align="right">9.501093</td>
-<td align="right">26.56593</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">13.600000</td>
-<td align="right">17.00000</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">5.000000</td>
-<td align="right">61.000000</td>
-<td align="right">-1.00000</td>
-<td align="right">0.020000</td>
-<td align="right">11.500000</td>
-<td align="right">2.50000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">32.200000</td>
-<td align="right">69.50000</td>
-<td align="right">0.2000000</td>
-<td align="right">0.1000000</td>
-<td align="right">5.900000</td>
-<td align="right">676.500000</td>
-<td align="right">178.00000</td>
-<td align="right">0.100000</td>
-<td align="right">14.800000</td>
-<td align="right">10.70000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">48.600000</td>
-<td align="right">620.00000</td>
-<td align="right">1.7000000</td>
-<td align="right">8.6000000</td>
-<td align="right">1000.000000</td>
-<td align="right">7500.000000</td>
-<td align="right">558.00000</td>
-<td align="right">57.170000</td>
-<td align="right">120.000000</td>
-<td align="right">505.70000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">934.000000</td>
-<td align="right">930.00000</td>
-<td align="right">957.0000000</td>
-<td align="right">957.0000000</td>
-<td align="right">267.000000</td>
-<td align="right">268.000000</td>
-<td align="right">957.00000</td>
-<td align="right">459.000000</td>
-<td align="right">662.000000</td>
-<td align="right">930.00000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">15.261438</td>
-<td align="right">15.19608</td>
-<td align="right">15.6372549</td>
-<td align="right">15.6372549</td>
-<td align="right">4.362745</td>
-<td align="right">4.379085</td>
-<td align="right">15.63725</td>
-<td align="right">7.500000</td>
-<td align="right">10.816994</td>
-<td align="right">15.19608</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_3, stats = &quot;common&quot;)))</code></pre>
-<table>
-<colgroup>
-<col width="4%"></col>
-<col width="6%"></col>
-<col width="5%"></col>
-<col width="8%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="7%"></col>
-<col width="9%"></col>
-<col width="22%"></col>
-<col width="16%"></col>
-<col width="6%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">antithrombin</th>
-<th align="right">HBsAg</th>
-<th align="right">indirect bilirubin</th>
-<th align="right">Interleukin 8</th>
-<th align="right">monocytes(%)</th>
-<th align="right">neutrophils(%)</th>
-<th align="right">Prothrombin activity</th>
-<th align="right">Quantification of Treponema pallidum antibodies</th>
-<th align="right">Red blood cell distribution width</th>
-<th align="right">total protein</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">85.318182</td>
-<td align="right">8.306308</td>
-<td align="right">6.888962</td>
-<td align="right">83.087687</td>
-<td align="right">6.155219</td>
-<td align="right">77.60146</td>
-<td align="right">78.55083</td>
-<td align="right">0.1324014</td>
-<td align="right">13.074540</td>
-<td align="right">65.303115</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">18.288268</td>
-<td align="right">42.929819</td>
-<td align="right">7.023537</td>
-<td align="right">553.152505</td>
-<td align="right">4.075424</td>
-<td align="right">16.64369</td>
-<td align="right">22.14339</td>
-<td align="right">0.7699385</td>
-<td align="right">1.727006</td>
-<td align="right">7.625481</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">20.000000</td>
-<td align="right">0.000000</td>
-<td align="right">0.100000</td>
-<td align="right">5.000000</td>
-<td align="right">0.300000</td>
-<td align="right">1.70000</td>
-<td align="right">6.00000</td>
-<td align="right">0.0200000</td>
-<td align="right">10.600000</td>
-<td align="right">31.800000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">86.000000</td>
-<td align="right">0.010000</td>
-<td align="right">5.400000</td>
-<td align="right">16.000000</td>
-<td align="right">5.700000</td>
-<td align="right">82.40000</td>
-<td align="right">81.00000</td>
-<td align="right">0.0500000</td>
-<td align="right">12.600000</td>
-<td align="right">65.900000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">136.000000</td>
-<td align="right">250.000000</td>
-<td align="right">145.100000</td>
-<td align="right">6795.000000</td>
-<td align="right">53.000000</td>
-<td align="right">98.90000</td>
-<td align="right">142.00000</td>
-<td align="right">11.9500000</td>
-<td align="right">27.100000</td>
-<td align="right">88.700000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">330.000000</td>
-<td align="right">279.000000</td>
-<td align="right">906.000000</td>
-<td align="right">268.000000</td>
-<td align="right">958.000000</td>
-<td align="right">957.00000</td>
-<td align="right">659.00000</td>
-<td align="right">279.0000000</td>
-<td align="right">923.000000</td>
-<td align="right">931.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">5.392157</td>
-<td align="right">4.558823</td>
-<td align="right">14.803922</td>
-<td align="right">4.379085</td>
-<td align="right">15.653595</td>
-<td align="right">15.63725</td>
-<td align="right">10.76797</td>
-<td align="right">4.5588235</td>
-<td align="right">15.081699</td>
-<td align="right">15.212418</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_4, stats = &quot;common&quot;)))</code></pre>
-<table>
-<colgroup>
-<col width="5%"></col>
-<col width="5%"></col>
-<col width="5%"></col>
-<col width="7%"></col>
-<col width="8%"></col>
-<col width="21%"></col>
-<col width="12%"></col>
-<col width="6%"></col>
-<col width="11%"></col>
-<col width="5%"></col>
-<col width="11%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">fibrinogen</th>
-<th align="right">hematocrit</th>
-<th align="right">Interleukin 1β</th>
-<th align="right">lymphocyte count</th>
-<th align="right">mean corpuscular hemoglobin concentration</th>
-<th align="right">mean corpuscular volume</th>
-<th align="right">PH value</th>
-<th align="right">Tumor necrosis factorα</th>
-<th align="right">Urea</th>
-<th align="right">White blood cell count</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">4.294435</td>
-<td align="right">36.544514</td>
-<td align="right">6.509702</td>
-<td align="right">1.016782</td>
-<td align="right">342.80355</td>
-<td align="right">90.388192</td>
-<td align="right">6.4835339</td>
-<td align="right">11.577612</td>
-<td align="right">9.589241</td>
-<td align="right">15.59944</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">1.888833</td>
-<td align="right">5.314735</td>
-<td align="right">7.012155</td>
-<td align="right">2.059922</td>
-<td align="right">17.79971</td>
-<td align="right">6.504046</td>
-<td align="right">0.7267371</td>
-<td align="right">13.061641</td>
-<td align="right">9.440427</td>
-<td align="right">67.74697</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">0.500000</td>
-<td align="right">14.500000</td>
-<td align="right">5.000000</td>
-<td align="right">0.000000</td>
-<td align="right">286.00000</td>
-<td align="right">61.600000</td>
-<td align="right">5.0000000</td>
-<td align="right">4.000000</td>
-<td align="right">0.800000</td>
-<td align="right">0.13000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">4.120000</td>
-<td align="right">36.600000</td>
-<td align="right">5.000000</td>
-<td align="right">0.800000</td>
-<td align="right">343.00000</td>
-<td align="right">90.100000</td>
-<td align="right">6.5000000</td>
-<td align="right">8.600000</td>
-<td align="right">5.985000</td>
-<td align="right">7.72000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">10.780000</td>
-<td align="right">52.300000</td>
-<td align="right">88.500000</td>
-<td align="right">52.420000</td>
-<td align="right">514.00000</td>
-<td align="right">118.900000</td>
-<td align="right">7.5650000</td>
-<td align="right">168.000000</td>
-<td align="right">68.400000</td>
-<td align="right">1726.60000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">566.000000</td>
-<td align="right">957.000000</td>
-<td align="right">268.000000</td>
-<td align="right">957.000000</td>
-<td align="right">957.00000</td>
-<td align="right">957.000000</td>
-<td align="right">384.0000000</td>
-<td align="right">268.000000</td>
-<td align="right">936.000000</td>
-<td align="right">1127.00000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">9.248366</td>
-<td align="right">15.637255</td>
-<td align="right">4.379085</td>
-<td align="right">15.637255</td>
-<td align="right">15.63725</td>
-<td align="right">15.637255</td>
-<td align="right">6.2745098</td>
-<td align="right">4.379085</td>
-<td align="right">15.294118</td>
-<td align="right">18.41503</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_5, stats = &quot;common&quot;)))</code></pre>
-<table>
-<colgroup>
-<col width="5%"></col>
-<col width="9%"></col>
-<col width="9%"></col>
-<col width="9%"></col>
-<col width="6%"></col>
-<col width="5%"></col>
-<col width="11%"></col>
-<col width="9%"></col>
-<col width="13%"></col>
-<col width="11%"></col>
-<col width="8%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">Corrected calcium</th>
-<th align="right">Direct bilirubin</th>
-<th align="right">Eosinophil count</th>
-<th align="right">ferritin</th>
-<th align="right">glucose</th>
-<th align="right">Mean platelet volume</th>
-<th align="right">neutrophils count</th>
-<th align="right">RBC distribution width SD</th>
-<th align="right">Red blood cell count</th>
-<th align="right">Serum potassium</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">2.3548687</td>
-<td align="right">9.886774</td>
-<td align="right">0.038652</td>
-<td align="right">1379.144170</td>
-<td align="right">8.889174</td>
-<td align="right">10.909281</td>
-<td align="right">7.809582</td>
-<td align="right">42.444204</td>
-<td align="right">9.28780</td>
-<td align="right">4.5088469</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">0.1285858</td>
-<td align="right">21.408093</td>
-<td align="right">0.061654</td>
-<td align="right">3454.399541</td>
-<td align="right">5.221573</td>
-<td align="right">1.088321</td>
-<td align="right">6.070367</td>
-<td align="right">6.300563</td>
-<td align="right">36.30541</td>
-<td align="right">0.8516411</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">1.6500000</td>
-<td align="right">1.600000</td>
-<td align="right">0.000000</td>
-<td align="right">17.800000</td>
-<td align="right">1.000000</td>
-<td align="right">8.500000</td>
-<td align="right">0.060000</td>
-<td align="right">31.300000</td>
-<td align="right">0.10000</td>
-<td align="right">2.7600000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">2.3600000</td>
-<td align="right">4.800000</td>
-<td align="right">0.010000</td>
-<td align="right">711.000000</td>
-<td align="right">6.990000</td>
-<td align="right">10.800000</td>
-<td align="right">5.850000</td>
-<td align="right">40.900000</td>
-<td align="right">4.14000</td>
-<td align="right">4.4100000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">2.7900000</td>
-<td align="right">360.600000</td>
-<td align="right">0.490000</td>
-<td align="right">50000.000000</td>
-<td align="right">43.010000</td>
-<td align="right">15.000000</td>
-<td align="right">33.880000</td>
-<td align="right">113.300000</td>
-<td align="right">749.50000</td>
-<td align="right">12.8000000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">914.0000000</td>
-<td align="right">930.000000</td>
-<td align="right">957.000000</td>
-<td align="right">283.000000</td>
-<td align="right">775.000000</td>
-<td align="right">862.000000</td>
-<td align="right">957.000000</td>
-<td align="right">923.000000</td>
-<td align="right">1127.00000</td>
-<td align="right">980.0000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">14.9346405</td>
-<td align="right">15.196078</td>
-<td align="right">15.637255</td>
-<td align="right">4.624183</td>
-<td align="right">12.663399</td>
-<td align="right">14.084967</td>
-<td align="right">15.637255</td>
-<td align="right">15.081699</td>
-<td align="right">18.41503</td>
-<td align="right">16.0130719</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_6, stats = &quot;common&quot;)))</code></pre>
-<table>
-<colgroup>
-<col width="4%"></col>
-<col width="6%"></col>
-<col width="28%"></col>
-<col width="12%"></col>
-<col width="5%"></col>
-<col width="5%"></col>
-<col width="5%"></col>
-<col width="12%"></col>
-<col width="6%"></col>
-<col width="8%"></col>
-<col width="5%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">(%)lymphocyte</th>
-<th align="right">Amino-terminal brain natriuretic peptide precursor(NT-proBNP)</th>
-<th align="right">aspartate aminotransferase</th>
-<th align="right">calcium</th>
-<th align="right">D-D dimer</th>
-<th align="right">HCO3-</th>
-<th align="right">HCV antibody quantification</th>
-<th align="right">Thrombin time</th>
-<th align="right">Total cholesterol</th>
-<th align="right">Uric acid</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">15.39165</td>
-<td align="right">3669.368421</td>
-<td align="right">46.52834</td>
-<td align="right">2.0779571</td>
-<td align="right">7.943413</td>
-<td align="right">23.141113</td>
-<td align="right">0.1170968</td>
-<td align="right">18.170318</td>
-<td align="right">3.6893555</td>
-<td align="right">276.12709</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">12.93374</td>
-<td align="right">9695.000276</td>
-<td align="right">103.28073</td>
-<td align="right">0.1629913</td>
-<td align="right">9.211021</td>
-<td align="right">4.409833</td>
-<td align="right">0.2350643</td>
-<td align="right">8.894196</td>
-<td align="right">0.9815529</td>
-<td align="right">151.53874</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">0.00000</td>
-<td align="right">5.000000</td>
-<td align="right">6.00000</td>
-<td align="right">1.1700000</td>
-<td align="right">0.210000</td>
-<td align="right">6.300000</td>
-<td align="right">0.0200000</td>
-<td align="right">13.000000</td>
-<td align="right">0.1000000</td>
-<td align="right">43.00000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">11.45000</td>
-<td align="right">585.000000</td>
-<td align="right">27.00000</td>
-<td align="right">2.0800000</td>
-<td align="right">2.155000</td>
-<td align="right">23.500000</td>
-<td align="right">0.0600000</td>
-<td align="right">16.800000</td>
-<td align="right">3.6300000</td>
-<td align="right">243.70000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">60.00000</td>
-<td align="right">70000.000000</td>
-<td align="right">1858.00000</td>
-<td align="right">2.6200000</td>
-<td align="right">60.000000</td>
-<td align="right">36.300000</td>
-<td align="right">2.0900000</td>
-<td align="right">161.900000</td>
-<td align="right">7.3000000</td>
-<td align="right">1176.00000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">958.00000</td>
-<td align="right">475.000000</td>
-<td align="right">935.00000</td>
-<td align="right">979.0000000</td>
-<td align="right">630.000000</td>
-<td align="right">934.000000</td>
-<td align="right">279.0000000</td>
-<td align="right">566.000000</td>
-<td align="right">931.0000000</td>
-<td align="right">934.00000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">15.65359</td>
-<td align="right">7.761438</td>
-<td align="right">15.27778</td>
-<td align="right">15.9967320</td>
-<td align="right">10.294118</td>
-<td align="right">15.261438</td>
-<td align="right">4.5588235</td>
-<td align="right">9.248366</td>
-<td align="right">15.2124183</td>
-<td align="right">15.26144</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_7, stats = &quot;common&quot;)))</code></pre>
-<table style="width:100%;">
-<colgroup>
-<col width="4%"></col>
-<col width="8%"></col>
-<col width="12%"></col>
-<col width="4%"></col>
-<col width="6%"></col>
-<col width="13%"></col>
-<col width="9%"></col>
-<col width="7%"></col>
-<col width="11%"></col>
-<col width="10%"></col>
-<col width="11%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">basophil count(#)</th>
-<th align="right">Fibrin degradation products</th>
-<th align="right">globulin</th>
-<th align="right">Interleukin 6</th>
-<th align="right">International standard ratio</th>
-<th align="right">Lactate dehydrogenase</th>
-<th align="right">monocytes count</th>
-<th align="right">platelet large cell ratio</th>
-<th align="right">PLT distribution width</th>
-<th align="right">γ-glutamyl transpeptidase</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">0.0170846</td>
-<td align="right">61.354242</td>
-<td align="right">33.241613</td>
-<td align="right">112.307978</td>
-<td align="right">1.3127618</td>
-<td align="right">474.22805</td>
-<td align="right">0.5258516</td>
-<td align="right">31.765661</td>
-<td align="right">13.005220</td>
-<td align="right">55.34409</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">0.0171678</td>
-<td align="right">65.645267</td>
-<td align="right">5.509276</td>
-<td align="right">537.205847</td>
-<td align="right">0.8083756</td>
-<td align="right">369.13698</td>
-<td align="right">1.6943098</td>
-<td align="right">8.565205</td>
-<td align="right">2.791223</td>
-<td align="right">69.45158</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">0.0000000</td>
-<td align="right">4.000000</td>
-<td align="right">10.100000</td>
-<td align="right">1.500000</td>
-<td align="right">0.8400000</td>
-<td align="right">110.00000</td>
-<td align="right">0.0100000</td>
-<td align="right">11.200000</td>
-<td align="right">8.000000</td>
-<td align="right">3.00000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">0.0100000</td>
-<td align="right">17.900000</td>
-<td align="right">32.700000</td>
-<td align="right">19.265000</td>
-<td align="right">1.1400000</td>
-<td align="right">340.00000</td>
-<td align="right">0.4100000</td>
-<td align="right">30.900000</td>
-<td align="right">12.400000</td>
-<td align="right">34.00000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">0.1200000</td>
-<td align="right">190.800000</td>
-<td align="right">50.600000</td>
-<td align="right">5000.000000</td>
-<td align="right">13.4800000</td>
-<td align="right">1867.00000</td>
-<td align="right">39.9200000</td>
-<td align="right">62.200000</td>
-<td align="right">25.300000</td>
-<td align="right">732.00000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">957.0000000</td>
-<td align="right">330.000000</td>
-<td align="right">930.000000</td>
-<td align="right">272.000000</td>
-<td align="right">659.0000000</td>
-<td align="right">934.00000</td>
-<td align="right">957.0000000</td>
-<td align="right">862.000000</td>
-<td align="right">862.000000</td>
-<td align="right">930.00000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">15.6372549</td>
-<td align="right">5.392157</td>
-<td align="right">15.196078</td>
-<td align="right">4.444444</td>
-<td align="right">10.7679739</td>
-<td align="right">15.26144</td>
-<td align="right">15.6372549</td>
-<td align="right">14.084967</td>
-<td align="right">14.084967</td>
-<td align="right">15.19608</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>kable(as.data.frame(summarytools::descr(df_8, stats = &quot;common&quot;)))</code></pre>
-<table>
-<colgroup>
-<col width="3%"></col>
-<col width="12%"></col>
-<col width="16%"></col>
-<col width="3%"></col>
-<col width="3%"></col>
-<col width="11%"></col>
-<col width="14%"></col>
-<col width="10%"></col>
-<col width="10%"></col>
-<col width="5%"></col>
-<col width="6%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left"></th>
-<th align="right">2019-nCoV nucleic acid detection</th>
-<th align="right">Activation of partial thromboplastin time</th>
-<th align="right">eGFR</th>
-<th align="right">ESR</th>
-<th align="right">glutamic-pyruvic transaminase</th>
-<th align="right">High sensitivity C-reactive protein</th>
-<th align="right">HIV antibody quantification</th>
-<th align="right">mean corpuscular hemoglobin</th>
-<th align="right">serum sodium</th>
-<th align="right">thrombocytocrit</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Mean</td>
-<td align="right">-1.000000</td>
-<td align="right">41.520070</td>
-<td align="right">81.56432</td>
-<td align="right">33.68930</td>
-<td align="right">38.86037</td>
-<td align="right">76.24383</td>
-<td align="right">0.1001439</td>
-<td align="right">30.99760</td>
-<td align="right">141.549641</td>
-<td align="right">0.2123086</td>
-</tr>
-<tr class="even">
-<td align="left">Std.Dev</td>
-<td align="right">0.000000</td>
-<td align="right">11.783239</td>
-<td align="right">32.22278</td>
-<td align="right">24.60345</td>
-<td align="right">83.76664</td>
-<td align="right">81.08041</td>
-<td align="right">0.0400809</td>
-<td align="right">2.90913</td>
-<td align="right">7.333611</td>
-<td align="right">0.0928407</td>
-</tr>
-<tr class="odd">
-<td align="left">Min</td>
-<td align="right">-1.000000</td>
-<td align="right">21.800000</td>
-<td align="right">2.00000</td>
-<td align="right">1.00000</td>
-<td align="right">5.00000</td>
-<td align="right">0.10000</td>
-<td align="right">0.0500000</td>
-<td align="right">20.40000</td>
-<td align="right">115.400000</td>
-<td align="right">0.0100000</td>
-</tr>
-<tr class="even">
-<td align="left">Median</td>
-<td align="right">-1.000000</td>
-<td align="right">39.200000</td>
-<td align="right">87.90000</td>
-<td align="right">28.00000</td>
-<td align="right">24.00000</td>
-<td align="right">51.50000</td>
-<td align="right">0.0900000</td>
-<td align="right">30.90000</td>
-<td align="right">140.400000</td>
-<td align="right">0.2100000</td>
-</tr>
-<tr class="odd">
-<td align="left">Max</td>
-<td align="right">-1.000000</td>
-<td align="right">144.000000</td>
-<td align="right">224.00000</td>
-<td align="right">110.00000</td>
-<td align="right">1600.00000</td>
-<td align="right">320.00000</td>
-<td align="right">0.2700000</td>
-<td align="right">50.80000</td>
-<td align="right">179.700000</td>
-<td align="right">0.5100000</td>
-</tr>
-<tr class="even">
-<td align="left">N.Valid</td>
-<td align="right">501.000000</td>
-<td align="right">568.000000</td>
-<td align="right">936.00000</td>
-<td align="right">383.00000</td>
-<td align="right">931.00000</td>
-<td align="right">737.00000</td>
-<td align="right">278.0000000</td>
-<td align="right">957.00000</td>
-<td align="right">975.000000</td>
-<td align="right">862.0000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Pct.Valid</td>
-<td align="right">8.186274</td>
-<td align="right">9.281046</td>
-<td align="right">15.29412</td>
-<td align="right">6.25817</td>
-<td align="right">15.21242</td>
-<td align="right">12.04248</td>
-<td align="right">4.5424837</td>
-<td align="right">15.63725</td>
-<td align="right">15.931373</td>
-<td align="right">14.0849673</td>
-</tr>
-</tbody>
-</table>
 </div>
 <div id="age-and-gender-distribution" class="section level2">
 <h2>Age and gender distribution</h2>
