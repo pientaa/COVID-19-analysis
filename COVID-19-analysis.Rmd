@@ -1,0 +1,31 @@
+---
+title: "COVID-19 Analysis"
+author: "Łukasz Pięta"
+date: "11/11/2020"
+output: 
+  html_document: 
+    df_print: default
+---
+
+
+```{r setup, include=FALSE}
+#install.packages("readxl")
+library(readxl)
+library(summarytools)
+library(dplyr)
+library(knitr)
+library(DT)
+library(ggplot2)
+library(reshape2)
+```
+
+## Read data
+```{r read_data}
+df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
+```
+
+## Data summary
+```{r summary_tools_used,message=FALSE,warning=FALSE}
+kable(as.data.frame(summarytools::descr(df, stats = "common")))
+```
+
