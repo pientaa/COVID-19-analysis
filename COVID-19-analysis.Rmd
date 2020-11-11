@@ -19,6 +19,7 @@ knitr::opts_chunk$set(message = FALSE)
 ```{r libraries, include=FALSE}
 library(readxl)
 library(summarytools)
+library(gtsummary)
 library(tidyverse)
 library(dplyr)
 library(knitr)
@@ -32,20 +33,61 @@ library(reshape2)
 df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 ```
 
-## Data summary
-```{r summary_tools_used,message=FALSE,warning=FALSE}
-kable(as.data.frame(summarytools::descr(df, stats = "common")))
-```
-
-As you can see, there is no NA in `outcome` column. So every sample has been classified. `0` means that the particular patient has survived. `1` means that patient has died.
-
 ## Clean dataset
 ```{r, clean_dataset}
 df$gender<-ifelse(df$gender==1, 'Male', 'Female') 
 df <- df %>% mutate(gender = as.factor(gender))
+df$outcome<-ifelse(df$outcome==1, 'Death', 'Survival')
+df <- df %>% mutate(outcome = as.factor(outcome))
+# TODO: Calculate how long hospital therapy took instead of all dates?
+df <- df %>% mutate(RE_DATE = as.Date(RE_DATE))
+df <- df %>% mutate(`Admission time` = as.Date(`Admission time`))
+df <- df %>% mutate(`Discharge time` =  as.Date(`Discharge time`))
 ```
 
-## Age distribution
-```{r, gender_distribution}
-ggplot(df, aes(x=age,color=gender)) + geom_histogram() + facet_grid(. ~ gender)
+## Data summary
+```{r summary_tools_used,message=FALSE,warning=FALSE}
+no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE' ))
+tbl_summary(
+    no_dates_df,
+    by = outcome
+            ) %>%
+    add_n() %>%
+    modify_header(label = "**Variable**") %>%
+    bold_labels() 
+
+df_1 <- df[0:10]
+df_2 <- df[11:20]
+df_3 <- df[21:30]
+df_4 <- df[31:40]
+df_5 <- df[41:50]
+df_6 <- df[51:60]
+df_7 <- df[61:70]
+df_8 <- df[71:80]
+
+
+kable(as.data.frame(summarytools::descr(df_1, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_2, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_3, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_4, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_5, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_6, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_7, stats = "common")))
+
+kable(as.data.frame(summarytools::descr(df_8, stats = "common")))
+```
+
+## Age and gender distribution
+```{r, gender_distribution, warning=FALSE}
+ggplot(df, aes(x=gender, fill=gender)) + geom_histogram(stat = "count") + ylab("Number of patients") +
+  xlab("Gender") + theme_minimal()
+ ggplot(df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) +
+   ylab("Number of patients") +
+   theme_minimal()
 ```
