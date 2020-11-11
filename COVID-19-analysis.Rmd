@@ -55,32 +55,6 @@ tbl_summary(
     add_n() %>%
     modify_header(label = "**Variable**") %>%
     bold_labels() 
-
-df_1 <- df[0:10]
-df_2 <- df[11:20]
-df_3 <- df[21:30]
-df_4 <- df[31:40]
-df_5 <- df[41:50]
-df_6 <- df[51:60]
-df_7 <- df[61:70]
-df_8 <- df[71:80]
-
-
-kable(as.data.frame(summarytools::descr(df_1, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_2, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_3, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_4, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_5, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_6, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_7, stats = "common")))
-
-kable(as.data.frame(summarytools::descr(df_8, stats = "common")))
 ```
 
 ## Age and gender distribution
