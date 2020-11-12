@@ -1642,21 +1642,36 @@ div.tocify {
 </div>
 <div id="clean-dataset" class="section level2">
 <h2>Clean dataset</h2>
-<pre class="r"><code>df$gender&lt;-ifelse(df$gender==1, &#39;Male&#39;, &#39;Female&#39;) 
+<pre class="r"><code># Patients with basic info
+patients_df &lt;- df %&gt;% group_by(`Admission time`, `Discharge time`, gender, age, outcome) %&gt;%
+summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), sum_of_samples = n()) 
+
+patients_df &lt;- patients_df %&gt;%
+    mutate(`Hospitalization length [days]` = ceiling(difftime(`Discharge time`, `Admission time`, units = &quot;days&quot;)))
+
+
+df &lt;- full_join(patients_df %&gt;% ungroup() %&gt;% select(`Admission time`, PATIENT_ID), df %&gt;% select(-PATIENT_ID), by=&quot;Admission time&quot;)
+
+df$gender&lt;-ifelse(df$gender==1, &#39;Male&#39;, &#39;Female&#39;) 
 df &lt;- df %&gt;% mutate(gender = as.factor(gender))
+
+patients_df$gender&lt;-ifelse(patients_df$gender==1, &#39;Male&#39;, &#39;Female&#39;) 
+patients_df &lt;- patients_df %&gt;% mutate(gender = as.factor(gender))
+
 df$outcome&lt;-ifelse(df$outcome==1, &#39;Death&#39;, &#39;Survival&#39;)
 df &lt;- df %&gt;% mutate(outcome = as.factor(outcome))
-# TODO: Calculate how long hospital therapy took instead of all dates?
-df &lt;- df %&gt;% mutate(RE_DATE = as.Date(RE_DATE))
-df &lt;- df %&gt;% mutate(`Admission time` = as.Date(`Admission time`))
-df &lt;- df %&gt;% mutate(`Discharge time` =  as.Date(`Discharge time`))</code></pre>
+
+patients_df$outcome&lt;-ifelse(patients_df$outcome==1, &#39;Death&#39;, &#39;Survival&#39;)
+patients_df &lt;- patients_df %&gt;% mutate(outcome = as.factor(outcome))</code></pre>
 </div>
-<div id="data-summary" class="section level2">
-<h2>Data summary</h2>
-<pre class="r"><code>no_dates_df &lt;- df %&gt;% select(-c(&#39;Admission time&#39;, &#39;Discharge time&#39;, &#39;RE_DATE&#39; ))
+<div id="original-data" class="section level2">
+<h2>Original Data</h2>
+<p>This section presents all original columns cleaned up a little. Columns that couldn’t be presented here represent timestamps and <code>PATIENT_ID</code>. Summary of these columns will be presented in the next sections. Note that this data is not aggregated yet - it’s not grouped by patient’s id, so outcome should not be considered as unique patient’s outcome. Missing observations has been skipped. Therefore, they are not listed below.</p>
+<pre class="r"><code>no_dates_df &lt;- df %&gt;% select(-c(&#39;Admission time&#39;, &#39;Discharge time&#39;, &#39;RE_DATE&#39;, &#39;PATIENT_ID&#39; ))
 tbl_summary(
     no_dates_df,
-    by = outcome
+    by = outcome,
+    missing = &quot;no&quot;
             ) %&gt;%
     add_n() %&gt;%
     modify_header(label = &quot;**Variable**&quot;) %&gt;%
@@ -1665,7 +1680,7 @@ tbl_summary(
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#ozvyemkvfj .gt_table {
+#qwcpcvcdym .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -1690,7 +1705,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_heading {
+#qwcpcvcdym .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1702,7 +1717,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_title {
+#qwcpcvcdym .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1712,7 +1727,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#ozvyemkvfj .gt_subtitle {
+#qwcpcvcdym .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1722,13 +1737,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#ozvyemkvfj .gt_bottom_border {
+#qwcpcvcdym .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_col_headings {
+#qwcpcvcdym .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1743,7 +1758,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_col_heading {
+#qwcpcvcdym .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1763,7 +1778,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#ozvyemkvfj .gt_column_spanner_outer {
+#qwcpcvcdym .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1775,15 +1790,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#ozvyemkvfj .gt_column_spanner_outer:first-child {
+#qwcpcvcdym .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ozvyemkvfj .gt_column_spanner_outer:last-child {
+#qwcpcvcdym .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ozvyemkvfj .gt_column_spanner {
+#qwcpcvcdym .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1795,7 +1810,7 @@ tbl_summary(
   width: 100%;
 }
 
-#ozvyemkvfj .gt_group_heading {
+#qwcpcvcdym .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1817,7 +1832,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#ozvyemkvfj .gt_empty_group_heading {
+#qwcpcvcdym .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1832,15 +1847,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#ozvyemkvfj .gt_from_md > :first-child {
+#qwcpcvcdym .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ozvyemkvfj .gt_from_md > :last-child {
+#qwcpcvcdym .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ozvyemkvfj .gt_row {
+#qwcpcvcdym .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1859,7 +1874,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#ozvyemkvfj .gt_stub {
+#qwcpcvcdym .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1871,7 +1886,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#ozvyemkvfj .gt_summary_row {
+#qwcpcvcdym .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1881,7 +1896,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#ozvyemkvfj .gt_first_summary_row {
+#qwcpcvcdym .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1891,7 +1906,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_grand_summary_row {
+#qwcpcvcdym .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1901,7 +1916,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#ozvyemkvfj .gt_first_grand_summary_row {
+#qwcpcvcdym .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1911,11 +1926,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_striped {
+#qwcpcvcdym .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ozvyemkvfj .gt_table_body {
+#qwcpcvcdym .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1924,7 +1939,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_footnotes {
+#qwcpcvcdym .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1938,13 +1953,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_footnote {
+#qwcpcvcdym .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#ozvyemkvfj .gt_sourcenotes {
+#qwcpcvcdym .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1958,46 +1973,46 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#ozvyemkvfj .gt_sourcenote {
+#qwcpcvcdym .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#ozvyemkvfj .gt_left {
+#qwcpcvcdym .gt_left {
   text-align: left;
 }
 
-#ozvyemkvfj .gt_center {
+#qwcpcvcdym .gt_center {
   text-align: center;
 }
 
-#ozvyemkvfj .gt_right {
+#qwcpcvcdym .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ozvyemkvfj .gt_font_normal {
+#qwcpcvcdym .gt_font_normal {
   font-weight: normal;
 }
 
-#ozvyemkvfj .gt_font_bold {
+#qwcpcvcdym .gt_font_bold {
   font-weight: bold;
 }
 
-#ozvyemkvfj .gt_font_italic {
+#qwcpcvcdym .gt_font_italic {
   font-style: italic;
 }
 
-#ozvyemkvfj .gt_super {
+#qwcpcvcdym .gt_super {
   font-size: 65%;
 }
 
-#ozvyemkvfj .gt_footnote_marks {
+#qwcpcvcdym .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="ozvyemkvfj" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="qwcpcvcdym" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
@@ -2008,18 +2023,6 @@ tbl_summary(
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">PATIENT_ID</td>
-      <td class="gt_row gt_center">375</td>
-      <td class="gt_row gt_center">288 (245, 332)</td>
-      <td class="gt_row gt_center">101 (51, 151)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,731</td>
-      <td class="gt_row gt_center">3,014</td>
-    </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">age</td>
       <td class="gt_row gt_center">6,120</td>
@@ -2051,22 +2054,10 @@ tbl_summary(
       <td class="gt_row gt_center">3 (2, 7)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,572</td>
-      <td class="gt_row gt_center">3,041</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">hemoglobin</td>
       <td class="gt_row gt_center">975</td>
       <td class="gt_row gt_center">123 (110, 135)</td>
       <td class="gt_row gt_center">127 (116, 138)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,438</td>
-      <td class="gt_row gt_center">2,707</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Serum chloride</td>
@@ -2075,22 +2066,10 @@ tbl_summary(
       <td class="gt_row gt_center">101 (99, 103)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,403</td>
-      <td class="gt_row gt_center">2,742</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin time</td>
       <td class="gt_row gt_center">662</td>
       <td class="gt_row gt_center">16.3 (15.0, 18.2)</td>
       <td class="gt_row gt_center">13.6 (13.1, 14.1)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,531</td>
-      <td class="gt_row gt_center">2,927</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">procalcitonin</td>
@@ -2099,22 +2078,10 @@ tbl_summary(
       <td class="gt_row gt_center">0.04 (0.02, 0.06)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,681</td>
-      <td class="gt_row gt_center">2,980</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">eosinophils(%)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.00 (0.00, 0.10)</td>
       <td class="gt_row gt_center">0.70 (0.00, 1.80)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 2 receptor</td>
@@ -2123,22 +2090,10 @@ tbl_summary(
       <td class="gt_row gt_center">529 (400, 742)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,804</td>
-      <td class="gt_row gt_center">3,048</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Alkaline phosphatase</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">83 (64, 123)</td>
       <td class="gt_row gt_center">60 (50, 75)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,742</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">albumin</td>
@@ -2147,22 +2102,10 @@ tbl_summary(
       <td class="gt_row gt_center">36 (34, 39)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,444</td>
-      <td class="gt_row gt_center">2,742</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">basophil(%)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.10 (0.10, 0.20)</td>
       <td class="gt_row gt_center">0.20 (0.10, 0.40)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 10</td>
@@ -2171,22 +2114,10 @@ tbl_summary(
       <td class="gt_row gt_center">5 (5, 8)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,805</td>
-      <td class="gt_row gt_center">3,048</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Total bilirubin</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">14 (10, 25)</td>
       <td class="gt_row gt_center">8 (6, 12)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,742</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Platelet count</td>
@@ -2195,22 +2126,10 @@ tbl_summary(
       <td class="gt_row gt_center">229 (176, 290)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">monocytes(%)</td>
       <td class="gt_row gt_center">958</td>
       <td class="gt_row gt_center">3.0 (2.0, 4.7)</td>
       <td class="gt_row gt_center">8.2 (6.3, 10.0)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,719</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">antithrombin</td>
@@ -2219,22 +2138,10 @@ tbl_summary(
       <td class="gt_row gt_center">93 (86, 103)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,688</td>
-      <td class="gt_row gt_center">3,102</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 8</td>
       <td class="gt_row gt_center">268</td>
       <td class="gt_row gt_center">30 (18, 61)</td>
       <td class="gt_row gt_center">11 (7, 19)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,804</td>
-      <td class="gt_row gt_center">3,048</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">indirect bilirubin</td>
@@ -2243,22 +2150,10 @@ tbl_summary(
       <td class="gt_row gt_center">4.9 (3.4, 7.1)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,453</td>
-      <td class="gt_row gt_center">2,761</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell distribution width</td>
       <td class="gt_row gt_center">923</td>
       <td class="gt_row gt_center">13.20 (12.40, 14.40)</td>
       <td class="gt_row gt_center">12.20 (11.80, 12.80)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,451</td>
-      <td class="gt_row gt_center">2,746</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">neutrophils(%)</td>
@@ -2267,22 +2162,10 @@ tbl_summary(
       <td class="gt_row gt_center">66 (56, 76)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">total protein</td>
       <td class="gt_row gt_center">931</td>
       <td class="gt_row gt_center">62 (57, 68)</td>
       <td class="gt_row gt_center">68 (65, 72)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,741</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Quantification of Treponema pallidum antibodies</td>
@@ -2291,22 +2174,10 @@ tbl_summary(
       <td class="gt_row gt_center">0.05 (0.04, 0.07)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,777</td>
-      <td class="gt_row gt_center">3,064</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin activity</td>
       <td class="gt_row gt_center">659</td>
       <td class="gt_row gt_center">66 (56, 78)</td>
       <td class="gt_row gt_center">94 (88, 103)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,534</td>
-      <td class="gt_row gt_center">2,927</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HBsAg</td>
@@ -2315,22 +2186,10 @@ tbl_summary(
       <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,776</td>
-      <td class="gt_row gt_center">3,065</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular volume</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">91.3 (87.1, 96.4)</td>
       <td class="gt_row gt_center">89.8 (86.8, 91.9)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">hematocrit</td>
@@ -2339,22 +2198,10 @@ tbl_summary(
       <td class="gt_row gt_center">37.1 (34.3, 39.9)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">White blood cell count</td>
       <td class="gt_row gt_center">1,127</td>
       <td class="gt_row gt_center">12 (8, 17)</td>
       <td class="gt_row gt_center">6 (4, 8)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,393</td>
-      <td class="gt_row gt_center">2,600</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Tumor necrosis factorα</td>
@@ -2363,22 +2210,10 @@ tbl_summary(
       <td class="gt_row gt_center">8 (6, 10)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,804</td>
-      <td class="gt_row gt_center">3,048</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin concentration</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">342 (331, 350)</td>
       <td class="gt_row gt_center">343 (335, 350)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">fibrinogen</td>
@@ -2387,22 +2222,10 @@ tbl_summary(
       <td class="gt_row gt_center">4.40 (3.56, 5.34)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,578</td>
-      <td class="gt_row gt_center">2,976</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 1β</td>
       <td class="gt_row gt_center">268</td>
       <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
       <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,804</td>
-      <td class="gt_row gt_center">3,048</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Urea</td>
@@ -2411,22 +2234,10 @@ tbl_summary(
       <td class="gt_row gt_center">4 (3, 5)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,430</td>
-      <td class="gt_row gt_center">2,754</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">lymphocyte count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.46 (0.31, 0.69)</td>
       <td class="gt_row gt_center">1.25 (0.87, 1.62)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">PH value</td>
@@ -2435,22 +2246,10 @@ tbl_summary(
       <td class="gt_row gt_center">6.50 (6.00, 7.00)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,730</td>
-      <td class="gt_row gt_center">3,006</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell count</td>
       <td class="gt_row gt_center">1,127</td>
       <td class="gt_row gt_center">4.0 (3.6, 4.6)</td>
       <td class="gt_row gt_center">4.2 (3.8, 4.7)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,393</td>
-      <td class="gt_row gt_center">2,600</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Eosinophil count</td>
@@ -2459,22 +2258,10 @@ tbl_summary(
       <td class="gt_row gt_center">0.03 (0.00, 0.09)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Corrected calcium</td>
       <td class="gt_row gt_center">914</td>
       <td class="gt_row gt_center">2.35 (2.27, 2.44)</td>
       <td class="gt_row gt_center">2.37 (2.27, 2.44)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,453</td>
-      <td class="gt_row gt_center">2,753</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Serum potassium</td>
@@ -2483,22 +2270,10 @@ tbl_summary(
       <td class="gt_row gt_center">4.28 (3.92, 4.62)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,401</td>
-      <td class="gt_row gt_center">2,739</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">glucose</td>
       <td class="gt_row gt_center">775</td>
       <td class="gt_row gt_center">9.1 (6.9, 13.3)</td>
       <td class="gt_row gt_center">5.7 (5.0, 7.6)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,535</td>
-      <td class="gt_row gt_center">2,810</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">neutrophils count</td>
@@ -2507,22 +2282,10 @@ tbl_summary(
       <td class="gt_row gt_center">3.5 (2.4, 5.2)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Direct bilirubin</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">8 (5, 14)</td>
       <td class="gt_row gt_center">4 (2, 5)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,742</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Mean platelet volume</td>
@@ -2531,22 +2294,10 @@ tbl_summary(
       <td class="gt_row gt_center">10.40 (9.90, 11.00)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,533</td>
-      <td class="gt_row gt_center">2,725</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">ferritin</td>
       <td class="gt_row gt_center">283</td>
       <td class="gt_row gt_center">1,636 (928, 2,517)</td>
       <td class="gt_row gt_center">504 (235, 834)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,811</td>
-      <td class="gt_row gt_center">3,026</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">RBC distribution width SD</td>
@@ -2555,22 +2306,10 @@ tbl_summary(
       <td class="gt_row gt_center">39.5 (37.6, 41.4)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,451</td>
-      <td class="gt_row gt_center">2,746</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Thrombin time</td>
       <td class="gt_row gt_center">566</td>
       <td class="gt_row gt_center">17.30 (15.80, 19.75)</td>
       <td class="gt_row gt_center">16.40 (15.60, 17.30)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,578</td>
-      <td class="gt_row gt_center">2,976</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">(%)lymphocyte</td>
@@ -2579,22 +2318,10 @@ tbl_summary(
       <td class="gt_row gt_center">24 (16, 33)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,719</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HCV antibody quantification</td>
       <td class="gt_row gt_center">279</td>
       <td class="gt_row gt_center">0.07 (0.04, 0.11)</td>
       <td class="gt_row gt_center">0.06 (0.04, 0.08)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,776</td>
-      <td class="gt_row gt_center">3,065</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">D-D dimer</td>
@@ -2603,22 +2330,10 @@ tbl_summary(
       <td class="gt_row gt_center">1 (0, 1)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,549</td>
-      <td class="gt_row gt_center">2,941</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Total cholesterol</td>
       <td class="gt_row gt_center">931</td>
       <td class="gt_row gt_center">3.32 (2.72, 3.88)</td>
       <td class="gt_row gt_center">3.93 (3.39, 4.48)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,741</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">aspartate aminotransferase</td>
@@ -2627,22 +2342,10 @@ tbl_summary(
       <td class="gt_row gt_center">21 (17, 29)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,444</td>
-      <td class="gt_row gt_center">2,741</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Uric acid</td>
       <td class="gt_row gt_center">934</td>
       <td class="gt_row gt_center">245 (166, 374)</td>
       <td class="gt_row gt_center">240 (193, 304)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,432</td>
-      <td class="gt_row gt_center">2,754</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HCO3-</td>
@@ -2651,22 +2354,10 @@ tbl_summary(
       <td class="gt_row gt_center">24.7 (22.8, 26.7)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,432</td>
-      <td class="gt_row gt_center">2,754</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">calcium</td>
       <td class="gt_row gt_center">979</td>
       <td class="gt_row gt_center">2.00 (1.90, 2.08)</td>
       <td class="gt_row gt_center">2.17 (2.10, 2.25)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,400</td>
-      <td class="gt_row gt_center">2,741</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Amino-terminal brain natriuretic peptide precursor(NT-proBNP)</td>
@@ -2675,22 +2366,10 @@ tbl_summary(
       <td class="gt_row gt_center">64 (23, 166)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,586</td>
-      <td class="gt_row gt_center">3,059</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Lactate dehydrogenase</td>
       <td class="gt_row gt_center">934</td>
       <td class="gt_row gt_center">593 (431, 840)</td>
       <td class="gt_row gt_center">220 (189, 278)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,444</td>
-      <td class="gt_row gt_center">2,742</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">platelet large cell ratio</td>
@@ -2699,22 +2378,10 @@ tbl_summary(
       <td class="gt_row gt_center">28 (23, 33)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,533</td>
-      <td class="gt_row gt_center">2,725</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 6</td>
       <td class="gt_row gt_center">272</td>
       <td class="gt_row gt_center">66 (30, 142)</td>
       <td class="gt_row gt_center">8 (2, 21)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,805</td>
-      <td class="gt_row gt_center">3,043</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Fibrin degradation products</td>
@@ -2723,22 +2390,10 @@ tbl_summary(
       <td class="gt_row gt_center">4 (4, 4)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,688</td>
-      <td class="gt_row gt_center">3,102</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">monocytes count</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.36 (0.20, 0.58)</td>
       <td class="gt_row gt_center">0.43 (0.32, 0.58)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">PLT distribution width</td>
@@ -2747,22 +2402,10 @@ tbl_summary(
       <td class="gt_row gt_center">11.70 (10.70, 13.00)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,533</td>
-      <td class="gt_row gt_center">2,725</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">globulin</td>
       <td class="gt_row gt_center">930</td>
       <td class="gt_row gt_center">34.1 (30.2, 38.2)</td>
       <td class="gt_row gt_center">31.8 (29.5, 35.2)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,742</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">γ-glutamyl transpeptidase</td>
@@ -2771,34 +2414,16 @@ tbl_summary(
       <td class="gt_row gt_center">29 (19, 46)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,742</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">International standard ratio</td>
       <td class="gt_row gt_center">659</td>
       <td class="gt_row gt_center">1.31 (1.17, 1.48)</td>
       <td class="gt_row gt_center">1.04 (0.99, 1.09)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,534</td>
-      <td class="gt_row gt_center">2,927</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">basophil count(#)</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">0.010 (0.010, 0.030)</td>
       <td class="gt_row gt_center">0.010 (0.010, 0.020)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">2019-nCoV nucleic acid detection</td>
@@ -2813,22 +2438,10 @@ tbl_summary(
       <td class="gt_row gt_center">444 (100%)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,848</td>
-      <td class="gt_row gt_center">2,771</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin</td>
       <td class="gt_row gt_center">957</td>
       <td class="gt_row gt_center">31.20 (29.90, 32.70)</td>
       <td class="gt_row gt_center">30.70 (29.60, 31.90)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,443</td>
-      <td class="gt_row gt_center">2,720</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Activation of partial thromboplastin time</td>
@@ -2837,22 +2450,10 @@ tbl_summary(
       <td class="gt_row gt_center">39 (35, 43)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,576</td>
-      <td class="gt_row gt_center">2,976</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">High sensitivity C-reactive protein</td>
       <td class="gt_row gt_center">737</td>
       <td class="gt_row gt_center">114 (65, 191)</td>
       <td class="gt_row gt_center">7 (2, 35)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,548</td>
-      <td class="gt_row gt_center">2,835</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">HIV antibody quantification</td>
@@ -2861,22 +2462,10 @@ tbl_summary(
       <td class="gt_row gt_center">0.09 (0.08, 0.11)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,776</td>
-      <td class="gt_row gt_center">3,066</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">serum sodium</td>
       <td class="gt_row gt_center">975</td>
       <td class="gt_row gt_center">142 (138, 148)</td>
       <td class="gt_row gt_center">140 (138, 141)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,403</td>
-      <td class="gt_row gt_center">2,742</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">thrombocytocrit</td>
@@ -2885,22 +2474,10 @@ tbl_summary(
       <td class="gt_row gt_center">0.24 (0.19, 0.30)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,533</td>
-      <td class="gt_row gt_center">2,725</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">ESR</td>
       <td class="gt_row gt_center">383</td>
       <td class="gt_row gt_center">36 (16, 59)</td>
       <td class="gt_row gt_center">26 (13, 40)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,746</td>
-      <td class="gt_row gt_center">2,991</td>
     </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">glutamic-pyruvic transaminase</td>
@@ -2909,34 +2486,16 @@ tbl_summary(
       <td class="gt_row gt_center">21 (15, 36)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,448</td>
-      <td class="gt_row gt_center">2,741</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">eGFR</td>
       <td class="gt_row gt_center">936</td>
       <td class="gt_row gt_center">72 (43, 91)</td>
       <td class="gt_row gt_center">100 (85, 114)</td>
     </tr>
     <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,430</td>
-      <td class="gt_row gt_center">2,754</td>
-    </tr>
-    <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">creatinine</td>
       <td class="gt_row gt_center">936</td>
       <td class="gt_row gt_center">88 (68, 130)</td>
       <td class="gt_row gt_center">64 (54, 83)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,430</td>
-      <td class="gt_row gt_center">2,754</td>
     </tr>
   </tbody>
   
@@ -2956,15 +2515,428 @@ tbl_summary(
   </tfoot>
 </table></div>
 </div>
+<div id="patients-summary" class="section level2">
+<h2>Patients summary</h2>
+<pre class="r"><code>patients_summary &lt;- patients_df %&gt;% ungroup() %&gt;% select(-c(age, PATIENT_ID)) %&gt;% rename(`Total blood tests` = sum_of_samples)
+
+tbl_summary(
+    patients_summary,
+    by = outcome,
+    label = gender ~ &quot;Gender&quot;,
+) %&gt;%
+    add_n() %&gt;%
+    add_overall() %&gt;%
+    modify_header(label = &quot;**Variable**&quot;) %&gt;%
+    bold_labels() </code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#hceclctuyh .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#hceclctuyh .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#hceclctuyh .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#hceclctuyh .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#hceclctuyh .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#hceclctuyh .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#hceclctuyh .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#hceclctuyh .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#hceclctuyh .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#hceclctuyh .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#hceclctuyh .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#hceclctuyh .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#hceclctuyh .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#hceclctuyh .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hceclctuyh .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hceclctuyh .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#hceclctuyh .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#hceclctuyh .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#hceclctuyh .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#hceclctuyh .gt_left {
+  text-align: left;
+}
+
+#hceclctuyh .gt_center {
+  text-align: center;
+}
+
+#hceclctuyh .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#hceclctuyh .gt_font_normal {
+  font-weight: normal;
+}
+
+#hceclctuyh .gt_font_bold {
+  font-weight: bold;
+}
+
+#hceclctuyh .gt_font_italic {
+  font-style: italic;
+}
+
+#hceclctuyh .gt_super {
+  font-size: 65%;
+}
+
+#hceclctuyh .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="hceclctuyh" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><strong>Variable</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Overall</strong>, N = 375<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 201<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 174<sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Gender</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">375</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center"></td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
+      <td class="gt_row gt_center">224 (60%)</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">98 (49%)</td>
+      <td class="gt_row gt_center">126 (72%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
+      <td class="gt_row gt_center">151 (40%)</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">103 (51%)</td>
+      <td class="gt_row gt_center">48 (28%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Total blood tests</td>
+      <td class="gt_row gt_center">16 (9, 21)</td>
+      <td class="gt_row gt_center">375</td>
+      <td class="gt_row gt_center">16 (12, 20)</td>
+      <td class="gt_row gt_center">14 (7, 24)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Hospitalization length [days]</td>
+      <td class="gt_row gt_center">10 (5, 16)</td>
+      <td class="gt_row gt_center">375</td>
+      <td class="gt_row gt_center">14 (10, 18)</td>
+      <td class="gt_row gt_center">6 (3, 10)</td>
+    </tr>
+  </tbody>
+  
+  <tfoot>
+    <tr class="gt_footnotes">
+      <td colspan="5">
+        <p class="gt_footnote">
+          <sup class="gt_footnote_marks">
+            <em>1</em>
+          </sup>
+           
+          Statistics presented: n (%); Median (IQR)
+          <br />
+        </p>
+      </td>
+    </tr>
+  </tfoot>
+</table></div>
+<pre class="r"><code>ggplot(patients_df, aes(x=gender, fill=gender)) + geom_histogram(stat = &quot;count&quot;) + ylab(&quot;Number of patients&quot;) +
+  xlab(&quot;Gender&quot;) + theme_minimal()</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="r"><code> ggplot(patients_df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name=&quot;Age&quot;, limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) + scale_y_continuous(name = &quot;Number of patients&quot;, limits = c(0,10), breaks = seq(0,10, by=1)) +
+    theme_minimal()</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
 <div id="age-and-gender-distribution" class="section level2">
 <h2>Age and gender distribution</h2>
-<pre class="r"><code>ggplot(df, aes(x=gender, fill=gender)) + geom_histogram(stat = &quot;count&quot;) + ylab(&quot;Number of patients&quot;) +
-  xlab(&quot;Gender&quot;) + theme_minimal()</code></pre>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<pre class="r"><code> ggplot(df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name=&quot;Age&quot;, limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) +
-   ylab(&quot;Number of patients&quot;) +
-   theme_minimal()</code></pre>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 
 

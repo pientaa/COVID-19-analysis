@@ -13,6 +13,7 @@ output:
 
 ```{r setup,include=FALSE}
 knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 
@@ -35,33 +36,68 @@ df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 
 ## Clean dataset
 ```{r, clean_dataset}
+
+# Patients with basic info
+patients_df <- df %>% group_by(`Admission time`, `Discharge time`, gender, age, outcome) %>%
+summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), sum_of_samples = n()) 
+
+patients_df <- patients_df %>%
+    mutate(`Hospitalization length [days]` = ceiling(difftime(`Discharge time`, `Admission time`, units = "days")))
+
+
+df <- full_join(patients_df %>% ungroup() %>% select(`Admission time`, PATIENT_ID), df %>% select(-PATIENT_ID), by="Admission time")
+
 df$gender<-ifelse(df$gender==1, 'Male', 'Female') 
 df <- df %>% mutate(gender = as.factor(gender))
+
+patients_df$gender<-ifelse(patients_df$gender==1, 'Male', 'Female') 
+patients_df <- patients_df %>% mutate(gender = as.factor(gender))
+
 df$outcome<-ifelse(df$outcome==1, 'Death', 'Survival')
 df <- df %>% mutate(outcome = as.factor(outcome))
-# TODO: Calculate how long hospital therapy took instead of all dates?
-df <- df %>% mutate(RE_DATE = as.Date(RE_DATE))
-df <- df %>% mutate(`Admission time` = as.Date(`Admission time`))
-df <- df %>% mutate(`Discharge time` =  as.Date(`Discharge time`))
+
+patients_df$outcome<-ifelse(patients_df$outcome==1, 'Death', 'Survival')
+patients_df <- patients_df %>% mutate(outcome = as.factor(outcome))
 ```
 
-## Data summary
-```{r summary_tools_used,message=FALSE,warning=FALSE}
-no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE' ))
+## Original Data
+This section presents all original columns cleaned up a little. Columns that couldn't be presented here represent timestamps and `PATIENT_ID`. Summary of these columns will be presented in the next sections. Note that this data is not aggregated yet - it's not grouped by patient's id, so outcome should not be considered as unique patient's outcome. Missing observations has been skipped. Therefore, they are not listed below.
+```{r original_data_summary,message=FALSE,warning=FALSE}
+
+no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE', 'PATIENT_ID' ))
 tbl_summary(
     no_dates_df,
-    by = outcome
+    by = outcome,
+    missing = "no"
             ) %>%
     add_n() %>%
     modify_header(label = "**Variable**") %>%
     bold_labels() 
+
+```
+
+## Patients summary
+```{r, data_transformed, warning=FALSE}
+
+patients_summary <- patients_df %>% ungroup() %>% select(-c(age, PATIENT_ID)) %>% rename(`Total blood tests` = sum_of_samples)
+
+tbl_summary(
+    patients_summary,
+    by = outcome,
+    label = gender ~ "Gender",
+) %>%
+    add_n() %>%
+    add_overall() %>%
+    modify_header(label = "**Variable**") %>%
+    bold_labels() 
+
+ggplot(patients_df, aes(x=gender, fill=gender)) + geom_histogram(stat = "count") + ylab("Number of patients") +
+  xlab("Gender") + theme_minimal()
+ ggplot(patients_df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) + scale_y_continuous(name = "Number of patients", limits = c(0,10), breaks = seq(0,10, by=1)) +
+    theme_minimal()
 ```
 
 ## Age and gender distribution
 ```{r, gender_distribution, warning=FALSE}
-ggplot(df, aes(x=gender, fill=gender)) + geom_histogram(stat = "count") + ylab("Number of patients") +
-  xlab("Gender") + theme_minimal()
- ggplot(df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) +
-   ylab("Number of patients") +
-   theme_minimal()
+
 ```
