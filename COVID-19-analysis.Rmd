@@ -27,6 +27,7 @@ library(knitr)
 library(DT)
 library(ggplot2)
 library(reshape2)
+library(gganimate)
 ```
 
 ## Read data
@@ -116,5 +117,16 @@ tbl_summary(
   modify_spanning_header(c("stat_1", "stat_2") ~ "**Final patient outcome related to test**") %>%
     bold_labels() 
 
+```
+
+```{r}
+
+#p <- ggplot((df %>% filter(!is.na())), aes(RE_DATE, `Lactate dehydrogenase`, colour = outcome)) +
+#    geom_point(alpha = 0.7) +
+#   labs(title = 'PATIENT_ID: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+#    transition_time(PATIENT_ID) +
+#    ease_aes('linear')
+
+#animate(p, 375, 1)
 ```
 
