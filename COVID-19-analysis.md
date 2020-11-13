@@ -25,12 +25,11 @@ df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 ## Clean dataset
 
 ```r
-# Patients with basic info
 patients_df <- df %>% group_by(`Admission time`, `Discharge time`, gender, age, outcome) %>%
-summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), sum_of_samples = n()) 
+summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), `Total blood tests` = n()) 
 
 patients_df <- patients_df %>%
-    mutate(`Hospitalization length [days]` = ceiling(difftime(`Discharge time`, `Admission time`, units = "days")))
+    mutate(`Days in hospital` = ceiling(difftime(`Discharge time`, `Admission time`, units = "days")))
 
 
 df <- full_join(patients_df %>% ungroup() %>% select(`Admission time`, PATIENT_ID), df %>% select(-PATIENT_ID), by="Admission time")
@@ -48,18 +47,19 @@ patients_df$outcome<-ifelse(patients_df$outcome==1, 'Death', 'Survival')
 patients_df <- patients_df %>% mutate(outcome = as.factor(outcome))
 ```
 
-## Original Data
-This section presents all original columns cleaned up a little. Columns that couldn't be presented here represent timestamps and `PATIENT_ID`. Summary of these columns will be presented in the next sections. Note that this data is not aggregated yet - it's not grouped by patient's id, so outcome should not be considered as unique patient's outcome. Missing observations has been skipped. Therefore, they are not listed below.
+## Patients summary
 
 ```r
-no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE', 'PATIENT_ID' ))
+patients_summary <- patients_df %>% ungroup() %>% select(-c(age, PATIENT_ID))
+
 tbl_summary(
-    no_dates_df,
+    patients_summary,
     by = outcome,
-    missing = "no"
-            ) %>%
+    label = gender ~ "Gender",
+) %>%
     add_n() %>%
-    modify_header(label = "**Variable**") %>%
+    modify_header(label = "") %>%
+    add_overall() %>%
     bold_labels() 
 ```
 
@@ -67,7 +67,7 @@ tbl_summary(
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#qwcpcvcdym .gt_table {
+#kravtaupgn .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -92,7 +92,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_heading {
+#kravtaupgn .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -104,7 +104,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_title {
+#kravtaupgn .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -114,7 +114,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#qwcpcvcdym .gt_subtitle {
+#kravtaupgn .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -124,13 +124,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#qwcpcvcdym .gt_bottom_border {
+#kravtaupgn .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_col_headings {
+#kravtaupgn .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -145,7 +145,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_col_heading {
+#kravtaupgn .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -165,7 +165,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#qwcpcvcdym .gt_column_spanner_outer {
+#kravtaupgn .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -177,15 +177,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#qwcpcvcdym .gt_column_spanner_outer:first-child {
+#kravtaupgn .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qwcpcvcdym .gt_column_spanner_outer:last-child {
+#kravtaupgn .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qwcpcvcdym .gt_column_spanner {
+#kravtaupgn .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -197,7 +197,7 @@ tbl_summary(
   width: 100%;
 }
 
-#qwcpcvcdym .gt_group_heading {
+#kravtaupgn .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -219,7 +219,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#qwcpcvcdym .gt_empty_group_heading {
+#kravtaupgn .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -234,15 +234,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#qwcpcvcdym .gt_from_md > :first-child {
+#kravtaupgn .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qwcpcvcdym .gt_from_md > :last-child {
+#kravtaupgn .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qwcpcvcdym .gt_row {
+#kravtaupgn .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -261,7 +261,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#qwcpcvcdym .gt_stub {
+#kravtaupgn .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -273,7 +273,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#qwcpcvcdym .gt_summary_row {
+#kravtaupgn .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -283,7 +283,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#qwcpcvcdym .gt_first_summary_row {
+#kravtaupgn .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -293,7 +293,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_grand_summary_row {
+#kravtaupgn .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -303,7 +303,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#qwcpcvcdym .gt_first_grand_summary_row {
+#kravtaupgn .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -313,11 +313,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_striped {
+#kravtaupgn .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qwcpcvcdym .gt_table_body {
+#kravtaupgn .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -326,7 +326,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_footnotes {
+#kravtaupgn .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -340,13 +340,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_footnote {
+#kravtaupgn .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#qwcpcvcdym .gt_sourcenotes {
+#kravtaupgn .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -360,80 +360,513 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#qwcpcvcdym .gt_sourcenote {
+#kravtaupgn .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#qwcpcvcdym .gt_left {
+#kravtaupgn .gt_left {
   text-align: left;
 }
 
-#qwcpcvcdym .gt_center {
+#kravtaupgn .gt_center {
   text-align: center;
 }
 
-#qwcpcvcdym .gt_right {
+#kravtaupgn .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qwcpcvcdym .gt_font_normal {
+#kravtaupgn .gt_font_normal {
   font-weight: normal;
 }
 
-#qwcpcvcdym .gt_font_bold {
+#kravtaupgn .gt_font_bold {
   font-weight: bold;
 }
 
-#qwcpcvcdym .gt_font_italic {
+#kravtaupgn .gt_font_italic {
   font-style: italic;
 }
 
-#qwcpcvcdym .gt_super {
+#kravtaupgn .gt_super {
   font-size: 65%;
 }
 
-#qwcpcvcdym .gt_footnote_marks {
+#kravtaupgn .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="qwcpcvcdym" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="kravtaupgn" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><strong>Variable</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Overall</strong>, N = 375<sup class="gt_footnote_marks">1</sup></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 201<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 174<sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Gender</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">375</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center"></td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
+      <td class="gt_row gt_center">224 (60%)</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">98 (49%)</td>
+      <td class="gt_row gt_center">126 (72%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
+      <td class="gt_row gt_center">151 (40%)</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">103 (51%)</td>
+      <td class="gt_row gt_center">48 (28%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Total blood tests</td>
+      <td class="gt_row gt_center">16 (9, 21)</td>
+      <td class="gt_row gt_center">375</td>
+      <td class="gt_row gt_center">16 (12, 20)</td>
+      <td class="gt_row gt_center">14 (7, 24)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Days in hospital</td>
+      <td class="gt_row gt_center">10 (5, 16)</td>
+      <td class="gt_row gt_center">375</td>
+      <td class="gt_row gt_center">14 (10, 18)</td>
+      <td class="gt_row gt_center">6 (3, 10)</td>
+    </tr>
+  </tbody>
+  
+  <tfoot>
+    <tr class="gt_footnotes">
+      <td colspan="5">
+        <p class="gt_footnote">
+          <sup class="gt_footnote_marks">
+            <em>1</em>
+          </sup>
+           
+          Statistics presented: n (%); Median (IQR)
+          <br />
+        </p>
+      </td>
+    </tr>
+  </tfoot>
+</table></div><!--/html_preserve-->
+
+```r
+ ggplot(patients_df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) + scale_y_continuous(name = "Number of patients", limits = c(0,10), breaks = seq(0,10, by=1)) +
+    theme_minimal()
+```
+
+![](COVID-19-analysis_files/figure-html/data_transformed-1.png)<!-- -->
+
+### Patients grouped by outcome, age and gender
+
+```r
+ ggplot(patients_df, aes(x=age,fill=outcome)) + geom_histogram(binwidth = 1) + facet_grid(outcome ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) + scale_y_continuous(name = "Number of patients", limits = c(0,9), breaks = seq(0,9, by=1)) +
+    theme_minimal()
+```
+
+![](COVID-19-analysis_files/figure-html/gender_distribution-1.png)<!-- -->
+
+### Patients grouped by outcome and hospitalization duration
+
+```r
+ggplot(patients_df, aes(x=`Days in hospital`, fill=outcome)) + geom_histogram(binwidth = 1) + facet_grid(. ~ outcome)  + ylab("Number of patients") +
+    theme_minimal()
+```
+
+![](COVID-19-analysis_files/figure-html/hospitalization_duration-1.png)<!-- -->
+
+### Patients grouped by outcome and total blood tests taken
+
+```r
+ggplot(patients_df, aes(x=`Total blood tests`, fill=outcome)) + geom_histogram(binwidth = 1) + facet_grid(. ~ outcome)  + ylab("Number of patients") +
+  scale_x_continuous(name="Total blood tests", limits=c(0, 60), breaks = seq(0, 60, by=10)) +
+   scale_y_continuous(name = "Number of patients", limits = c(0,20), breaks = seq(0,20, by=2)) +
+    theme_minimal()
+```
+
+![](COVID-19-analysis_files/figure-html/total_blood_tests-1.png)<!-- -->
+
+## Biomarkers
+
+```r
+no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE', 'PATIENT_ID', 'age', 'gender' ))
+tbl_summary(
+    no_dates_df,
+    by = outcome,
+    missing = "no"
+            ) %>%
+    add_n() %>%
+    modify_header(label = "**Biomarker**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Final patient outcome related to test**") %>%
+    bold_labels() 
+```
+
+<!--html_preserve--><style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#hciegjordy .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#hciegjordy .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#hciegjordy .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#hciegjordy .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#hciegjordy .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hciegjordy .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#hciegjordy .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#hciegjordy .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#hciegjordy .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#hciegjordy .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#hciegjordy .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#hciegjordy .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#hciegjordy .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#hciegjordy .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#hciegjordy .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#hciegjordy .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#hciegjordy .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#hciegjordy .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hciegjordy .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#hciegjordy .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hciegjordy .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#hciegjordy .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#hciegjordy .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hciegjordy .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#hciegjordy .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#hciegjordy .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#hciegjordy .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#hciegjordy .gt_left {
+  text-align: left;
+}
+
+#hciegjordy .gt_center {
+  text-align: center;
+}
+
+#hciegjordy .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#hciegjordy .gt_font_normal {
+  font-weight: normal;
+}
+
+#hciegjordy .gt_font_bold {
+  font-weight: bold;
+}
+
+#hciegjordy .gt_font_italic {
+  font-style: italic;
+}
+
+#hciegjordy .gt_super {
+  font-size: 65%;
+}
+
+#hciegjordy .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="hciegjordy" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_center gt_columns_bottom_border" rowspan="2" colspan="1"><strong>Biomarker</strong></th>
+      <th class="gt_col_heading gt_center gt_columns_bottom_border" rowspan="2" colspan="1"><strong>N</strong></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>Final patient outcome related to test</strong></span>
+      </th>
+    </tr>
+    <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 2,905<sup class="gt_footnote_marks">1</sup></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 3,215<sup class="gt_footnote_marks">1</sup></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">age</td>
-      <td class="gt_row gt_center">6,120</td>
-      <td class="gt_row gt_center">70 (63, 78)</td>
-      <td class="gt_row gt_center">51 (37, 62)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">gender</td>
-      <td class="gt_row gt_center">6,120</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center"></td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">751 (26%)</td>
-      <td class="gt_row gt_center">1,639 (51%)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2,154 (74%)</td>
-      <td class="gt_row gt_center">1,576 (49%)</td>
-    </tr>
     <tr>
       <td class="gt_row gt_left" style="font-weight: bold;">Hypersensitive cardiac troponinI</td>
       <td class="gt_row gt_center">507</td>
@@ -901,437 +1334,4 @@ tbl_summary(
     </tr>
   </tfoot>
 </table></div><!--/html_preserve-->
-
-## Patients summary
-
-```r
-patients_summary <- patients_df %>% ungroup() %>% select(-c(age, PATIENT_ID)) %>% rename(`Total blood tests` = sum_of_samples)
-
-tbl_summary(
-    patients_summary,
-    by = outcome,
-    label = gender ~ "Gender",
-) %>%
-    add_n() %>%
-    add_overall() %>%
-    modify_header(label = "**Variable**") %>%
-    bold_labels() 
-```
-
-<!--html_preserve--><style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-#hceclctuyh .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#hceclctuyh .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 4px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#hceclctuyh .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#hceclctuyh .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#hceclctuyh .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#hceclctuyh .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#hceclctuyh .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#hceclctuyh .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#hceclctuyh .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#hceclctuyh .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#hceclctuyh .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#hceclctuyh .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#hceclctuyh .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#hceclctuyh .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hceclctuyh .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hceclctuyh .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#hceclctuyh .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#hceclctuyh .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#hceclctuyh .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#hceclctuyh .gt_left {
-  text-align: left;
-}
-
-#hceclctuyh .gt_center {
-  text-align: center;
-}
-
-#hceclctuyh .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#hceclctuyh .gt_font_normal {
-  font-weight: normal;
-}
-
-#hceclctuyh .gt_font_bold {
-  font-weight: bold;
-}
-
-#hceclctuyh .gt_font_italic {
-  font-style: italic;
-}
-
-#hceclctuyh .gt_super {
-  font-size: 65%;
-}
-
-#hceclctuyh .gt_footnote_marks {
-  font-style: italic;
-  font-size: 65%;
-}
-</style>
-<div id="hceclctuyh" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><strong>Variable</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Overall</strong>, N = 375<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 201<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 174<sup class="gt_footnote_marks">1</sup></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Gender</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">375</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center"></td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
-      <td class="gt_row gt_center">224 (60%)</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">98 (49%)</td>
-      <td class="gt_row gt_center">126 (72%)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
-      <td class="gt_row gt_center">151 (40%)</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">103 (51%)</td>
-      <td class="gt_row gt_center">48 (28%)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Total blood tests</td>
-      <td class="gt_row gt_center">16 (9, 21)</td>
-      <td class="gt_row gt_center">375</td>
-      <td class="gt_row gt_center">16 (12, 20)</td>
-      <td class="gt_row gt_center">14 (7, 24)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Hospitalization length [days]</td>
-      <td class="gt_row gt_center">10 (5, 16)</td>
-      <td class="gt_row gt_center">375</td>
-      <td class="gt_row gt_center">14 (10, 18)</td>
-      <td class="gt_row gt_center">6 (3, 10)</td>
-    </tr>
-  </tbody>
-  
-  <tfoot>
-    <tr class="gt_footnotes">
-      <td colspan="5">
-        <p class="gt_footnote">
-          <sup class="gt_footnote_marks">
-            <em>1</em>
-          </sup>
-           
-          Statistics presented: n (%); Median (IQR)
-          <br />
-        </p>
-      </td>
-    </tr>
-  </tfoot>
-</table></div><!--/html_preserve-->
-
-```r
-ggplot(patients_df, aes(x=gender, fill=gender)) + geom_histogram(stat = "count") + ylab("Number of patients") +
-  xlab("Gender") + theme_minimal()
-```
-
-![](COVID-19-analysis_files/figure-html/data_transformed-1.png)<!-- -->
-
-```r
- ggplot(patients_df, aes(x=age,fill=gender)) + geom_histogram(binwidth = 1) + facet_grid(. ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) + scale_y_continuous(name = "Number of patients", limits = c(0,10), breaks = seq(0,10, by=1)) +
-    theme_minimal()
-```
-
-![](COVID-19-analysis_files/figure-html/data_transformed-2.png)<!-- -->
-
-## Age and gender distribution
 
