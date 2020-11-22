@@ -28,6 +28,9 @@ library(DT)
 library(ggplot2)
 library(reshape2)
 library(gganimate)
+#library("gg3D")
+library( rgl )
+library(magick)
 ```
 
 ## Read data
@@ -114,12 +117,46 @@ tbl_summary(
             ) %>%
     add_n() %>%
     modify_header(label = "**Biomarker**") %>%
-  modify_spanning_header(c("stat_1", "stat_2") ~ "**Final patient outcome related to test**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Final patient outcome related to the test**") %>%
     bold_labels() 
 
 ```
 
-```{r}
+
+## Finding correlation
+
+Taking only these patients that have all of the following biomarkers tested: Lactate dehydrogenase, Lymphocyte count, High sensitivity C-reactive protein.
+
+```{r, correlation ,webgl=TRUE,results='hide'}
+
+new_df  <- df
+
+new_df$outcome<-ifelse(df$outcome=='Death', 1, 0)
+
+new_df <- new_df %>% select(PATIENT_ID, `Lactate dehydrogenase`, `lymphocyte count`, `High sensitivity C-reactive protein`, outcome) %>%
+    group_by(PATIENT_ID) %>%
+    summarise(LDH_mean = mean(`Lactate dehydrogenase`, na.rm = TRUE), Lymphocyte_mean = mean(`lymphocyte count`, na.rm = TRUE), hs_CRP_mean = mean(`High sensitivity C-reactive protein`, na.rm = TRUE), death = sum(outcome) > 0)
+
+new_df <- new_df %>% filter(!is.nan(LDH_mean) & !is.nan(Lymphocyte_mean) & !is.nan(hs_CRP_mean))
+
+new_df$death<-ifelse(new_df$death==TRUE, 'Death', 'Survival')
+new_df <- new_df %>% mutate(death = as.factor(death)) %>% rename(outcome = death)
+
+
+mycolors <- c('royalblue1', 'darkcyan')
+new_df$color <- mycolors[ as.numeric(new_df$outcome) ]
+
+par(mar=c(0,0,0,0))
+plot3d( 
+    x=new_df$LDH_mean, y=new_df$Lymphocyte_mean, z=new_df$hs_CRP_mean, 
+    col = new_df$color, 
+    type = 's', 
+    radius = 10,
+    legend=TRUE,
+    xlab="LDH_mean", ylab="Lymphocyte_mean", zlab="hs_CRP_mean")
+legend3d("topright", legend = c('Death', 'Survival'), pch = 10, col = mycolors, cex=0.8, inset=c(0.02))
+
+writeWebGL( filename="3dscatter.html" ,  width=600, height=600)
 
 #p <- ggplot((df %>% filter(!is.na())), aes(RE_DATE, `Lactate dehydrogenase`, colour = outcome)) +
 #    geom_point(alpha = 0.7) +
@@ -128,5 +165,31 @@ tbl_summary(
 #    ease_aes('linear')
 
 #animate(p, 375, 1)
+```
+
+
+Patients summary then:
+
+```{r, patients_with_markers} 
+
+tbl_summary(
+    new_df %>% rename(`Lactate dehydrogenase` = LDH_mean, `Lymphocyte count` = Lymphocyte_mean, `High sensitivity C-reactive protein`= hs_CRP_mean) %>% select(-PATIENT_ID, -color),
+    by = outcome
+) %>%
+    add_n() %>%
+    modify_header(label = "**Mean value of**") %>%
+    add_overall() %>%
+    bold_labels() 
+
+```
+
+
+
+Correlation between lactate dehydrogenase, lymphocyte count and high sensitivity C-reactive protein:
+```{r, show_correlation}
+
+htmltools::includeHTML("./3dscatter.html")
+
+#df %>% filter(!is.na(`Lactate dehydrogenase`)) %>% group_by(PATIENT_ID) %>% summarise(LDH_mean = mean(`Lactate dehydrogenase`), survived = sum(as.numeric(outcome)) > 0)
 ```
 
