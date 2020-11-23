@@ -31,6 +31,7 @@ library(gganimate)
 #library("gg3D")
 library( rgl )
 library(magick)
+library(tibble)
 ```
 
 ## Read data
@@ -122,8 +123,35 @@ tbl_summary(
 
 ```
 
+### Finding correlation
 
-## Finding correlation
+```{r, find_cor}
+cor_df <-df
+
+cor_df$outcome<-ifelse(cor_df$outcome=='Death', 1, 0)
+cor_df$gender<-ifelse(cor_df$gender=='Male', 1, 0)
+
+cor_df <- cor_df %>% rename(isMale=gender)
+cor_df <- cor_df %>% rename(Death=outcome)
+
+#cor_df %>% select (-c(`Admission time`, PATIENT_ID, RE_DATE, `Discharge time` ))
+
+cor_df <- cor_df %>% select (-c(`Admission time`, PATIENT_ID, RE_DATE, `Discharge time` ))
+
+corrMatrix <- cor(cor_df[sapply(cor_df, is.numeric)], use='pairwise.complete.obs')
+
+correlation_df <- as.data.frame(corrMatrix)
+
+#correlation_df[3,]
+
+correlation_df %>% rownames_to_column('variable') %>% filter(variable != 'Death') %>% select(variable, Death) %>% mutate(Death = abs(Death)) %>%
+  arrange(desc(Death)) %>%
+  rename(`Outcome correlation` = Death) %>%
+  head(10) 
+
+#highlyCorrelated <- findCorrelation(corrMatrix, cutoff=0.5)
+
+```
 
 Taking only these patients that have all of the following biomarkers tested: Lactate dehydrogenase, Lymphocyte count, High sensitivity C-reactive protein.
 
