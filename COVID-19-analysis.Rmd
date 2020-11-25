@@ -28,7 +28,7 @@ library(DT)
 library(ggplot2)
 library(reshape2)
 library(gganimate)
-#library("gg3D")
+library(hrbrthemes)
 library( rgl )
 library(magick)
 library(tibble)
@@ -201,9 +201,65 @@ tbl_summary(
 ```
 
 ```{r, show_correlation}
-
 htmltools::includeHTML("./3dscatter.html")
-
-#df %>% filter(!is.na(`Lactate dehydrogenase`)) %>% group_by(PATIENT_ID) %>% summarise(LDH_mean = mean(`Lactate dehydrogenase`), survived = sum(as.numeric(outcome)) > 0)
 ```
 
+
+## Most common biomarkers
+
+```{r, most_common_biomarkers} 
+biomarker_popularity <- df %>% group_by(PATIENT_ID, outcome) %>% summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) sum(!is.na(x)))
+biomarker_popularity$sum_of_single_test <- rowSums(biomarker_popularity %>% ungroup() %>% select(-PATIENT_ID, -outcome))
+
+
+
+most_tested_death <- biomarker_popularity %>% select(sum_of_single_test, outcome, `neutrophils(%)`,  `(%)lymphocyte`, albumin) %>% filter(outcome=='Death') %>% arrange(desc(sum_of_single_test)) %>% head(10)
+most_tested_survival <- biomarker_popularity %>% select(sum_of_single_test, outcome, `neutrophils(%)`,  `(%)lymphocyte`, albumin) %>% filter(outcome=='Survival') %>% arrange(desc(sum_of_single_test)) %>% head(10)
+
+foo <- rbind(most_tested_death, most_tested_survival)
+
+patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup() %>% select(PATIENT_ID, RE_DATE,`neutrophils(%)`,  `(%)lymphocyte`, albumin, outcome),  by="PATIENT_ID") %>% filter(!is.na(`neutrophils(%)`) |  !is.na(`(%)lymphocyte`) | !is.na(albumin))
+
+neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
+
+neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Neutrophils (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Neutrophils (%)") +
+    transition_reveal(RE_DATE)
+
+#anim_save("neutrophils_seq.gif")
+
+lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
+
+lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Lymphocyte (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Lymphocyte (%)") +
+    transition_reveal(RE_DATE)
+
+#anim_save("lymphocyte_seq.gif")
+
+albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
+
+albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Albumin value during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Albumin") +
+    transition_reveal(RE_DATE)
+
+#anim_save("albumin_seq.gif")
+
+```
