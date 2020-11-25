@@ -125,6 +125,8 @@ tbl_summary(
 
 ### Finding correlation
 
+Finding correlation between outcome and other variables. Ignoring `Admission time`, `PATIENT_ID`, `RE_DATE` and `Discharge time` and dropping `outcome` which correlation with itself is equal to `1.0`.
+
 ```{r, find_cor}
 cor_df <-df
 
@@ -134,26 +136,22 @@ cor_df$gender<-ifelse(cor_df$gender=='Male', 1, 0)
 cor_df <- cor_df %>% rename(isMale=gender)
 cor_df <- cor_df %>% rename(Death=outcome)
 
-#cor_df %>% select (-c(`Admission time`, PATIENT_ID, RE_DATE, `Discharge time` ))
-
 cor_df <- cor_df %>% select (-c(`Admission time`, PATIENT_ID, RE_DATE, `Discharge time` ))
 
 corrMatrix <- cor(cor_df[sapply(cor_df, is.numeric)], use='pairwise.complete.obs')
 
 correlation_df <- as.data.frame(corrMatrix)
 
-#correlation_df[3,]
-
 correlation_df %>% rownames_to_column('variable') %>% filter(variable != 'Death') %>% select(variable, Death) %>% mutate(Death = abs(Death)) %>%
   arrange(desc(Death)) %>%
   rename(`Outcome correlation` = Death) %>%
   head(10) 
 
-#highlyCorrelated <- findCorrelation(corrMatrix, cutoff=0.5)
-
 ```
 
-Taking only these patients that have all of the following biomarkers tested: Lactate dehydrogenase, Lymphocyte count, High sensitivity C-reactive protein.
+### Use of correlation
+
+In following section, we will use 3 biomarkers that are most correlated to outcome and visualize theirs mean values among each patient at 3D graph. So we take only these patients who had all of these 3 biomarkers tested at least once. If somebody was tested more than once, then mean value of all tests for each biomarker is calculated.
 
 ```{r, correlation ,webgl=TRUE,results='hide'}
 
@@ -161,11 +159,11 @@ new_df  <- df
 
 new_df$outcome<-ifelse(df$outcome=='Death', 1, 0)
 
-new_df <- new_df %>% select(PATIENT_ID, `Lactate dehydrogenase`, `lymphocyte count`, `High sensitivity C-reactive protein`, outcome) %>%
+new_df <- new_df %>% select(PATIENT_ID, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
     group_by(PATIENT_ID) %>%
-    summarise(LDH_mean = mean(`Lactate dehydrogenase`, na.rm = TRUE), Lymphocyte_mean = mean(`lymphocyte count`, na.rm = TRUE), hs_CRP_mean = mean(`High sensitivity C-reactive protein`, na.rm = TRUE), death = sum(outcome) > 0)
+    summarise(Neutrophils_mean = mean(`neutrophils(%)`, na.rm = TRUE), Lymphocyte_mean = mean(`(%)lymphocyte`, na.rm = TRUE), albumin_mean = mean(`albumin`, na.rm = TRUE), death = sum(outcome) > 0)
 
-new_df <- new_df %>% filter(!is.nan(LDH_mean) & !is.nan(Lymphocyte_mean) & !is.nan(hs_CRP_mean))
+new_df <- new_df %>% filter(!is.nan(Neutrophils_mean) & !is.nan(Lymphocyte_mean) & !is.nan(albumin_mean))
 
 new_df$death<-ifelse(new_df$death==TRUE, 'Death', 'Survival')
 new_df <- new_df %>% mutate(death = as.factor(death)) %>% rename(outcome = death)
@@ -176,32 +174,23 @@ new_df$color <- mycolors[ as.numeric(new_df$outcome) ]
 
 par(mar=c(0,0,0,0))
 plot3d( 
-    x=new_df$LDH_mean, y=new_df$Lymphocyte_mean, z=new_df$hs_CRP_mean, 
+    x=new_df$Neutrophils_mean, y=new_df$Lymphocyte_mean, z=new_df$albumin_mean, 
     col = new_df$color, 
     type = 's', 
-    radius = 10,
+    radius = 1,
     legend=TRUE,
-    xlab="LDH_mean", ylab="Lymphocyte_mean", zlab="hs_CRP_mean")
+    xlab="Neutrophils(%)", ylab="Lymphocyte(%)", zlab="Albumin")
 legend3d("topright", legend = c('Death', 'Survival'), pch = 10, col = mycolors, cex=0.8, inset=c(0.02))
 
 writeWebGL( filename="3dscatter.html" ,  width=600, height=600)
-
-#p <- ggplot((df %>% filter(!is.na())), aes(RE_DATE, `Lactate dehydrogenase`, colour = outcome)) +
-#    geom_point(alpha = 0.7) +
-#   labs(title = 'PATIENT_ID: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
-#    transition_time(PATIENT_ID) +
-#    ease_aes('linear')
-
-#animate(p, 375, 1)
 ```
 
-
-Patients summary then:
+Data after cleaning and transformation:
 
 ```{r, patients_with_markers} 
 
 tbl_summary(
-    new_df %>% rename(`Lactate dehydrogenase` = LDH_mean, `Lymphocyte count` = Lymphocyte_mean, `High sensitivity C-reactive protein`= hs_CRP_mean) %>% select(-PATIENT_ID, -color),
+    new_df %>% rename(`Neutrophils(%)` = Neutrophils_mean, `Lymphocyte(%)` = Lymphocyte_mean, `Albumin`= albumin_mean) %>% select(-PATIENT_ID, -color),
     by = outcome
 ) %>%
     add_n() %>%
@@ -211,9 +200,6 @@ tbl_summary(
 
 ```
 
-
-
-Correlation between lactate dehydrogenase, lymphocyte count and high sensitivity C-reactive protein:
 ```{r, show_correlation}
 
 htmltools::includeHTML("./3dscatter.html")
