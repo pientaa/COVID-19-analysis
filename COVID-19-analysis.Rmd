@@ -185,7 +185,7 @@ Data after cleaning and transformation:
 ```{r, correlation_summary_mean} 
 
 tbl_summary(
-    new_df %>% rename(`Neutrophils(%)` = Neutrophils_mean, `Lymphocyte(%)` = Lymphocyte_mean, `Albumin`= albumin_mean) %>% select(-PATIENT_ID, -color),
+    new_df %>% ungroup() %>%rename(`Neutrophils(%)` = Neutrophils_mean, `Lymphocyte(%)` = Lymphocyte_mean, `Albumin`= albumin_mean) %>% select(-PATIENT_ID, -color),
     by = outcome
 ) %>%
     add_n() %>%
@@ -197,50 +197,6 @@ tbl_summary(
 
 ```{r, show_correlation_mean}
 htmltools::includeHTML("./3d_correlation_mean.html")
-```
-
-```{r, use_correlation_last_value,webgl=TRUE,results='hide'}
-
-last_value_df <- df %>% select(PATIENT_ID, RE_DATE, age, gender, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
-  group_by(PATIENT_ID, age, gender, outcome) %>% 
-  fill(`neutrophils(%)`, `(%)lymphocyte`, albumin) %>% 
-  summarise_at(vars(`neutrophils(%)`:albumin), function(x) last(x,order_by = !is.na(x))) %>%
-  filter(!is.na(`neutrophils(%)`) &  !is.na(`(%)lymphocyte`) & !is.na(albumin))
-
-
-mycolors <- c('royalblue1', 'darkcyan')
-last_value_df$color <- mycolors[ as.numeric(last_value_df$outcome) ]
-
-par(mar=c(0,0,0,0))
-plot3d( 
-    x=last_value_df$`neutrophils(%)`, y=last_value_df$ `(%)lymphocyte`, z=last_value_df$albumin, 
-    col = last_value_df$color, 
-    type = 's', 
-    radius = 1,
-    legend=TRUE,
-    xlab="Neutrophils(%)", ylab="Lymphocyte(%)", zlab="Albumin")
-legend3d("topright", legend = c('Death', 'Survival'), pch = 10, col = mycolors, cex=0.8, inset=c(0.02))
-
-writeWebGL( filename="3d_correlation_last.html" ,  width=600, height=600)
-```
-
-Data after cleaning and transformation:
-
-```{r, correlation_summary_last} 
-
-tbl_summary(
-    last_value_df %>% ungroup() %>%  select(-PATIENT_ID, -color, -age, -gender),
-    by = outcome
-) %>%
-    add_n() %>%
-    modify_header(label = "**Last value of**") %>%
-    add_overall() %>%
-    bold_labels() 
-
-```
-
-```{r, show_correlation_last}
-htmltools::includeHTML("./3d_correlation_last.html")
 ```
 
 ## Most common biomarkers
@@ -258,43 +214,43 @@ patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup
 
 neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
 
-#neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-#  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
-#    geom_line() +
-#    geom_point() +
-#  facet_grid(rows=vars(outcome)) +
-#    ggtitle("Neutrophils (%) during patient hospitalization") +
-#    theme_ipsum() +
-#    ylab("Neutrophils (%)") +
-#    transition_reveal(RE_DATE)
+neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Neutrophils (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Neutrophils (%)") +
+    transition_reveal(RE_DATE)
 
 #anim_save("neutrophils_seq.gif")
 
 lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
 
-#lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-#  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
-#    geom_line() +
-#    geom_point() +
-#  facet_grid(rows=vars(outcome)) +
-#    ggtitle("Lymphocyte (%) during patient hospitalization") +
-#    theme_ipsum() +
-#    ylab("Lymphocyte (%)") +
-#    transition_reveal(RE_DATE)
+lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Lymphocyte (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Lymphocyte (%)") +
+    transition_reveal(RE_DATE)
 
 #anim_save("lymphocyte_seq.gif")
 
 albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
 
-#albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-#  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
-#    geom_line() +
-#    geom_point() +
-#  facet_grid(rows=vars(outcome)) +
-#    ggtitle("Albumin value during patient hospitalization") +
-#    theme_ipsum() +
-#    ylab("Albumin") +
-#    transition_reveal(RE_DATE)
+albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Albumin value during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Albumin") +
+    transition_reveal(RE_DATE)
 
 #anim_save("albumin_seq.gif")
 
