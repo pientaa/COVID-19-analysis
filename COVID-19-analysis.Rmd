@@ -153,20 +153,15 @@ correlation_df %>% rownames_to_column('variable') %>% filter(variable != 'Death'
 
 In following section, we will use 3 biomarkers that are most correlated to outcome and visualize theirs mean values among each patient at 3D graph. So we take only these patients who had all of these 3 biomarkers tested at least once. If somebody was tested more than once, then mean value of all tests for each biomarker is calculated.
 
-```{r, correlation ,webgl=TRUE,results='hide'}
+```{r, use_correlation_mean_value ,webgl=TRUE,results='hide'}
 
 new_df  <- df
 
-new_df$outcome<-ifelse(df$outcome=='Death', 1, 0)
-
 new_df <- new_df %>% select(PATIENT_ID, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
-    group_by(PATIENT_ID) %>%
-    summarise(Neutrophils_mean = mean(`neutrophils(%)`, na.rm = TRUE), Lymphocyte_mean = mean(`(%)lymphocyte`, na.rm = TRUE), albumin_mean = mean(`albumin`, na.rm = TRUE), death = sum(outcome) > 0)
+    group_by(PATIENT_ID, outcome) %>%
+    summarise(Neutrophils_mean = mean(`neutrophils(%)`, na.rm = TRUE), Lymphocyte_mean = mean(`(%)lymphocyte`, na.rm = TRUE), albumin_mean = mean(`albumin`, na.rm = TRUE))
 
 new_df <- new_df %>% filter(!is.nan(Neutrophils_mean) & !is.nan(Lymphocyte_mean) & !is.nan(albumin_mean))
-
-new_df$death<-ifelse(new_df$death==TRUE, 'Death', 'Survival')
-new_df <- new_df %>% mutate(death = as.factor(death)) %>% rename(outcome = death)
 
 
 mycolors <- c('royalblue1', 'darkcyan')
@@ -182,12 +177,12 @@ plot3d(
     xlab="Neutrophils(%)", ylab="Lymphocyte(%)", zlab="Albumin")
 legend3d("topright", legend = c('Death', 'Survival'), pch = 10, col = mycolors, cex=0.8, inset=c(0.02))
 
-writeWebGL( filename="3dscatter.html" ,  width=600, height=600)
+writeWebGL( filename="3d_correlation_mean.html" ,  width=600, height=600)
 ```
 
 Data after cleaning and transformation:
 
-```{r, patients_with_markers} 
+```{r, correlation_summary_mean} 
 
 tbl_summary(
     new_df %>% rename(`Neutrophils(%)` = Neutrophils_mean, `Lymphocyte(%)` = Lymphocyte_mean, `Albumin`= albumin_mean) %>% select(-PATIENT_ID, -color),
@@ -200,18 +195,59 @@ tbl_summary(
 
 ```
 
-```{r, show_correlation}
-htmltools::includeHTML("./3dscatter.html")
+```{r, show_correlation_mean}
+htmltools::includeHTML("./3d_correlation_mean.html")
 ```
 
+```{r, use_correlation_last_value,webgl=TRUE,results='hide'}
+
+last_value_df <- df %>% select(PATIENT_ID, RE_DATE, age, gender, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
+  group_by(PATIENT_ID, age, gender, outcome) %>% 
+  fill(`neutrophils(%)`, `(%)lymphocyte`, albumin) %>% 
+  summarise_at(vars(`neutrophils(%)`:albumin), function(x) last(x,order_by = !is.na(x))) %>%
+  filter(!is.na(`neutrophils(%)`) &  !is.na(`(%)lymphocyte`) & !is.na(albumin))
+
+
+mycolors <- c('royalblue1', 'darkcyan')
+last_value_df$color <- mycolors[ as.numeric(last_value_df$outcome) ]
+
+par(mar=c(0,0,0,0))
+plot3d( 
+    x=last_value_df$`neutrophils(%)`, y=last_value_df$ `(%)lymphocyte`, z=last_value_df$albumin, 
+    col = last_value_df$color, 
+    type = 's', 
+    radius = 1,
+    legend=TRUE,
+    xlab="Neutrophils(%)", ylab="Lymphocyte(%)", zlab="Albumin")
+legend3d("topright", legend = c('Death', 'Survival'), pch = 10, col = mycolors, cex=0.8, inset=c(0.02))
+
+writeWebGL( filename="3d_correlation_last.html" ,  width=600, height=600)
+```
+
+Data after cleaning and transformation:
+
+```{r, correlation_summary_last} 
+
+tbl_summary(
+    last_value_df %>% ungroup() %>%  select(-PATIENT_ID, -color, -age, -gender),
+    by = outcome
+) %>%
+    add_n() %>%
+    modify_header(label = "**Last value of**") %>%
+    add_overall() %>%
+    bold_labels() 
+
+```
+
+```{r, show_correlation_last}
+htmltools::includeHTML("./3d_correlation_last.html")
+```
 
 ## Most common biomarkers
 
 ```{r, most_common_biomarkers} 
 biomarker_popularity <- df %>% group_by(PATIENT_ID, outcome) %>% summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) sum(!is.na(x)))
 biomarker_popularity$sum_of_single_test <- rowSums(biomarker_popularity %>% ungroup() %>% select(-PATIENT_ID, -outcome))
-
-
 
 most_tested_death <- biomarker_popularity %>% select(sum_of_single_test, outcome, `neutrophils(%)`,  `(%)lymphocyte`, albumin) %>% filter(outcome=='Death') %>% arrange(desc(sum_of_single_test)) %>% head(10)
 most_tested_survival <- biomarker_popularity %>% select(sum_of_single_test, outcome, `neutrophils(%)`,  `(%)lymphocyte`, albumin) %>% filter(outcome=='Survival') %>% arrange(desc(sum_of_single_test)) %>% head(10)
@@ -222,44 +258,59 @@ patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup
 
 neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
 
-neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Neutrophils (%) during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Neutrophils (%)") +
-    transition_reveal(RE_DATE)
+#neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+#  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
+#    geom_line() +
+#    geom_point() +
+#  facet_grid(rows=vars(outcome)) +
+#    ggtitle("Neutrophils (%) during patient hospitalization") +
+#    theme_ipsum() +
+#    ylab("Neutrophils (%)") +
+#    transition_reveal(RE_DATE)
 
 #anim_save("neutrophils_seq.gif")
 
 lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
 
-lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Lymphocyte (%) during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Lymphocyte (%)") +
-    transition_reveal(RE_DATE)
+#lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+#  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
+#    geom_line() +
+#    geom_point() +
+#  facet_grid(rows=vars(outcome)) +
+#    ggtitle("Lymphocyte (%) during patient hospitalization") +
+#    theme_ipsum() +
+#    ylab("Lymphocyte (%)") +
+#    transition_reveal(RE_DATE)
 
 #anim_save("lymphocyte_seq.gif")
 
 albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
 
-albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Albumin value during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Albumin") +
-    transition_reveal(RE_DATE)
+#albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+#  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
+#    geom_line() +
+#    geom_point() +
+#  facet_grid(rows=vars(outcome)) +
+#    ggtitle("Albumin value during patient hospitalization") +
+#    theme_ipsum() +
+#    ylab("Albumin") +
+#    transition_reveal(RE_DATE)
 
 #anim_save("albumin_seq.gif")
+
+```
+
+## Prediction model
+
+```{r,prediction_model} 
+#Get last test of each patient for crucial biomarkers
+
+#df %>% select(PATIENT_ID, RE_DATE, age, gender, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
+#  group_by(PATIENT_ID, age, gender, outcome) %>% 
+#  fill(`neutrophils(%)`, `(%)lymphocyte`, albumin) %>% 
+#  summarise_at(vars(`neutrophils(%)`:albumin), function(x) last(x,order_by = !is.na(x))) %>%
+#  filter(!is.na(`neutrophils(%)`) &  !is.na(`(%)lymphocyte`) & !is.na(albumin))
+
+
 
 ```
