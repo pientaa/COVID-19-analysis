@@ -32,6 +32,7 @@ library(hrbrthemes)
 library( rgl )
 library(magick)
 library(tibble)
+library(caret)
 ```
 
 ## Read data
@@ -212,45 +213,45 @@ foo <- rbind(most_tested_death, most_tested_survival)
 
 patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup() %>% select(PATIENT_ID, RE_DATE,`neutrophils(%)`,  `(%)lymphocyte`, albumin, outcome),  by="PATIENT_ID") %>% filter(!is.na(`neutrophils(%)`) |  !is.na(`(%)lymphocyte`) | !is.na(albumin))
 
-neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
+#neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
 
-neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Neutrophils (%) during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Neutrophils (%)") +
-    transition_reveal(RE_DATE)
+#neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+#  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
+#    geom_line() +
+#    geom_point() +
+#  facet_grid(rows=vars(outcome)) +
+#    ggtitle("Neutrophils (%) during patient hospitalization") +
+#    theme_ipsum() +
+#    ylab("Neutrophils (%)") +
+#    transition_reveal(RE_DATE)
 
 #anim_save("neutrophils_seq.gif")
 
-lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
+#lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
 
-lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Lymphocyte (%) during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Lymphocyte (%)") +
-    transition_reveal(RE_DATE)
+#lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+#  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
+#    geom_line() +
+#    geom_point() +
+#  facet_grid(rows=vars(outcome)) +
+#    ggtitle("Lymphocyte (%) during patient hospitalization") +
+#    theme_ipsum() +
+#    ylab("Lymphocyte (%)") +
+#    transition_reveal(RE_DATE)
 
 #anim_save("lymphocyte_seq.gif")
 
-albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
+#albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
 
-albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Albumin value during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Albumin") +
-    transition_reveal(RE_DATE)
+#albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+#  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
+#    geom_line() +
+#    geom_point() +
+#  facet_grid(rows=vars(outcome)) +
+#    ggtitle("Albumin value during patient hospitalization") +
+#    theme_ipsum() +
+#    ylab("Albumin") +
+#    transition_reveal(RE_DATE)
 
 #anim_save("albumin_seq.gif")
 
@@ -259,14 +260,57 @@ albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
 ## Prediction model
 
 ```{r,prediction_model} 
-#Get last test of each patient for crucial biomarkers
 
-#df %>% select(PATIENT_ID, RE_DATE, age, gender, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
-#  group_by(PATIENT_ID, age, gender, outcome) %>% 
-#  fill(`neutrophils(%)`, `(%)lymphocyte`, albumin) %>% 
-#  summarise_at(vars(`neutrophils(%)`:albumin), function(x) last(x,order_by = !is.na(x))) %>%
-#  filter(!is.na(`neutrophils(%)`) &  !is.na(`(%)lymphocyte`) & !is.na(albumin))
+last_test_df <- df %>% 
+  group_by(PATIENT_ID, outcome, gender, age) %>% 
+  fill_(names(df)) %>% 
+  fill_(names(df), "up") %>% 
+  summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) last(x,order_by = is.na(x)))
+
+last_test_df %>% select(hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine)
+
+#Taking these that has at most 19 NA's (18 it's common lowest level of NA among all columns)
+
+#IMO that's already cleaned right now
+
+cleaned_df <- last_test_df %>% ungroup() %>% select(outcome, age, gender, hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine) %>% filter_all(function(x) !is.na(x)) 
+
+cleaned_df %>% summary()
+
+set.seed(23)
+inTraining <- 
+    createDataPartition(
+        y = cleaned_df$outcome,
+        p = .75,
+        list = FALSE)
 
 
+training <- cleaned_df[ inTraining,]
+testing  <- cleaned_df[-inTraining,]
 
+rfGrid <- expand.grid(mtry = 10:30)
+ctrl <- trainControl(
+    method = "repeatedcv",
+    classProbs = TRUE,
+    number = 2,
+    repeats = 5)
+
+set.seed(23)
+fit <- train(outcome ~ .,
+             data = training,
+             method = "rf",
+             metric = "ROC",
+             preProc = c("center", "scale"),
+             trControl = ctrl,
+             tuneGrid = rfGrid,
+             ntree = 30)
+rfClasses <- predict(fit, newdata = testing)
+confusionMatrix(data = rfClasses, testing$outcome)
+
+#df %>% group_by(PATIENT_ID) %>% summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) ))
+
+#TODO:
+# 1. Show how many patients died before any test has been taken
+# 2. Clean data before prediction and maybe use this cleaned data in some visualizations before?
+# 3. Describe model of outcome prediction
 ```
