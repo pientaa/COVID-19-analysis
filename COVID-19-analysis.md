@@ -31,7 +31,6 @@ summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), `Total records` = n())
 patients_df <- patients_df %>%
     mutate(`Days in hospital` = ceiling(difftime(`Discharge time`, `Admission time`, units = "days")))
 
-
 df <- full_join(patients_df %>% ungroup() %>% select(`Admission time`, PATIENT_ID), df %>% select(-PATIENT_ID), by="Admission time")
 
 df$gender<-ifelse(df$gender==1, 'Male', 'Female') 
@@ -42,8 +41,6 @@ patients_df <- patients_df %>% mutate(gender = as.factor(gender))
 
 df$outcome<-ifelse(df$outcome==1, 'Death', 'Survival')
 df <- df %>% mutate(outcome = as.factor(outcome))
-
-no_re_date_summary <- df %>% filter(is.na(RE_DATE))
 
 patients_df$outcome<-ifelse(patients_df$outcome==1, 'Death', 'Survival')
 patients_df <- patients_df %>% mutate(outcome = as.factor(outcome))
@@ -63,1479 +60,6 @@ last_test_df <- df %>%
 
 
 cleaned_df <- last_test_df %>% ungroup() %>% select(PATIENT_ID, outcome, age, gender, hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine) %>% filter_all(function(x) !is.na(x)) 
-```
-
-## Removed data
-
-
-```r
-tbl_summary(
-    no_re_date_summary %>% select(-PATIENT_ID),
-    by = outcome
-) %>%
-    add_n() %>%
-    modify_header(label = "") %>%
-    add_overall() %>%
-    bold_labels() 
-```
-
-<!--html_preserve--><style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-#pfrpzipsep .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#pfrpzipsep .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 4px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#pfrpzipsep .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#pfrpzipsep .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#pfrpzipsep .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#pfrpzipsep .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#pfrpzipsep .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#pfrpzipsep .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#pfrpzipsep .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#pfrpzipsep .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#pfrpzipsep .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#pfrpzipsep .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#pfrpzipsep .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#pfrpzipsep .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#pfrpzipsep .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#pfrpzipsep .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#pfrpzipsep .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#pfrpzipsep .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#pfrpzipsep .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#pfrpzipsep .gt_left {
-  text-align: left;
-}
-
-#pfrpzipsep .gt_center {
-  text-align: center;
-}
-
-#pfrpzipsep .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#pfrpzipsep .gt_font_normal {
-  font-weight: normal;
-}
-
-#pfrpzipsep .gt_font_bold {
-  font-weight: bold;
-}
-
-#pfrpzipsep .gt_font_italic {
-  font-style: italic;
-}
-
-#pfrpzipsep .gt_super {
-  font-size: 65%;
-}
-
-#pfrpzipsep .gt_footnote_marks {
-  font-style: italic;
-  font-size: 65%;
-}
-</style>
-<div id="pfrpzipsep" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Overall</strong>, N = 14<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 8<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 6<sup class="gt_footnote_marks">1</sup></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">age</td>
-      <td class="gt_row gt_center">62 (46, 66)</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center">64 (62, 71)</td>
-      <td class="gt_row gt_center">42 (35, 57)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">gender</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center"></td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
-      <td class="gt_row gt_center">2 (14%)</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">2 (25%)</td>
-      <td class="gt_row gt_center">0 (0%)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
-      <td class="gt_row gt_center">12 (86%)</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">6 (75%)</td>
-      <td class="gt_row gt_center">6 (100%)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Hypersensitive cardiac troponinI</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">hemoglobin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Serum chloride</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin time</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">procalcitonin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">eosinophils(%)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 2 receptor</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Alkaline phosphatase</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">albumin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">basophil(%)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 10</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Total bilirubin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Platelet count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">monocytes(%)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">antithrombin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 8</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">indirect bilirubin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell distribution width</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils(%)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">total protein</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Quantification of Treponema pallidum antibodies</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin activity</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HBsAg</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular volume</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">hematocrit</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">White blood cell count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Tumor necrosis factorα</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin concentration</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">fibrinogen</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 1β</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Urea</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">lymphocyte count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">PH value</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Eosinophil count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Corrected calcium</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Serum potassium</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">glucose</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Direct bilirubin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Mean platelet volume</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">ferritin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">RBC distribution width SD</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Thrombin time</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">(%)lymphocyte</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HCV antibody quantification</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">D-D dimer</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Total cholesterol</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">aspartate aminotransferase</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Uric acid</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HCO3-</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">calcium</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Amino-terminal brain natriuretic peptide precursor(NT-proBNP)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Lactate dehydrogenase</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">platelet large cell ratio</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 6</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Fibrin degradation products</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">monocytes count</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">PLT distribution width</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">globulin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">γ-glutamyl transpeptidase</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">International standard ratio</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">basophil count(#)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">2019-nCoV nucleic acid detection</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Activation of partial thromboplastin time</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">High sensitivity C-reactive protein</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HIV antibody quantification</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">serum sodium</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">thrombocytocrit</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">ESR</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">glutamic-pyruvic transaminase</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">eGFR</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">creatinine</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">0</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-      <td class="gt_row gt_center">NA (NA, NA)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
-      <td class="gt_row gt_center">14</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">8</td>
-      <td class="gt_row gt_center">6</td>
-    </tr>
-  </tbody>
-  
-  <tfoot>
-    <tr class="gt_footnotes">
-      <td colspan="5">
-        <p class="gt_footnote">
-          <sup class="gt_footnote_marks">
-            <em>1</em>
-          </sup>
-           
-          Statistics presented: Median (IQR); n (%)
-          <br />
-        </p>
-      </td>
-    </tr>
-  </tfoot>
-</table></div><!--/html_preserve-->
-
-```r
-patients_df %>% filter(`Total blood tests`==0) 
-```
-
-<div class="kable-table">
-
-| PATIENT_ID|outcome  |Admission time      |Discharge time      |gender | age| Total blood tests|Days in hospital |
-|----------:|:--------|:-------------------|:-------------------|:------|---:|-----------------:|:----------------|
-|        187|Survival |2020-02-17 18:56:09 |2020-02-20 20:55:31 |Male   |  44|                 0|4 days           |
-|        189|Survival |2020-02-10 04:37:30 |2020-02-10 13:54:23 |Male   |  61|                 0|1 days           |
-|        192|Survival |2020-02-16 17:14:30 |2020-02-16 21:05:17 |Male   |  34|                 0|1 days           |
-|        197|Survival |2020-02-10 05:01:15 |2020-02-11 15:40:41 |Male   |  67|                 0|2 days           |
-|        200|Survival |2020-02-16 04:41:21 |2020-02-16 15:26:13 |Male   |  25|                 0|1 days           |
-|        201|Survival |2020-02-17 21:30:07 |2020-02-20 13:05:11 |Male   |  39|                 0|3 days           |
-|        253|Death    |2020-02-13 21:05:54 |2020-02-14 11:00:05 |Male   |  51|                 0|1 days           |
-|        268|Death    |2020-02-14 11:46:36 |2020-02-15 10:15:28 |Male   |  69|                 0|1 days           |
-|        285|Death    |2020-01-31 23:20:40 |2020-02-01 03:16:34 |Male   |  63|                 0|1 days           |
-|        289|Death    |2020-02-01 02:12:05 |2020-02-01 10:54:57 |Male   |  63|                 0|1 days           |
-|        311|Death    |2020-02-11 23:45:15 |2020-02-15 09:02:41 |Female |  77|                 0|4 days           |
-|        347|Death    |2020-02-11 22:25:20 |2020-02-15 10:03:32 |Female |  80|                 0|4 days           |
-|        354|Death    |2020-02-03 21:22:41 |2020-02-04 01:03:11 |Male   |  57|                 0|1 days           |
-|        359|Death    |2020-02-11 01:42:48 |2020-02-14 09:38:13 |Male   |  65|                 0|4 days           |
-
-</div>
-
-```r
-#TODO: List patient with no RE_DATE which means no tests taken
 ```
 
 ## Patients summary
@@ -1558,7 +82,7 @@ tbl_summary(
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#zatmjacrcr .gt_table {
+#rfhzboblej .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -1583,7 +107,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_heading {
+#rfhzboblej .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1595,7 +119,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_title {
+#rfhzboblej .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1605,7 +129,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#zatmjacrcr .gt_subtitle {
+#rfhzboblej .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1615,13 +139,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#zatmjacrcr .gt_bottom_border {
+#rfhzboblej .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_col_headings {
+#rfhzboblej .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1636,7 +160,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_col_heading {
+#rfhzboblej .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1656,7 +180,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#zatmjacrcr .gt_column_spanner_outer {
+#rfhzboblej .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1668,15 +192,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#zatmjacrcr .gt_column_spanner_outer:first-child {
+#rfhzboblej .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zatmjacrcr .gt_column_spanner_outer:last-child {
+#rfhzboblej .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zatmjacrcr .gt_column_spanner {
+#rfhzboblej .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1688,7 +212,7 @@ tbl_summary(
   width: 100%;
 }
 
-#zatmjacrcr .gt_group_heading {
+#rfhzboblej .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1710,7 +234,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#zatmjacrcr .gt_empty_group_heading {
+#rfhzboblej .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1725,15 +249,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#zatmjacrcr .gt_from_md > :first-child {
+#rfhzboblej .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zatmjacrcr .gt_from_md > :last-child {
+#rfhzboblej .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zatmjacrcr .gt_row {
+#rfhzboblej .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1752,7 +276,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#zatmjacrcr .gt_stub {
+#rfhzboblej .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1764,7 +288,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#zatmjacrcr .gt_summary_row {
+#rfhzboblej .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1774,7 +298,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#zatmjacrcr .gt_first_summary_row {
+#rfhzboblej .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1784,7 +308,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_grand_summary_row {
+#rfhzboblej .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1794,7 +318,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#zatmjacrcr .gt_first_grand_summary_row {
+#rfhzboblej .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1804,11 +328,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_striped {
+#rfhzboblej .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zatmjacrcr .gt_table_body {
+#rfhzboblej .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1817,7 +341,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_footnotes {
+#rfhzboblej .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1831,13 +355,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_footnote {
+#rfhzboblej .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#zatmjacrcr .gt_sourcenotes {
+#rfhzboblej .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1851,46 +375,46 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#zatmjacrcr .gt_sourcenote {
+#rfhzboblej .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#zatmjacrcr .gt_left {
+#rfhzboblej .gt_left {
   text-align: left;
 }
 
-#zatmjacrcr .gt_center {
+#rfhzboblej .gt_center {
   text-align: center;
 }
 
-#zatmjacrcr .gt_right {
+#rfhzboblej .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zatmjacrcr .gt_font_normal {
+#rfhzboblej .gt_font_normal {
   font-weight: normal;
 }
 
-#zatmjacrcr .gt_font_bold {
+#rfhzboblej .gt_font_bold {
   font-weight: bold;
 }
 
-#zatmjacrcr .gt_font_italic {
+#rfhzboblej .gt_font_italic {
   font-style: italic;
 }
 
-#zatmjacrcr .gt_super {
+#rfhzboblej .gt_super {
   font-size: 65%;
 }
 
-#zatmjacrcr .gt_footnote_marks {
+#rfhzboblej .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="zatmjacrcr" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="rfhzboblej" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
@@ -1991,6 +515,34 @@ ggplot(patients_df, aes(x=`Total blood tests`, fill=outcome)) + geom_histogram(b
 
 ![](COVID-19-analysis_files/figure-html/total_blood_tests-1.png)<!-- -->
 
+## Removed data
+
+
+```r
+patients_df %>% filter(`Total blood tests`==0) 
+```
+
+<div class="kable-table">
+
+| PATIENT_ID|outcome  |Admission time      |Discharge time      |gender | age| Total blood tests|Days in hospital |
+|----------:|:--------|:-------------------|:-------------------|:------|---:|-----------------:|:----------------|
+|        187|Survival |2020-02-17 18:56:09 |2020-02-20 20:55:31 |Male   |  44|                 0|4 days           |
+|        189|Survival |2020-02-10 04:37:30 |2020-02-10 13:54:23 |Male   |  61|                 0|1 days           |
+|        192|Survival |2020-02-16 17:14:30 |2020-02-16 21:05:17 |Male   |  34|                 0|1 days           |
+|        197|Survival |2020-02-10 05:01:15 |2020-02-11 15:40:41 |Male   |  67|                 0|2 days           |
+|        200|Survival |2020-02-16 04:41:21 |2020-02-16 15:26:13 |Male   |  25|                 0|1 days           |
+|        201|Survival |2020-02-17 21:30:07 |2020-02-20 13:05:11 |Male   |  39|                 0|3 days           |
+|        253|Death    |2020-02-13 21:05:54 |2020-02-14 11:00:05 |Male   |  51|                 0|1 days           |
+|        268|Death    |2020-02-14 11:46:36 |2020-02-15 10:15:28 |Male   |  69|                 0|1 days           |
+|        285|Death    |2020-01-31 23:20:40 |2020-02-01 03:16:34 |Male   |  63|                 0|1 days           |
+|        289|Death    |2020-02-01 02:12:05 |2020-02-01 10:54:57 |Male   |  63|                 0|1 days           |
+|        311|Death    |2020-02-11 23:45:15 |2020-02-15 09:02:41 |Female |  77|                 0|4 days           |
+|        347|Death    |2020-02-11 22:25:20 |2020-02-15 10:03:32 |Female |  80|                 0|4 days           |
+|        354|Death    |2020-02-03 21:22:41 |2020-02-04 01:03:11 |Male   |  57|                 0|1 days           |
+|        359|Death    |2020-02-11 01:42:48 |2020-02-14 09:38:13 |Male   |  65|                 0|4 days           |
+
+</div>
+
 ## Biomarkers
 
 ```r
@@ -2010,7 +562,7 @@ tbl_summary(
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#keuuympsrb .gt_table {
+#llmgqhurfo .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -2035,7 +587,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_heading {
+#llmgqhurfo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2047,7 +599,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_title {
+#llmgqhurfo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2057,7 +609,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#keuuympsrb .gt_subtitle {
+#llmgqhurfo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2067,13 +619,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#keuuympsrb .gt_bottom_border {
+#llmgqhurfo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_col_headings {
+#llmgqhurfo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2088,7 +640,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_col_heading {
+#llmgqhurfo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2108,7 +660,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#keuuympsrb .gt_column_spanner_outer {
+#llmgqhurfo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2120,15 +672,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#keuuympsrb .gt_column_spanner_outer:first-child {
+#llmgqhurfo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#keuuympsrb .gt_column_spanner_outer:last-child {
+#llmgqhurfo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#keuuympsrb .gt_column_spanner {
+#llmgqhurfo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2140,7 +692,7 @@ tbl_summary(
   width: 100%;
 }
 
-#keuuympsrb .gt_group_heading {
+#llmgqhurfo .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2162,7 +714,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#keuuympsrb .gt_empty_group_heading {
+#llmgqhurfo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2177,15 +729,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#keuuympsrb .gt_from_md > :first-child {
+#llmgqhurfo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#keuuympsrb .gt_from_md > :last-child {
+#llmgqhurfo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#keuuympsrb .gt_row {
+#llmgqhurfo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2204,7 +756,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#keuuympsrb .gt_stub {
+#llmgqhurfo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2216,7 +768,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#keuuympsrb .gt_summary_row {
+#llmgqhurfo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2226,7 +778,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#keuuympsrb .gt_first_summary_row {
+#llmgqhurfo .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2236,7 +788,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_grand_summary_row {
+#llmgqhurfo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2246,7 +798,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#keuuympsrb .gt_first_grand_summary_row {
+#llmgqhurfo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2256,11 +808,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_striped {
+#llmgqhurfo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#keuuympsrb .gt_table_body {
+#llmgqhurfo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2269,7 +821,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_footnotes {
+#llmgqhurfo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2283,13 +835,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_footnote {
+#llmgqhurfo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#keuuympsrb .gt_sourcenotes {
+#llmgqhurfo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2303,46 +855,46 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#keuuympsrb .gt_sourcenote {
+#llmgqhurfo .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#keuuympsrb .gt_left {
+#llmgqhurfo .gt_left {
   text-align: left;
 }
 
-#keuuympsrb .gt_center {
+#llmgqhurfo .gt_center {
   text-align: center;
 }
 
-#keuuympsrb .gt_right {
+#llmgqhurfo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#keuuympsrb .gt_font_normal {
+#llmgqhurfo .gt_font_normal {
   font-weight: normal;
 }
 
-#keuuympsrb .gt_font_bold {
+#llmgqhurfo .gt_font_bold {
   font-weight: bold;
 }
 
-#keuuympsrb .gt_font_italic {
+#llmgqhurfo .gt_font_italic {
   font-style: italic;
 }
 
-#keuuympsrb .gt_super {
+#llmgqhurfo .gt_super {
   font-size: 65%;
 }
 
-#keuuympsrb .gt_footnote_marks {
+#llmgqhurfo .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="keuuympsrb" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="llmgqhurfo" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
@@ -2826,400 +1378,9 @@ tbl_summary(
   </tfoot>
 </table></div><!--/html_preserve-->
 
-## Something more about data set
-
-```r
-df %>% group_by(PATIENT_ID, outcome) %>% summarise(missing_test=is.na(RE_DATE)) %>%
-  group_by(PATIENT_ID, outcome) %>%
-  summarise(test_provided = ifelse(missing_test, 0, 1)) %>%
-  group_by(PATIENT_ID, outcome) %>%
-  summarise(tests_provided=sum(test_provided))
-```
-
-<div class="kable-table">
-
-| PATIENT_ID|outcome  | tests_provided|
-|----------:|:--------|--------------:|
-|          1|Survival |             24|
-|          2|Survival |             29|
-|          3|Survival |             18|
-|          4|Survival |             14|
-|          5|Survival |             21|
-|          6|Survival |             14|
-|          7|Survival |             20|
-|          8|Survival |             27|
-|          9|Survival |             17|
-|         10|Survival |             26|
-|         11|Survival |             20|
-|         12|Survival |             18|
-|         13|Survival |             21|
-|         14|Survival |             23|
-|         15|Survival |             13|
-|         16|Survival |             12|
-|         17|Survival |             23|
-|         18|Survival |             18|
-|         19|Survival |             25|
-|         20|Survival |             20|
-|         21|Survival |             17|
-|         22|Survival |             16|
-|         23|Survival |             15|
-|         24|Survival |             26|
-|         25|Survival |             23|
-|         26|Survival |             21|
-|         27|Survival |             13|
-|         28|Survival |             19|
-|         29|Survival |             14|
-|         30|Survival |             20|
-|         31|Survival |             17|
-|         32|Survival |             18|
-|         33|Survival |             23|
-|         34|Survival |             12|
-|         35|Survival |             13|
-|         36|Survival |             15|
-|         37|Survival |             14|
-|         38|Survival |             14|
-|         39|Survival |             10|
-|         40|Survival |             14|
-|         41|Survival |              5|
-|         42|Survival |             11|
-|         43|Survival |             14|
-|         44|Survival |             17|
-|         45|Survival |              9|
-|         46|Survival |              8|
-|         47|Survival |              9|
-|         48|Survival |              9|
-|         49|Survival |             11|
-|         50|Survival |              6|
-|         51|Survival |              7|
-|         52|Survival |             10|
-|         53|Survival |              4|
-|         54|Survival |             10|
-|         55|Survival |              9|
-|         56|Survival |              2|
-|         57|Survival |              4|
-|         58|Survival |             10|
-|         59|Survival |              7|
-|         60|Survival |             21|
-|         61|Survival |             23|
-|         62|Survival |             17|
-|         63|Survival |             20|
-|         64|Survival |             25|
-|         65|Survival |             22|
-|         66|Survival |             26|
-|         67|Survival |             24|
-|         68|Survival |             14|
-|         69|Survival |             18|
-|         70|Survival |             23|
-|         71|Survival |             16|
-|         72|Survival |             10|
-|         73|Survival |             24|
-|         74|Survival |              7|
-|         75|Survival |             12|
-|         76|Survival |             25|
-|         77|Survival |             13|
-|         78|Survival |             24|
-|         79|Survival |             14|
-|         80|Survival |             25|
-|         81|Survival |             29|
-|         82|Survival |             17|
-|         83|Survival |             16|
-|         84|Survival |             23|
-|         85|Survival |             22|
-|         86|Survival |             18|
-|         87|Survival |             13|
-|         88|Survival |             21|
-|         89|Survival |             15|
-|         90|Survival |             16|
-|         91|Survival |             21|
-|         92|Survival |             18|
-|         93|Survival |             15|
-|         94|Survival |             21|
-|         95|Survival |             13|
-|         96|Survival |             12|
-|         97|Survival |             21|
-|         98|Survival |             18|
-|         99|Survival |             16|
-|        100|Survival |             18|
-|        101|Survival |             22|
-|        102|Survival |             17|
-|        103|Survival |             14|
-|        104|Survival |             21|
-|        105|Survival |             20|
-|        106|Survival |             20|
-|        107|Survival |              9|
-|        108|Survival |             23|
-|        109|Survival |             19|
-|        110|Survival |             15|
-|        111|Survival |             13|
-|        112|Survival |             19|
-|        113|Survival |             16|
-|        114|Survival |             20|
-|        115|Survival |             13|
-|        116|Survival |             13|
-|        117|Survival |             25|
-|        118|Survival |             10|
-|        119|Survival |             18|
-|        120|Survival |             14|
-|        121|Survival |             10|
-|        122|Survival |             15|
-|        123|Survival |             19|
-|        124|Survival |             23|
-|        125|Survival |             20|
-|        126|Survival |             18|
-|        127|Survival |             19|
-|        128|Survival |             13|
-|        129|Survival |             24|
-|        130|Survival |              9|
-|        131|Survival |              9|
-|        132|Survival |             16|
-|        133|Survival |             13|
-|        134|Survival |             16|
-|        135|Survival |             20|
-|        136|Survival |             15|
-|        137|Survival |             19|
-|        138|Survival |             16|
-|        139|Survival |             21|
-|        140|Survival |             21|
-|        141|Survival |             18|
-|        142|Survival |             17|
-|        143|Survival |             12|
-|        144|Survival |             15|
-|        145|Survival |             20|
-|        146|Survival |             18|
-|        147|Survival |             17|
-|        148|Survival |             24|
-|        149|Survival |             19|
-|        150|Survival |             16|
-|        151|Survival |             15|
-|        152|Survival |             15|
-|        153|Survival |             12|
-|        154|Survival |             11|
-|        155|Survival |             12|
-|        156|Survival |             16|
-|        157|Survival |             14|
-|        158|Survival |             19|
-|        159|Survival |             15|
-|        160|Survival |             15|
-|        161|Survival |             15|
-|        162|Survival |              9|
-|        163|Survival |             23|
-|        164|Survival |             18|
-|        165|Survival |             29|
-|        166|Survival |             14|
-|        167|Survival |             13|
-|        168|Survival |             20|
-|        169|Survival |             16|
-|        170|Survival |             25|
-|        171|Survival |             28|
-|        172|Survival |             21|
-|        173|Survival |             19|
-|        174|Survival |             16|
-|        175|Survival |             40|
-|        176|Survival |             18|
-|        177|Survival |             13|
-|        178|Survival |             17|
-|        179|Survival |             10|
-|        180|Survival |              5|
-|        181|Survival |              7|
-|        182|Survival |              1|
-|        183|Survival |              9|
-|        184|Survival |              7|
-|        185|Survival |              8|
-|        186|Survival |              5|
-|        187|Survival |              0|
-|        188|Survival |              7|
-|        189|Survival |              0|
-|        190|Survival |             15|
-|        191|Survival |              5|
-|        192|Survival |              0|
-|        193|Survival |              6|
-|        194|Survival |             39|
-|        195|Survival |              7|
-|        196|Survival |             29|
-|        197|Survival |              0|
-|        198|Survival |              7|
-|        199|Survival |             26|
-|        200|Survival |              0|
-|        201|Survival |              0|
-|        202|Death    |             16|
-|        203|Death    |             22|
-|        204|Death    |             34|
-|        205|Death    |             17|
-|        206|Death    |             13|
-|        207|Death    |             11|
-|        208|Death    |              7|
-|        209|Death    |             10|
-|        210|Death    |             30|
-|        211|Death    |              8|
-|        212|Death    |             12|
-|        213|Death    |              8|
-|        214|Death    |              6|
-|        215|Death    |              9|
-|        216|Death    |             10|
-|        217|Death    |             31|
-|        218|Death    |             42|
-|        219|Death    |             16|
-|        220|Death    |             21|
-|        221|Death    |             23|
-|        222|Death    |             25|
-|        223|Death    |             19|
-|        224|Death    |             33|
-|        225|Death    |             15|
-|        226|Death    |             16|
-|        227|Death    |             13|
-|        228|Death    |             18|
-|        229|Death    |             36|
-|        230|Death    |             11|
-|        231|Death    |             42|
-|        232|Death    |             15|
-|        233|Death    |             41|
-|        234|Death    |             25|
-|        235|Death    |             15|
-|        236|Death    |              7|
-|        237|Death    |             21|
-|        238|Death    |             23|
-|        239|Death    |             31|
-|        240|Death    |             22|
-|        241|Death    |             17|
-|        242|Death    |             28|
-|        243|Death    |             30|
-|        244|Death    |             32|
-|        245|Death    |             13|
-|        246|Death    |             32|
-|        247|Death    |             21|
-|        248|Death    |             22|
-|        249|Death    |              9|
-|        250|Death    |             26|
-|        251|Death    |             29|
-|        252|Death    |             49|
-|        253|Death    |              0|
-|        254|Death    |             14|
-|        255|Death    |             18|
-|        256|Death    |             28|
-|        257|Death    |             25|
-|        258|Death    |             59|
-|        259|Death    |              5|
-|        260|Death    |              9|
-|        261|Death    |             19|
-|        262|Death    |             18|
-|        263|Death    |              7|
-|        264|Death    |             39|
-|        265|Death    |              1|
-|        266|Death    |              7|
-|        267|Death    |             28|
-|        268|Death    |              0|
-|        269|Death    |              6|
-|        270|Death    |             10|
-|        271|Death    |              4|
-|        272|Death    |              7|
-|        273|Death    |             24|
-|        274|Death    |             16|
-|        275|Death    |              1|
-|        276|Death    |              8|
-|        277|Death    |             12|
-|        278|Death    |             15|
-|        279|Death    |             13|
-|        280|Death    |             11|
-|        281|Death    |             33|
-|        282|Death    |             18|
-|        283|Death    |             31|
-|        284|Death    |             14|
-|        285|Death    |              0|
-|        286|Death    |              6|
-|        287|Death    |             19|
-|        288|Death    |             32|
-|        289|Death    |              0|
-|        290|Death    |             11|
-|        291|Death    |             29|
-|        292|Death    |             10|
-|        293|Death    |              5|
-|        294|Death    |              8|
-|        295|Death    |             47|
-|        296|Death    |             11|
-|        297|Death    |             15|
-|        298|Death    |              6|
-|        299|Death    |              7|
-|        300|Death    |              5|
-|        301|Death    |              8|
-|        302|Death    |             10|
-|        303|Death    |             10|
-|        304|Death    |             35|
-|        305|Death    |             17|
-|        306|Death    |             20|
-|        307|Death    |              6|
-|        308|Death    |             49|
-|        309|Death    |             25|
-|        310|Death    |             21|
-|        311|Death    |              0|
-|        312|Death    |              8|
-|        313|Death    |             20|
-|        314|Death    |              7|
-|        315|Death    |              7|
-|        316|Death    |              7|
-|        317|Death    |              9|
-|        318|Death    |              7|
-|        319|Death    |              7|
-|        320|Death    |             33|
-|        321|Death    |              5|
-|        322|Death    |             16|
-|        323|Death    |              7|
-|        324|Death    |             16|
-|        325|Death    |             10|
-|        326|Death    |             18|
-|        327|Death    |              7|
-|        328|Death    |             30|
-|        329|Death    |              9|
-|        330|Death    |              7|
-|        331|Death    |              8|
-|        332|Death    |             16|
-|        333|Death    |              7|
-|        334|Death    |             14|
-|        335|Death    |              7|
-|        336|Death    |              7|
-|        337|Death    |             31|
-|        338|Death    |             25|
-|        339|Death    |              7|
-|        340|Death    |             10|
-|        341|Death    |             22|
-|        342|Death    |             35|
-|        343|Death    |             27|
-|        344|Death    |             13|
-|        345|Death    |             24|
-|        346|Death    |              8|
-|        347|Death    |              0|
-|        348|Death    |              9|
-|        349|Death    |             33|
-|        350|Death    |              6|
-|        351|Death    |              7|
-|        352|Death    |             10|
-|        353|Death    |              5|
-|        354|Death    |              0|
-|        355|Death    |              8|
-|        356|Death    |             19|
-|        357|Death    |             14|
-|        358|Death    |             21|
-|        359|Death    |              0|
-|        360|Death    |              5|
-|        361|Death    |             20|
-|        362|Death    |             19|
-|        363|Death    |              4|
-|        364|Death    |             21|
-|        365|Death    |              6|
-|        366|Death    |             30|
-|        367|Death    |              5|
-|        368|Death    |             35|
-|        369|Death    |              6|
-|        370|Death    |             24|
-|        371|Death    |              9|
-|        372|Death    |             53|
-|        373|Death    |              6|
-|        374|Death    |             13|
-|        375|Death    |             24|
-
-</div>
 ### Finding correlation
 
-Finding correlation between outcome and other variables. Ignoring `Admission time`, `PATIENT_ID`, `RE_DATE` and `Discharge time` and dropping `outcome` which correlation with itself is equal to `1.0`.
+Finding correlation between outcome and other variables. Ignoring `Admission time`, `PATIENT_ID`, `RE_DATE` and `Discharge time`, and dropping `outcome`, which correlation with itself is equal to `1.0`.
 
 
 ```r
@@ -3266,6 +1427,8 @@ In following section, we will use 3 biomarkers that are most correlated to outco
 
 
 ```r
+#TODO: Take for correlation cleaned_df and check if it's consistent with predictive model
+
 new_df  <- df
 
 new_df <- new_df %>% select(PATIENT_ID, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
@@ -3309,7 +1472,7 @@ tbl_summary(
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#svywhtuvtl .gt_table {
+#oacdjucfqi .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -3334,7 +1497,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_heading {
+#oacdjucfqi .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3346,7 +1509,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_title {
+#oacdjucfqi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3356,7 +1519,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#svywhtuvtl .gt_subtitle {
+#oacdjucfqi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3366,13 +1529,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#svywhtuvtl .gt_bottom_border {
+#oacdjucfqi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_col_headings {
+#oacdjucfqi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3387,7 +1550,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_col_heading {
+#oacdjucfqi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3407,7 +1570,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#svywhtuvtl .gt_column_spanner_outer {
+#oacdjucfqi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3419,15 +1582,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#svywhtuvtl .gt_column_spanner_outer:first-child {
+#oacdjucfqi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#svywhtuvtl .gt_column_spanner_outer:last-child {
+#oacdjucfqi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#svywhtuvtl .gt_column_spanner {
+#oacdjucfqi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3439,7 +1602,7 @@ tbl_summary(
   width: 100%;
 }
 
-#svywhtuvtl .gt_group_heading {
+#oacdjucfqi .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3461,7 +1624,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#svywhtuvtl .gt_empty_group_heading {
+#oacdjucfqi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3476,15 +1639,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#svywhtuvtl .gt_from_md > :first-child {
+#oacdjucfqi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#svywhtuvtl .gt_from_md > :last-child {
+#oacdjucfqi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#svywhtuvtl .gt_row {
+#oacdjucfqi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3503,7 +1666,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#svywhtuvtl .gt_stub {
+#oacdjucfqi .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3515,7 +1678,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#svywhtuvtl .gt_summary_row {
+#oacdjucfqi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3525,7 +1688,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#svywhtuvtl .gt_first_summary_row {
+#oacdjucfqi .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3535,7 +1698,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_grand_summary_row {
+#oacdjucfqi .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3545,7 +1708,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#svywhtuvtl .gt_first_grand_summary_row {
+#oacdjucfqi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3555,11 +1718,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_striped {
+#oacdjucfqi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#svywhtuvtl .gt_table_body {
+#oacdjucfqi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3568,7 +1731,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_footnotes {
+#oacdjucfqi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3582,13 +1745,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_footnote {
+#oacdjucfqi .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#svywhtuvtl .gt_sourcenotes {
+#oacdjucfqi .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3602,46 +1765,46 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#svywhtuvtl .gt_sourcenote {
+#oacdjucfqi .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#svywhtuvtl .gt_left {
+#oacdjucfqi .gt_left {
   text-align: left;
 }
 
-#svywhtuvtl .gt_center {
+#oacdjucfqi .gt_center {
   text-align: center;
 }
 
-#svywhtuvtl .gt_right {
+#oacdjucfqi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#svywhtuvtl .gt_font_normal {
+#oacdjucfqi .gt_font_normal {
   font-weight: normal;
 }
 
-#svywhtuvtl .gt_font_bold {
+#oacdjucfqi .gt_font_bold {
   font-weight: bold;
 }
 
-#svywhtuvtl .gt_font_italic {
+#oacdjucfqi .gt_font_italic {
   font-style: italic;
 }
 
-#svywhtuvtl .gt_super {
+#oacdjucfqi .gt_super {
   font-size: 65%;
 }
 
-#svywhtuvtl .gt_footnote_marks {
+#oacdjucfqi .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="svywhtuvtl" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="oacdjucfqi" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
@@ -8508,7 +6671,7 @@ rgltimerClass = function(Tick, startTime, interval, stopTime, stepSize, value, r
   div.width = 600;
   div.height = 600;
   rgl.initialize(div,
-                         {"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":false,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0]},"rootSubscene":6,"objects":{"12":{"id":12,"type":"spheres","material":{},"vertices":[[68.36,22.72,34.48],[80.625,13.65,35.95],[67.16666,26.5,35.76667],[71.15,18.25,34],[59.76667,30.66667,39.85],[60,27.25,35],[80.63333,12.36667,34.33333],[47.26,39.58,39.72],[59.16667,27.53333,37.7],[74.1,17.1,33.63334],[71.95,21.85,41.05],[46.56667,40.46667,45.76667],[62.96667,27.63333,35.6],[72.575,21.525,31.85],[51.7,38.15,37],[59.7,26.3,40.1],[58,34.15,41.23333],[73.3,16.53333,30.9],[50.85,32.225,31.675],[75.8,18.175,33.55],[66.65,24.2,38.65],[56.85,34.3,39.1],[80.06667,13.16667,28.2],[57.025,36,32.475],[51.68,38.64,39.24],[48.925,39.625,38.925],[62.4,29.95,41.95],[47.2,41.05,43.15],[75.9,16.1,33.9],[79.5,12.9,40.1],[50.7,37,37.5],[60.63334,30.8,40.93333],[84.74,9.96,32.5],[52.35,31.25,33.8],[56.45,31.35,32.5],[71.95,14.75,33.7],[77.55,8.95,30.1],[88.65,4.9,39],[67.65,20.6,36.85],[48.35,39.05,43.75],[67.6,18.2,31.7],[69.95,14.7,32.35],[54.85,28.25,41.1],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.35,39.2,40.6],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[61.95,25.25,29.475],[70.7,24.76667,32.4],[53.675,38.85,40.66667],[70,18.8,36.03333],[73.375,18.35,31.825],[67.96,23.2,35.9],[59.11666,29.15,36.45],[65.3,29,34.16667],[55.23333,35.86666,38.76667],[72.7,19.1,36.15],[71.38,19.42,36.4],[61.4,26.66667,37.8],[49.75,39.675,37.05],[1.8,52.35,33.2],[76.1,14.5,32.1],[61.83333,23.33333,36.2],[52.85,34.75,42.9],[80.75,14.45,34.775],[58.7,33.7,40.3],[71.72,19.82,34.3],[73.1,20.6,35.85],[79.8,10.6,34.55],[56.2,34.05,33.85],[79.62,12.94,32.225],[72.25,20.425,36.7],[44.33333,43.3,38.7],[55.35,32.8,36.45],[74.4,16.83333,38.63334],[75.4,17.9,37.6],[65.1,23.9,43.9],[49.5,33.7,40],[82.3,12.65,40.53333],[70.56667,18.73333,39.85],[64.875,26.7,33.8],[53.55,38.9,38.7],[81.25,11.3,36.05],[68.25,23.25,33.8],[42.75,41.75,42.8],[72,20.4,41.66667],[48.5,38.85,37.5],[62.75,24.6,36.96667],[61,28.6,40.75],[52.2,34.4,40.6],[66.1,25.96667,31.15],[70.93333,14.66667,36.2],[67.06667,21.8,31.325],[67.7,23.6,32.8],[70.63333,15.56667,32.8],[74.1,15.8,35.5],[49.95,38.25,38.75],[54.46667,35.8,35.8],[73.25,17.45,35.4],[80.15,11,33.65],[57.7,28.1,36.2],[68.3,21.3,42.45],[78.5,14.7,30.6],[75.4,14.675,35.45],[55.75,33.85,40.25],[56.15,30.35,38.65],[70,18,34.2],[75.8,19.6,41.9],[70,18.5,34.83333],[69.65,22.25,36.65],[80.675,13.525,29.875],[65.7,25.9,33.15],[61,27.175,35.56667],[59.56667,29.8,38.83333],[88.1,6.4,31.4],[67.3,25.175,35.95],[53.1,36.5,32.4],[54.3,35.4,32],[67.9,21.75,35.1],[54.4,30.8,35.45],[63,26.6,35.2],[64.3,26.6,38.35],[59.36666,31.1,36.1],[66.85,22.7,33.15],[56.65,32.75,36.75],[70.74,19.8,34.175],[76.7,16.65,37.275],[71.73333,20.76667,33.475],[66.93333,24.33333,38.66667],[63.35,26.4,35.8],[66.9,24.4,39.4],[68.9,20.53333,33.5],[70.36667,21.43333,34.9],[76.1,17.7,36.45],[69,24.33333,36.2],[71.575,21.9,33.725],[60.1,29.4,35],[66,22.6,35],[54.6,31.9,36.95],[46.65,40.05,39.5],[40.1,48.1,38.5],[60.2,29.5,30.1],[75.45,19.05,36.3],[54,37.13334,41.25],[69.3,18.83333,40.2],[75.75,16.45,29.9],[56.1,30.15,35.95],[68.4,21.1,40.76667],[68.1,23.2,41.9],[65.23333,26.96667,37],[63.1,28.8,36.15],[53.52,36.44,36.68],[66.3,23,41.75],[64.7,22.06667,37.53333],[62.275,27.1,38.3],[44.4,44.15,38.65],[48.2,38.15,36.26],[72.4,19.575,34.025],[61.76667,26.03333,37.5],[66.63333,26.16667,39.43333],[67.85,23,42.1],[78.58572,14.92857,36.77143],[80.8,13.55,40.8],[62.6,25.3,39.7],[82.7,13,33.95],[68.5,25.45,38.55],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.3],[63.5,28.4,41.3],[87.85,5.45,36.25],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.45,42.53333],[60.9,30.6,44.5],[95.1,4.1,32.7],[87.13333,5.633333,29.52],[51.4,40,36],[91.01667,6.683333,29.01667],[70.5,18.2,33.1],[86.2,8.225,30.875],[87.66666,5.966667,31.1],[79.33334,10.26667,29.23333],[92.91666,5.15,28.92],[94.33334,3.233333,26.5],[86.8,6.25,31.8],[89.15,7.15,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[93.72,2.88,26.42],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,29.6],[95.5,2,26.9],[92.18,3.92,23.9],[88.57143,5.385714,26.575],[96.6,1.35,27.65],[90.725,4.075,30.65],[93.76667,2.2,25.575],[68.18,22.58,23.075],[91.2,3.7,27.5],[89.15,6.683333,29.08333],[92.2,4.7,34.8],[93.55,4.7,30.15],[87.1,8.6,24.1],[93,4.1,28.03333],[93.04,3.62,27.18333],[88.6,8.8,28.2],[94.54285,2.657143,24.67143],[69.45,16.75,38.65],[93.91111,2.877778,28.07778],[91.625,4.85,32.84],[88.4,5.333333,28.16667],[86.9,10,27.9],[94.78,1.58,22.31667],[91.6,4.575,27.6],[87.68,5.68,25.93333],[95.56667,1.466667,24.78],[89.425,6.125,30.7],[88.12,7.88,31.3],[94.88571,3.657143,24.86],[94.53333,3.166667,28.73333],[80.3,12.2,29.55],[86.375,5,28.925],[82.675,13.325,25.26667],[91.73333,6.5,30.96667],[81.75,14.625,31.16667],[95.225,1.95,29.2625],[90.55556,6.655556,26.46],[95.25,1.95,32.15],[94.33334,3.966667,22.76],[83.45,11.025,33.65],[88.85,5.5,26.675],[92.69167,2.825,23.50769],[64.7,26.7,29.4],[81.65,12.45,29.5],[88.85,4.1,31.1],[88.3,7.266667,31.3],[91.2,4.5,28.1],[84.26,11.98,26.92],[86.9,4.9,28.4],[90.7,3.833333,29],[90.1,7.1,21.5],[96.1,1.4,34.85],[90.3,4.7,31.9],[90.13333,5.833333,30.975],[95.3,2.25,28.8],[89.3,4.2,31.4],[88.4,9.6,26.55],[95.6,3.9,28.35],[92.96667,3.733333,28.9],[96.6,1.8,29.9],[90.7,6.52,27],[96.36667,1.3,28.05],[85.5,10.48,25.6],[93.15,1.5,23.95],[87.4,9.1,31.1],[92.1,3.766667,27.43333],[90.975,4.5,26.825],[79.8,9.65,32.25],[92.925,4.2,25.35],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[92.22222,5.433333,25.52222],[67.9,20.6,36.4],[87.3,7.15,31.25],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[93.7,2.05,33.6],[89.9,6.65,31.15],[93.83334,3.333333,23.91429],[95.46667,2.066667,32.3],[95.825,1.525,31.1],[91.6,6.1,27.9],[94.48,2.2,23.21],[97.1,1.95,28.13333],[89.575,7.375,31.8],[93,3,23.8],[78.85,15.9,31.4],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[85.7625,10.9125,23.65],[90.6,4.6,27],[93.85,3.65,18.55],[93,3.6,28.5],[98.8,0.15,23.2],[86.8,7.1,33],[93.65,2.85,24.4],[96,2.7,31.5],[87.12,4.74,32.64],[87.4,10.4,34.2],[89.95,5.15,24.2],[80.9,10.3,24.8],[92.75,3.4,30.95],[93.5,3.3,37.3],[95.8,1.9,31.9],[88.1,6.6,27.6],[91.7,5.35,27.4],[85.775,7.3,37.9],[93.2,3.95,29.26667],[96.1,2.1,34],[75.2,9.7,39.5],[89.26,4.78,31.25],[87.45715,8.1,25.25714],[92.8,4.033333,24.45],[93.3,2.65,30.85],[92.775,3.425,24],[70.7,15.6,38.6],[96.1,2,26.2],[94.2,3.56,22.18333],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[89.46667,4.8,26.66667],[93.05,2.4,22.7],[87.6,9.566667,25.6],[94,3.3,28.2],[90.4,5.9,32.06667],[96.375,1.8,26.2],[94.8,3.7,28.9],[94.375,3.725,25.6],[91.9,4.4,35.8],[91.6,5.225,22.7],[94.1,3.4,30],[89.24,7.3,30.1],[93.9,5.5,31.3],[91.25,4.375,22.93333],[79.5,15,30.7],[93.56,1.65,21.12222],[89,6.3,23.9],[95.15,2.3,27.26667],[87.7,8.3,26.93333]],"colors":[[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1]],"radii":[[1]],"centers":[[68.36,22.72,34.48],[80.625,13.65,35.95],[67.16666,26.5,35.76667],[71.15,18.25,34],[59.76667,30.66667,39.85],[60,27.25,35],[80.63333,12.36667,34.33333],[47.26,39.58,39.72],[59.16667,27.53333,37.7],[74.1,17.1,33.63334],[71.95,21.85,41.05],[46.56667,40.46667,45.76667],[62.96667,27.63333,35.6],[72.575,21.525,31.85],[51.7,38.15,37],[59.7,26.3,40.1],[58,34.15,41.23333],[73.3,16.53333,30.9],[50.85,32.225,31.675],[75.8,18.175,33.55],[66.65,24.2,38.65],[56.85,34.3,39.1],[80.06667,13.16667,28.2],[57.025,36,32.475],[51.68,38.64,39.24],[48.925,39.625,38.925],[62.4,29.95,41.95],[47.2,41.05,43.15],[75.9,16.1,33.9],[79.5,12.9,40.1],[50.7,37,37.5],[60.63334,30.8,40.93333],[84.74,9.96,32.5],[52.35,31.25,33.8],[56.45,31.35,32.5],[71.95,14.75,33.7],[77.55,8.95,30.1],[88.65,4.9,39],[67.65,20.6,36.85],[48.35,39.05,43.75],[67.6,18.2,31.7],[69.95,14.7,32.35],[54.85,28.25,41.1],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.35,39.2,40.6],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[61.95,25.25,29.475],[70.7,24.76667,32.4],[53.675,38.85,40.66667],[70,18.8,36.03333],[73.375,18.35,31.825],[67.96,23.2,35.9],[59.11666,29.15,36.45],[65.3,29,34.16667],[55.23333,35.86666,38.76667],[72.7,19.1,36.15],[71.38,19.42,36.4],[61.4,26.66667,37.8],[49.75,39.675,37.05],[1.8,52.35,33.2],[76.1,14.5,32.1],[61.83333,23.33333,36.2],[52.85,34.75,42.9],[80.75,14.45,34.775],[58.7,33.7,40.3],[71.72,19.82,34.3],[73.1,20.6,35.85],[79.8,10.6,34.55],[56.2,34.05,33.85],[79.62,12.94,32.225],[72.25,20.425,36.7],[44.33333,43.3,38.7],[55.35,32.8,36.45],[74.4,16.83333,38.63334],[75.4,17.9,37.6],[65.1,23.9,43.9],[49.5,33.7,40],[82.3,12.65,40.53333],[70.56667,18.73333,39.85],[64.875,26.7,33.8],[53.55,38.9,38.7],[81.25,11.3,36.05],[68.25,23.25,33.8],[42.75,41.75,42.8],[72,20.4,41.66667],[48.5,38.85,37.5],[62.75,24.6,36.96667],[61,28.6,40.75],[52.2,34.4,40.6],[66.1,25.96667,31.15],[70.93333,14.66667,36.2],[67.06667,21.8,31.325],[67.7,23.6,32.8],[70.63333,15.56667,32.8],[74.1,15.8,35.5],[49.95,38.25,38.75],[54.46667,35.8,35.8],[73.25,17.45,35.4],[80.15,11,33.65],[57.7,28.1,36.2],[68.3,21.3,42.45],[78.5,14.7,30.6],[75.4,14.675,35.45],[55.75,33.85,40.25],[56.15,30.35,38.65],[70,18,34.2],[75.8,19.6,41.9],[70,18.5,34.83333],[69.65,22.25,36.65],[80.675,13.525,29.875],[65.7,25.9,33.15],[61,27.175,35.56667],[59.56667,29.8,38.83333],[88.1,6.4,31.4],[67.3,25.175,35.95],[53.1,36.5,32.4],[54.3,35.4,32],[67.9,21.75,35.1],[54.4,30.8,35.45],[63,26.6,35.2],[64.3,26.6,38.35],[59.36666,31.1,36.1],[66.85,22.7,33.15],[56.65,32.75,36.75],[70.74,19.8,34.175],[76.7,16.65,37.275],[71.73333,20.76667,33.475],[66.93333,24.33333,38.66667],[63.35,26.4,35.8],[66.9,24.4,39.4],[68.9,20.53333,33.5],[70.36667,21.43333,34.9],[76.1,17.7,36.45],[69,24.33333,36.2],[71.575,21.9,33.725],[60.1,29.4,35],[66,22.6,35],[54.6,31.9,36.95],[46.65,40.05,39.5],[40.1,48.1,38.5],[60.2,29.5,30.1],[75.45,19.05,36.3],[54,37.13334,41.25],[69.3,18.83333,40.2],[75.75,16.45,29.9],[56.1,30.15,35.95],[68.4,21.1,40.76667],[68.1,23.2,41.9],[65.23333,26.96667,37],[63.1,28.8,36.15],[53.52,36.44,36.68],[66.3,23,41.75],[64.7,22.06667,37.53333],[62.275,27.1,38.3],[44.4,44.15,38.65],[48.2,38.15,36.26],[72.4,19.575,34.025],[61.76667,26.03333,37.5],[66.63333,26.16667,39.43333],[67.85,23,42.1],[78.58572,14.92857,36.77143],[80.8,13.55,40.8],[62.6,25.3,39.7],[82.7,13,33.95],[68.5,25.45,38.55],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.3],[63.5,28.4,41.3],[87.85,5.45,36.25],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.45,42.53333],[60.9,30.6,44.5],[95.1,4.1,32.7],[87.13333,5.633333,29.52],[51.4,40,36],[91.01667,6.683333,29.01667],[70.5,18.2,33.1],[86.2,8.225,30.875],[87.66666,5.966667,31.1],[79.33334,10.26667,29.23333],[92.91666,5.15,28.92],[94.33334,3.233333,26.5],[86.8,6.25,31.8],[89.15,7.15,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[93.72,2.88,26.42],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,29.6],[95.5,2,26.9],[92.18,3.92,23.9],[88.57143,5.385714,26.575],[96.6,1.35,27.65],[90.725,4.075,30.65],[93.76667,2.2,25.575],[68.18,22.58,23.075],[91.2,3.7,27.5],[89.15,6.683333,29.08333],[92.2,4.7,34.8],[93.55,4.7,30.15],[87.1,8.6,24.1],[93,4.1,28.03333],[93.04,3.62,27.18333],[88.6,8.8,28.2],[94.54285,2.657143,24.67143],[69.45,16.75,38.65],[93.91111,2.877778,28.07778],[91.625,4.85,32.84],[88.4,5.333333,28.16667],[86.9,10,27.9],[94.78,1.58,22.31667],[91.6,4.575,27.6],[87.68,5.68,25.93333],[95.56667,1.466667,24.78],[89.425,6.125,30.7],[88.12,7.88,31.3],[94.88571,3.657143,24.86],[94.53333,3.166667,28.73333],[80.3,12.2,29.55],[86.375,5,28.925],[82.675,13.325,25.26667],[91.73333,6.5,30.96667],[81.75,14.625,31.16667],[95.225,1.95,29.2625],[90.55556,6.655556,26.46],[95.25,1.95,32.15],[94.33334,3.966667,22.76],[83.45,11.025,33.65],[88.85,5.5,26.675],[92.69167,2.825,23.50769],[64.7,26.7,29.4],[81.65,12.45,29.5],[88.85,4.1,31.1],[88.3,7.266667,31.3],[91.2,4.5,28.1],[84.26,11.98,26.92],[86.9,4.9,28.4],[90.7,3.833333,29],[90.1,7.1,21.5],[96.1,1.4,34.85],[90.3,4.7,31.9],[90.13333,5.833333,30.975],[95.3,2.25,28.8],[89.3,4.2,31.4],[88.4,9.6,26.55],[95.6,3.9,28.35],[92.96667,3.733333,28.9],[96.6,1.8,29.9],[90.7,6.52,27],[96.36667,1.3,28.05],[85.5,10.48,25.6],[93.15,1.5,23.95],[87.4,9.1,31.1],[92.1,3.766667,27.43333],[90.975,4.5,26.825],[79.8,9.65,32.25],[92.925,4.2,25.35],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[92.22222,5.433333,25.52222],[67.9,20.6,36.4],[87.3,7.15,31.25],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[93.7,2.05,33.6],[89.9,6.65,31.15],[93.83334,3.333333,23.91429],[95.46667,2.066667,32.3],[95.825,1.525,31.1],[91.6,6.1,27.9],[94.48,2.2,23.21],[97.1,1.95,28.13333],[89.575,7.375,31.8],[93,3,23.8],[78.85,15.9,31.4],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[85.7625,10.9125,23.65],[90.6,4.6,27],[93.85,3.65,18.55],[93,3.6,28.5],[98.8,0.15,23.2],[86.8,7.1,33],[93.65,2.85,24.4],[96,2.7,31.5],[87.12,4.74,32.64],[87.4,10.4,34.2],[89.95,5.15,24.2],[80.9,10.3,24.8],[92.75,3.4,30.95],[93.5,3.3,37.3],[95.8,1.9,31.9],[88.1,6.6,27.6],[91.7,5.35,27.4],[85.775,7.3,37.9],[93.2,3.95,29.26667],[96.1,2.1,34],[75.2,9.7,39.5],[89.26,4.78,31.25],[87.45715,8.1,25.25714],[92.8,4.033333,24.45],[93.3,2.65,30.85],[92.775,3.425,24],[70.7,15.6,38.6],[96.1,2,26.2],[94.2,3.56,22.18333],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[89.46667,4.8,26.66667],[93.05,2.4,22.7],[87.6,9.566667,25.6],[94,3.3,28.2],[90.4,5.9,32.06667],[96.375,1.8,26.2],[94.8,3.7,28.9],[94.375,3.725,25.6],[91.9,4.4,35.8],[91.6,5.225,22.7],[94.1,3.4,30],[89.24,7.3,30.1],[93.9,5.5,31.3],[91.25,4.375,22.93333],[79.5,15,30.7],[93.56,1.65,21.12222],[89,6.3,23.9],[95.15,2.3,27.26667],[87.7,8.3,26.93333]],"ignoreExtent":false,"flags":3},"14":{"id":14,"type":"text","material":{"lit":false},"vertices":[[50.3,-9.763639,13.27982]],"colors":[[0,0,0,1]],"texts":[["Neutrophils(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[50.3,-9.763639,13.27982]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"15":{"id":15,"type":"text","material":{"lit":false},"vertices":[[-16.6219,26.25,13.27982]],"colors":[[0,0,0,1]],"texts":[["Lymphocyte(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.6219,26.25,13.27982]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"16":{"id":16,"type":"text","material":{"lit":false},"vertices":[[-16.6219,-9.763639,32.425]],"colors":[[0,0,0,1]],"texts":[["Albumin"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.6219,-9.763639,32.425]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"18":{"id":18,"type":"quads","material":{"lit":false,"back":"lines","uri":"data:image/png;base64,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"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true,"flags":8198},"10":{"id":10,"type":"light","vertices":[[0,0,1]],"colors":[[1,1,1,1],[1,1,1,1],[1,1,1,1]],"viewpoint":true,"finite":false},"9":{"id":9,"type":"background","material":{"fog":true},"colors":[[0.2980392,0.2980392,0.2980392,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"11":{"id":11,"type":"background","material":{"lit":false,"back":"lines"},"colors":[[1,1,1,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"17":{"id":17,"type":"background","material":{"lit":false,"back":"lines","uriId":18},"colors":[[1,1,1,1]],"ids":[[18]],"types":[["quads"]],"centers":[[0,0,0]],"objects":[{"id":{"id":18},"type":{"type":"quads"},"material":{"color":"#FFFFFF","lit":false,"texture":"/tmp/Rtmp85JiuW/file6f5270cc2cf8.png","back":"lines"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true}],"sphere":false,"fogtype":"none","flags":0},"13":{"id":13,"type":"bboxdeco","material":{"front":"lines","back":"lines"},"vertices":[[20,"NA","NA"],[40,"NA","NA"],[60,"NA","NA"],[80,"NA","NA"],[100,"NA","NA"],["NA",0,"NA"],["NA",10,"NA"],["NA",20,"NA"],["NA",30,"NA"],["NA",40,"NA"],["NA",50,"NA"],["NA","NA",20],["NA","NA",25],["NA","NA",30],["NA","NA",35],["NA","NA",40],["NA","NA",45]],"colors":[[0,0,0,1]],"draw_front":true,"newIds":[26,27,28,29,30,31,32]},"6":{"id":6,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":6,"mouseMode":{"left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,286.4459],"modelMatrix":[[0.6761268,0,0,-34.00918],[0,0.4297156,2.220868,-83.29167],[0,-1.180634,0.8083299,-281.6644],[0,0,0,1]],"projMatrix":[[3.732051,0,0,0],[0,3.732051,0,0],[0,0,-3.863703,-1032.604],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,0.3420201,0.9396926,0],[0,-0.9396926,0.3420201,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[0.6761268,1.256404,2.363398],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":1,"bbox":[0.3209875,100.279,-0.6459222,53.14592,18.12688,46.72312],"windowRect":[454,1203,710,1459],"family":"sans","font":1,"cex":1,"useFreeType":true,"fontname":"/home/pienta/R/x86_64-pc-linux-gnu-library/3.4/rgl/fonts/FreeSans.ttf","maxClipPlanes":8,"glVersion":3,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[17,13,12,14,15,16,10,26,27,28,29,30,31,32],"subscenes":[],"flags":2643},"26":{"id":26,"type":"lines","material":{"lit":false},"vertices":[[20,-1.4528,17.69794],[100,-1.4528,17.69794],[20,-1.4528,17.69794],[20,-2.83794,16.96158],[40,-1.4528,17.69794],[40,-2.83794,16.96158],[60,-1.4528,17.69794],[60,-2.83794,16.96158],[80,-1.4528,17.69794],[80,-2.83794,16.96158],[100,-1.4528,17.69794],[100,-2.83794,16.96158]],"colors":[[0,0,0,1]],"centers":[[60,-1.4528,17.69794],[20,-2.14537,17.32976],[40,-2.14537,17.32976],[60,-2.14537,17.32976],[80,-2.14537,17.32976],[100,-2.14537,17.32976]],"ignoreExtent":true,"origId":13,"flags":64},"27":{"id":27,"type":"text","material":{"lit":false},"vertices":[[20,-5.60822,15.48888],[40,-5.60822,15.48888],[60,-5.60822,15.48888],[80,-5.60822,15.48888],[100,-5.60822,15.48888]],"colors":[[0,0,0,1]],"texts":[["20"],["40"],["60"],["80"],["100"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[20,-5.60822,15.48888],[40,-5.60822,15.48888],[60,-5.60822,15.48888],[80,-5.60822,15.48888],[100,-5.60822,15.48888]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"28":{"id":28,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,0,17.69794],[-1.178383,50,17.69794],[-1.178383,0,17.69794],[-3.752302,0,16.96158],[-1.178383,10,17.69794],[-3.752302,10,16.96158],[-1.178383,20,17.69794],[-3.752302,20,16.96158],[-1.178383,30,17.69794],[-3.752302,30,16.96158],[-1.178383,40,17.69794],[-3.752302,40,16.96158],[-1.178383,50,17.69794],[-3.752302,50,16.96158]],"colors":[[0,0,0,1]],"centers":[[-1.178383,25,17.69794],[-2.465343,0,17.32976],[-2.465343,10,17.32976],[-2.465343,20,17.32976],[-2.465343,30,17.32976],[-2.465343,40,17.32976],[-2.465343,50,17.32976]],"ignoreExtent":true,"origId":13,"flags":64},"29":{"id":29,"type":"text","material":{"lit":false},"vertices":[[-8.900141,0,15.48888],[-8.900141,10,15.48888],[-8.900141,20,15.48888],[-8.900141,30,15.48888],[-8.900141,40,15.48888],[-8.900141,50,15.48888]],"colors":[[0,0,0,1]],"texts":[["0"],["10"],["20"],["30"],["40"],["50"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.900141,0,15.48888],[-8.900141,10,15.48888],[-8.900141,20,15.48888],[-8.900141,30,15.48888],[-8.900141,40,15.48888],[-8.900141,50,15.48888]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"30":{"id":30,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,-1.4528,20],[-1.178383,-1.4528,45],[-1.178383,-1.4528,20],[-3.752302,-2.83794,20],[-1.178383,-1.4528,25],[-3.752302,-2.83794,25],[-1.178383,-1.4528,30],[-3.752302,-2.83794,30],[-1.178383,-1.4528,35],[-3.752302,-2.83794,35],[-1.178383,-1.4528,40],[-3.752302,-2.83794,40],[-1.178383,-1.4528,45],[-3.752302,-2.83794,45]],"colors":[[0,0,0,1]],"centers":[[-1.178383,-1.4528,32.5],[-2.465343,-2.14537,20],[-2.465343,-2.14537,25],[-2.465343,-2.14537,30],[-2.465343,-2.14537,35],[-2.465343,-2.14537,40],[-2.465343,-2.14537,45]],"ignoreExtent":true,"origId":13,"flags":64},"31":{"id":31,"type":"text","material":{"lit":false},"vertices":[[-8.900141,-5.60822,20],[-8.900141,-5.60822,25],[-8.900141,-5.60822,30],[-8.900141,-5.60822,35],[-8.900141,-5.60822,40],[-8.900141,-5.60822,45]],"colors":[[0,0,0,1]],"texts":[["20"],["25"],["30"],["35"],["40"],["45"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.900141,-5.60822,20],[-8.900141,-5.60822,25],[-8.900141,-5.60822,30],[-8.900141,-5.60822,35],[-8.900141,-5.60822,40],[-8.900141,-5.60822,45]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"32":{"id":32,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,-1.4528,17.69794],[-1.178383,53.9528,17.69794],[-1.178383,-1.4528,47.15206],[-1.178383,53.9528,47.15206],[-1.178383,-1.4528,17.69794],[-1.178383,-1.4528,47.15206],[-1.178383,53.9528,17.69794],[-1.178383,53.9528,47.15206],[-1.178383,-1.4528,17.69794],[101.7784,-1.4528,17.69794],[-1.178383,-1.4528,47.15206],[101.7784,-1.4528,47.15206],[-1.178383,53.9528,17.69794],[101.7784,53.9528,17.69794],[-1.178383,53.9528,47.15206],[101.7784,53.9528,47.15206],[101.7784,-1.4528,17.69794],[101.7784,53.9528,17.69794],[101.7784,-1.4528,47.15206],[101.7784,53.9528,47.15206],[101.7784,-1.4528,17.69794],[101.7784,-1.4528,47.15206],[101.7784,53.9528,17.69794],[101.7784,53.9528,47.15206]],"colors":[[0,0,0,1]],"centers":[[-1.178383,26.25,17.69794],[-1.178383,26.25,47.15206],[-1.178383,-1.4528,32.425],[-1.178383,53.9528,32.425],[50.3,-1.4528,17.69794],[50.3,-1.4528,47.15206],[50.3,53.9528,17.69794],[50.3,53.9528,47.15206],[101.7784,26.25,17.69794],[101.7784,26.25,47.15206],[101.7784,-1.4528,32.425],[101.7784,53.9528,32.425]],"ignoreExtent":true,"origId":13,"flags":64}},"snapshot":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAAHXRFWHRTb2Z0d2FyZQBSL1JHTCBwYWNrYWdlL2xpYnBuZ7GveO8AACAASURBVHic7V0HWBTHF9/DbjSaxJamp0aj2JGmUk4UQREFBGmCB9J7kd4OaYIIKFgQFaUooKJir1RB/auxRKOxIGqMxqCJ3UTd/9sb3ax3x3F3oFzZ38fHtzc3szs3O7837015D8Np0FBgYG1dARo02hI0AWgoNGgC0FBo0ASg0Tp4+/ZteXn5IanHixcvqNWmCUCjdXDv3r0xY8Yslm7o6+sfPXqUWm2aADRaB7///ruVlVVb16IZxMbGHjlyhJpCE4BG64AmAA2FBk0AGgoNmgA0FBo0AWgoNGgC0FBo0ASgodBoEwJs2bIlIiJC9Pw0AWh8LDRFgO3VuHMq7rUMP3ZBcMG6urq+ffsacTFjxoza2tpmn3X79m0vLy+cJgAN6YFAAtT+jK/cgW+pwKvP4zG5eMM9AQWBALNnz0bXt27dUlZWbmhoePbsmbW1tbOzs6mp6blz5/7++2+4cHR0nDJlytmzZ+fPnw/Ztm/fDgSYOXOmt7e3hoZGSUlJs5WkCUDjY0EgAcJzcL8sfEEK7pGBu6Xhq8sEFKQSAAASfd26dcuXL09OToaP165dg2Hhxo0bBw4cwLki38/P79ChQ56enugj8AQugCQmJibNVpImAI2PBYEE2HkM338S31qJH7+Er9mFn70moCA/AdasWQO9XE9Pbz4XoBr99ttvrq6uvr6+ZmZmcEElAFKBrl69amBg0GwlaQLQ+FgQSIB//sVjNxDi32c5vnKn4IJUAty5c2fYsGF3797NzMxMS0uDlJcvX/7666/BwcE5OTnwEdJBLzp8+LC7uztOE4CG9EDILNDdRvzh4yYLAgH69esHHABtfurUqTU1NZD49OlT0G0cHBwMDQ1B19+/f/+kSZP8/f2zs7PHjBmzd+/eH3/8MS8vjyYADWkBvQ5AQ6FBE4CGQoMmAA2FBk0AGgqNT08AsIxzc3OF58nPz4+LiyM/0gSg8bHQFAGe/vNPzrlzW69cef32rcCC//77r4eHh6mpqaWl5eTJk6urqwVme9tEceGgCUDjE0EgAe4/ezahsNBo2zarXbsMtmx59fo1f8EzZ84YGxuj61u3bm3fvh3kelJSEny8cOHCnDlzNm3aNGvWLKDH+PHjb9++Dek7d+708vJCnVtTU5OayLNpgiYAjU8EgQQIraxMP3XK98gR+O9z5Ej+xYv8BV+9eoWm/HNycq5dI9aKeQiwZcuWuXPnwsesrKylS5fCBZDh9OnTqHPzJPJsmqAJQOMTQSAB5uzYYb937+SiIvMdO2AciOYucglEY2Pjvn37XFxc3N3d+QkQHh6O8mhpaT158gSkPv5eveFJ5Nk0QROAxieCQAIcv3t3xrZtIZWVy06f1tq06bcnT/gLQo8kN3I+fvx40KBBRUVFUVFR8HH37t2IAOSeZ+jW8fHx6enpOEW/pybybJqgCUDjE6EpI7jy9m3Q/q3Kyi79+afAgo8ePbKxsZkxYwbo7vr6+mVlZffu3WOxWKGhoSD4IZFKgB07dnz++ed//PEHTiEANZFn0wTchCYAjU8Beh2AhkKDJgANhQZNABoKDZoANBQaNAFoKDRoAtBQaNAEoKHQoAkgdfjf//63bdu2X375RcT8b968OXHiRGlpaW1t7b///ivxrc6dO1dXVydB8Zs3b8LTq6qqXn+4aUzE4m/fvkX1/+mnn3i+EnKHK1euiJW/qa8ePHjQv39/C+nGiBEjeHabyicBnj59OmXKFAaD8fnnn2MY5ubm1uxm2uvXrysrK0Pmnj17QsGhQ4devnxZgluBIOzdu7etra24NQkICFBSUurWrRv8HzVqFFrXFL341atX4e1Cns8++wz+T5069Ql330GzdzAyMgoMDBSl6Zq91d9///1Q6sHTbvJJgODgYHhJp0+fhuvNmzfD29q0aZPwIiwWa9CgQRe52xWhM8H1mDFjxL0VdAh9fX3IQxJAxOJr167t0KHD7t270dO//fZbDw8PsZ6ura09cOBAKAvXMA5AqdDQUCF3gN4MstDX1xdSqAQQ8kQJWlX6IYcEAP2hV69eISEhZMpULoQUAcEAr3P9+vVkCvRISLl165ZYt1qyZAkwZ/To0SQBRCw+fPhwEKjkx61bt4aFhYleHNC+ffv4+Hjyo7m5+aRJk4TcAXrwV1zAgEMSQEjTSdCqMgE5JACoLtB39+/fT6bExcWB6BJS5O7du66urkh8IhQUFMBN7t27J/qtQDR27doVtH/oeSQBRCkOT4ds27dvh+sXL15Q9QrRnw7626xZs9D18+fPf/jhB3t7e1HuMHjwYJIAQppOglaVCcghAQ4dOgSv6iLl7MWGDRsgBTRUEe/Q2Ng4cuRIJEFFvBVoFGA2oI2HPARotnhlZSUkZmZmguqPlHgYDVA4W9F/CKg9ffv21dLSAt0JjIFhw4bduXNHlDtQCSCk6VreqtIJOSRAWVkZvJgbN26QKUVFRZACglaU4qAbgAoOmszNmzdxbgcS5VaOjo6ghaPZGx4CNFt8165dkNi9e/f09PRjx46lpaUBB5ydnUV/Os7tu9988w1oXyYmJgMGDFBRUUEDWrN3oBJASNO1sFWlFnJIgIMHD8KLoc7TgXIPKSCkhRe8du0amMKdOnUKCAh48v7ohii3Ki0t7dmzZ0NDA/rIQ4Bmi+/duxcSFy9eTKbANej0jx8/FvGH/P7776B9BQUFoY///PPPzJkzwa548+ZNs3egEkBI00ncqlIOOSQADNPwYg4fPkymgHUIMlV4qePHj/fo0WP69OlI8JMQ5VbQgRgMRrv3gCLo486dO0UpfubMGchWVVVFpkARSLlw4YKIP4S0WMgURKorV640ewcqAYQ0nWStKv2QQwKA2Ovdu3dsbCyZYmBgMG3aNCFFwO4EeQlim3+WXZRbgYG4jwJQwfX09ODi/v37ohQHdb9Lly7Z2dlkSk5ODlBIxOI41yEC9M7r16+TKWiasr6+vtk7UAkgpOkkaFWZgBwSAOeKZLAIkbeMAwcOQGcSHj4ExD90l7CwsJwP8fz5c3FvhX+oAolYHEyIPn36gMjHuZrYwIEDDQ0NRS8OyhIUNzIyAvMdPkK/Bz6rqamJcgcqAYTnl6AppB/ySYBnz56BNg9q8dChQ5WUlFA8KSHIzc3FBAF0a3FvhX9IABGLP3z4EPordCnoYZBNV1cXrQSL/vSKigoo26FDh6+//hpyamhoIF2u2TvwEEBIfgmaQvohnwTAuVpNXV2dm5sbqCIS36ScC3QrUCrOnTv38YqDjlFdXQ3Z/ve//6EUEOTATNGfDuMVmKpFRUXkHTgcDv6+KUSvP5mfujbH85W4TSG1kFsCILDZ7GbdRwoBhwuJi8OjoQISFwfygMSVuDjwh8lkSlwc504AtKS4TEDOfyH0v5b0YJoALSkuE5DzX9jCHizTBIDiLSFAy/kjE6AJIAwt7MFtToC2HUBkAjQBhIEmgMTFZQVyToC27cEyTYAWFpcVyDMB4BWCGcdsAejigJYModIPuSUAjODwCuHl1dNoAWAQAw6AKGnr9/mxILcEAN1D7qXXJwA0IDRjSxQ5KYd8EgApPy20gGngXAJA7wdjQIJBgOod4/79+5s/xMmTJ1u5rhJBPgkALwzGbpoALQdqQ2hMcQ1iHu8YhYWFPPusFixY8BHqKzbkkABI/OPvpVdbV0e2gfaS1HOnREUfBPi9Y8TGxiorKz+h4OXLlx+r0uJADgmAxD/e4llIGjhlM5VYgwC/dww7O7vZs2d/pEq2BPJGAOr6P02AlgNtpoIRAC0LoNEAIKSIQO8YEydO9Pf3P3ToUEZGRnFx8RNBwcLaBPJGAFL84wqzlPNRgSbT+BcHmsrflHeMPn36ACu+/PJLGBY6dOjw7bffXhQUMvXTQ64IwLP9iyZAy0Gd/wHB3+x0UFPeMUaOHBkcHPzPP//gXBeogwcPhjHho9ZcRMgVAXhejxQSoLyuDgsPZ4aHC9cipAc8TYrWxZrKLMQ7Bg+Q4z3qKf62gvwQgN9Ka+F+4I8B9rJls06f7rxqFScjo6k89Q0N5ceOfcpaCQE0IA9XhQwCQrxj8ORETlbQGei2hfwQgP/F1EvffsbcrVuV/PwwT8+m+lB5bS18qxQRwU5L+7RVEwx+AggRK0K8Y2hqav7+++9kzmXLlrVv314avMrJCQEETtJJIQFwbq2EfMvJyem3cuW4LVvY3LjnbQ5+AuAfzjQIAVUF6t69u6mp6ePHj+H6559/7t+//7x581q5rhJBTgggcJlGOgkgHESd/f2ZPj7lFRVtXRcCAgkgom5JJUBZWRmYBx07duzbty/oRSYmJlIyEyoPBBCyRqMIp1o/KppqQBEHASpA/O/Zs6ekpARGgFaoWStBHvqHkFV6mgAtRFMNKIUTDJJB5vuH8CV6mgAthJAGlGAQkELIfP8QvklLoArb5oAqcYqKOFLfe+q5h4qEfCsHg4BsE6DZ3T5SSABiPTU0lFlSorRkSfmHwSQF5795s5ziOPpTotkuLgeDgGwToNk9utJAAELer1iRm5+PPrJSUpRsbTuEh2P+/s327PKKCkZICIPDYS9d+vFryotmCSAHg4AME0CU7f6SHWVqXbAzMvpmZ2NxcagmWFDQj/DR0pKTlNRsWc7KlX1Xr9avrgbaCMlGHIEICWFyOLnFxa1VbVy0vSRsLvjTJQ6W/IkhwwRA/u+F55EGArA4nDGFhZiHR25eHnwsP3aMFR2du22bKGUJERscjLm7l38Y3pkH7ISEr9etM71wgSUCqUSHKAQQOAhIHCz500NWCSDiaS9pIEB9QwM7NZWTlSU8T0tUNaAT5uDACAtjUyKlthwi7ibkGQQkDpbcJpBVAogi/nHpIECz4KxZgwUGMhMSJDZ2Cf8leXmc5OTWrZiIJ4rQIEC+DomDJbcJZJIATemdAnNK/zQFaESTDx7slJgoZIsoCaKvFxR8glrh79dYcvnAL3rINyJxsOS2gkwSQETxj8sIAaBDg5bP9PYW5UdhAQFKUVHMhQs/fr3e7f5n84G/nmgQuHjxosTBktsKskcA0cU/3mLnuJ8G5bW1uWVlTX1LzKJu3Ji7ZQvOVco7RUamNzZiPj6fYHpXrEPV0M5DhgyROFhyW0H2CABtxy+TmgKIJRjERc/fJsBGj8ZUVZkqKgK/ZaqqtlNXx8aNY3MdVGHffov9+CP8/wQVE6v1RowYoaSkdOz9UR5xgyW3FWSMAGgPFr9W2hTY3E4jev5PDxCcmJFRT3NzbOJETE+PZW7OkwE6YHsrK8zYmO3k9InrJlbrGRoaQrcGDkgWLLmtIGMEEHfpUZpVIOK3hIdjdnYsKyummVmPzMwRq1axXFxw7vYHzqZNudwgpPUNDUwbG8zLixkW9olXtdniBJi6fPly3759Qb+XLFhyW0HOCZArxa6BONnZ3+XlaVVVsby9wagdFBoKBm678HBmQAAzMnLuvn3M2Fg0h8sMDp5z4QIjM5PzaY+JscWcQqBOhkoQLLlNQBOgzVBeWYm5u2Pe3kog4EeMwNjsjmFhiffuEcI+NHRIfj7m74/6EycnhxEQgAUGClzTKD92DPP1ZUZFlR8/3ro1bC0CSHOAYRkjAC7mFv9c8b26tiJYqamMxYt5tj3nbtkCop3FXbIl9hvPnQs9nhEeznJ15YB16OfHXrSIWDxOTs4tLERTQJy0NGALOyyMnZ5O9jBQk1hLl2JgQsyYMXbnTt2KitbdB4GLTwAhr0ZqAwzLOQHa0DVQeU0NIzV10eXLqF8SXTkjAzoxFhS05PZtUpyzg4O7p6WN5J6C5+TlseLi2EuXEpnXr2fGx2MuLsMLC4FFbF/fTnFxXVasYHGVaWAImMWgL+14/BhsaMzJCVu4kLNiRev+BHHX0WXx+JHs1VisHc5tSACoJPRpsFyRkx9WRAQjKgp6LcPREcQ8MygIRDt7xQpOQgI2Zw42axbbw6NLXJxhVRVYAsSMkK/vmj/+ABN5mJcXZmnJmjlTKSioU0ICG1gERSIjMSsrzNVVKTIS7IfcvDyxRLWIEIsAwk/PSC1kr8ayQgAeQJd1unwZc3Bgb9zI8vNjeXh0W7p0zM6d0PvnHzvG5HCIESMwsD0MEQsWMC0sMDc3pZAQTF0dCw0dBfaAkxNn5UrgDNHPfH2Dbt3qEBiImENugc7Nzyf7K2fNGlZiYgvHBHEJIItnA2SPADL6VnI3bQKVhrN2LfqI2dgwvL3bh4ZienqdQaL7+LCSk5lTpmAmJpihIWf5cmLPT1ERDAtgIXRdsYK9ahV5K86qVZCfGRLCSUriLFqEElnR0aAFoR11MBqAbb3gxAkwNloycyqurJGSphYLNAHaBmDpQkefA5qMnR3b3x8zNU29fh2UH7azM/R+9rJlxMnJ6OguQUFg42La2mzKbkpckHctzN/f+uTJ9pGRnKwsYn7JwaHLkiVYy7YMiUsAHR2dysrK0tJSqqUrtcGREGgCtBnAKui9fDnoM0Rfj41tB2Rwd29vbo6FhMw4cgRkOdPHRxk6sa1tO1NTRlwcvz5DddWPzZwJUh/6PWocTmoqOzm5hVvBxSJAZGRkx44dGQxGjx49wBiYPHnys2fPcCkOjoQgewQQa25OmglATPWsXYv6KApI2iU83LS4mOHr237xYnZmJjMpaUhxsVJwMDFVamvLoWhBCFhMDBYezoqKIgwDR8fOERGITq1VQ9GN2jdv3vTj4s8//4SP1dXVnTp1iomJwaU4OBKCnBMAl6a5OSZ3UujdBodbt0DF58kAZi5k4KSkQF8nhoWgoIEwRIApbGmJjRjBXrLkv0WA+vry2tqOMTHlT55ggYHoQAw7Kal1T/+I3nTXrl2DzAYGBmTKlClT9PX1cSkOjoQgLZ1DdIi7vUdKCADdnbFokcupU8yIiNyyMszPD4uO5qSl8ZxuIRa8MjLAwGXFxLAgj5ERNm4cc+zY9hERvdatY3JN3tzSUuj0xDSoqSlcsBISPlKdRW+6xsZGb29vajSAkSNHoo9SGxwJQSo6h1iQgABt7hkFR8rYwoWgonDWrQPNp8vatR1XrsRcXNpzOEx/fzIbFho6oaxsfmmp0vz5SgEBta9ewQjAMjSEgt+VlLC4hx6ZoaFfwbDg5gbpuRs2cLKzhR+ZlxiYIDQ1/KL3cvr06cTExKlTp37zzTfoEIzUBkdCkH8CSINrIASqAsPZuBFEeOfIyPlXrxLTlz4+6Cu4HrRpE+bpibm6QkdnhIejqUzgDCsy8t3icVBQ10WL/C5ehMEERpJuoFktWiSK8pObn5+7Y4eIrSHZxtsNGzaMGTPms88+09XVRYdgpDY4EoLsEUDc/W3SQwAewFDAnDcPBPnMNWugH6NKEruAwAZYvBjN8LzbDRoTwwwM5HBtAEgpr6nBnJ3bQeKcOcATpwsXCLYsXMgR6jsIej+xoy4qihkcLEr1xCUA1TZ7+PChhoYGMIE/m/QER0JQCAKIaxoSBqjnuVlexz6SRwlComdlIR8QTNDyw8MxQ0MmyE9BzkLAaCbUfRgKHBwwb28ieoCzM6avj+npYbNmERc2Nr2Skz1+/pkp1CsEPLFXYqL9+fPECYTY2NyNG5utpOgEACMYTF6qdrR69Wro6CgiBhXSExwJQfYIIO7uBgk8o6RmbXNd88Yt4x/v4GXiVU7EKiUldQNLNzYWmMyIihq9fTsjMLD06VMQ5NTBCsn7+ps3MR+fgGvXGBYW7Wxs2gUH66ekDC8p6bF+PTMy8seDB5nTp2MLFoCyxBa6G7S8ooLwsaWtzYiIUN+5k8mdoxSWX5x2zs/Ph26dmZlJpqSkpCgpKb18+VJqgyMh0AQQgIZbv832/WkSu/ojjQCs+PhxINcDA0EtAXWf2P9jakqI+YgIZlQUZm0N/zmxse0gPTqaMJ3t7OBbpqUlGM3EEQLQfOCrwEDMxITYbFdeDuKc9D0q+ImQOTAQMrPhIiDgi6ys1iVAY2MjdPdp06ahxa8rV64MGDBg5syZuBQHR0JQFALkHjpETDvm5IhY6qOaDYSin5bGWb0arnMLCzlpaYTSFR/v/MsvhGYfGTnl8GGMxeq1du3cNWs+i4/X3b8fjITyykpkGBC2bEkJh7trWsQnKnl7r3z0qPPixWwfH2gEVnR0s9wW9yhF7969u3bt2rlz5379+jEYDLB0kd8HqQ2OhCB7BJDMOGMsWbK2sRELDf14FWshWB4ehIofEgL6DLZwIXRxENig9zNcXWEoUHJ2ZkVE4O/1IrFvHh3NCA3FvLxELyuBrXX27Nn9+/cXFxefOXOG+pV0BkdCUBQCcDZsAAWj1Y+MtCKg03cPDGwXGcl0dydPQsIoAZKeYWn5TUkJe/lyIoiqmxuYCixIX7MG8lRU1ui61c5w2UeOBkQsbu4hAR5zIjcvT6xhTW5m24RDUQjw0arTauAkJ7OCg9murrlFRcRhmsWL+y5fTsxampkRRyXHjGF5erIcHAjVn83W2byZAUrR8eOGjtvjtr4ZOWfzbJ/jmRuIkzdMf/85tbWfLVpkxA4qLN4jcX3EJYCULDiKC9kjAC7m7gZp9ozCD2ZERPv4eELMw5+TE5jIbK6+jvn6jiwogI8uV6509fT8ESgRFARUsfXeON5s20T2uUMXcS0XQjtihYR0DQ9nGqdMcn2o6dCwacv+5p8qCDK65URcyGal5ZEAuTt2YDY2HUNDp2zapBQRsfHhQ+AAaEGE0l9ZiXl4qB85gllYMBYuJE7PREYiGxq+zSsoVrU8bBDwXMvxFLKSOenpGjYVi0pxw6hXgZxCyepDE0B6IZa6KSsEwPz9M8FMNzAg5j2DghhRUSyul1kcHS8ODsZ0dFjW1kAGlFJeU5O7fTuHu3OOHRmVsmwT2SZg8vac46RuXWXkelDimVyx2g3ppS9fvuQ/EIMgneFhcAUhgNS6BqKCxeEogerCPfmFpD66YMbFMUEdcnQkFn0TE8uridUJbMYMRkBAz1WrMAeHhefPY9HRYOOyYmKQCxYwAybu2cMwNmaHhEisl4t77uLrr79GE6A8B2KkOTwMLqMEEGttS5p9Y1FBTNRwtyeQXTZ3507M1JRhbt4pPt7+p5+Y0dFKoaGczEzOokWMefM+j4mxOH0aW7iww6JFhGXs5eVRVaUUFET4ms7PBzIQLrc4HGZUlGT1EYsAR48e7dKli66uLv+BGGkOD4PTBJA2gNpDbPHnTvmzQ0M7zJlDnIbx8uqanAz/MTs7HA0Lbm7fmyaaZpRqOh1jBwayXV1BtH4TFAS6Exo6OHFx7YODsx89wsTxKMpOSSHO2m/YgItJAHTuEWhAppAHYqQ5PAyuCASQHs8oQvBuK2h9PRYQsPf5c+QUkZ2c/PXmzV9kZjK1tWEoyP/rL/gW5YQfNc6sxjHjtdaCywQfgoLMjx3rAPJ+/nwYH8BExgwNEXNY4eHUo8NCAEoU5unpd+ECFh4O90eeccs/RFP3ycrK0tPTo259Iw/ESHN4GFxGCSCWcJJ+AhBHe4ODOdnZcM3hugRlcZUHsHFBw8FAJCcnszMzIR2bNo1wiMKlR2xy6lyf1fmFWzAQ/+7unebNg690uFNJxGYhf/+gS5ew0FC2jw/hbDQ6uinPoeTScnlVFVgafbkTrMTWDBYLxQegoimzmBxm+Q/ESHN4GJwmQJsDVPb2cXHJDQ3M99s06hsacktL30l67v4fMjMzNjb86tVOnp7IGxzh/crRsWdGhv+VK5i9PRDgG1BFQkJYbDYYAN1BawoJgXT96uqB+/ez09L4n15RUalmeUjH5ee01btwri8J4tgN93yZZHom/4EYaQ4Pg8soAcSaoZNyh02EAsPd2skA7WXFCvjICAz8bPlylqAfyMnJwUxMusTF9YIBwc+vfUoK4Q3FwYFhb08cEhgzhgVWMtd5BBFhgHs3+E+cLwsIEDgCBERtMOf8vfk4PtuH99uWTLVRD8RIc3gYXBEIIM2eURCIIy8ZGaDtsKysiClOd/dRZWVsPicoOHL/ZmzMCApq5+gImo8R6OvW1gw3N8zX12DbNsbChezwcDBkeTquEBsgr6BkvPnPE+b9Frp4L89XYhHAx8eHZ5MzeSBGmsPD4DQBpAGEnF69mhES8mVWFmj/zIkTMXV1fvUDUpQCApxiFjG++544Tmlj0z80FKQ+ofwsXDgEOlxwcDszs47oeGRiIk9xVkQEFhbG4fPFsmFjfl5BMX+txCKANpjpGPbgwQMyhTwQI83hYXAZJYBYM5vSTwCc27m7xcRYnDmDzZrVKSEBi4jgD5oNP8TEJVFrwRVN9vWibUdYISFfLVtGrI65uBAc0NVlubt3NDfHbG3H5+czPT2BS/9tEa2ogPEhFKxqa2tRohHjYhLA2tq6Y8eO9vb2/AdipDk8DK4IBMCle5sK2ck42dmsuDgmmz1+zx7iPEChgD088xfu9MzCrRPfWvqtZ9jZjYqLw1RUemVl+Vy8SJwi0NUlFoxhWDA27pWe3nPdOlZ4OPkUgifOzp/DQJGUJEpIetRoFZXVIYm7klKbOUgEr8PT0/Pzzz/nPxAjzeFhcBklgLgTO1JLAOKUQlgY09eXTKlvaGDFx4OGIzA/6Crq1tV6nlXENP/ChT9s3QoSHUQ+dO6xaWm9QkI6JiWlNzRgbHb7Zcs+T05mU/xEIA7ogo0RGMiJj1+6YrvwjaKo0caZlBoE/6XJ/q2m7ichmVEwSbB9BR6IkdrwMDhNgLYF9MVtf/8NCg91HxsWE4MOu/Cjnutdi+Hujs2bx3R0ZJqZYQMGYP7+DA4Hmzq1G+g/Hh5gCbA8PYnDNOvXU8uy0tMxFgubM4ezceP8gG1T/B5pOtwrKNrZZN24+/vVrI5mHsEnOD4r3iHM95YEB6+lBFLaM4RD3JlNqT2sxMnPZ4SGMqOj0UfCzA0L2/zwIZNiNfKAWKLy8OiXmflFVhbm5tbNw+Or1as9L10aqcZudAAAIABJREFUlpDwOWhElpa5eXn8pXILCjqHhhY8eIBxJw90XfaF5ONars+XLH9n/hK+hvz9mQEB5CY8JDVSV5Rqzqszcj0o/IdIbQs3C5kkgLh2rTS/Hp6Di8z4eEZEBFtoONTcsjKljAzixIyXlwrYtX5+BBNCQrCQEOjonKVLwczF3N1BsyLJQKzystnE3jjuLqO8/M0mvodnOP93Xozp46NSVNRz7VpkNshTCwsHTQDpgihn3olp07Q0wiuWuTnT2/tLT89Bs2YxTUwgkYi7ERBAuNQNDp5+5AjV9wkHvjI35zThO4gVFNQBdKSQEPb78JViORSDzNevXz9x4kRpaWltbe2///6L0qU8OgYuuwQQS62XXQ1VCMj9c8wFCwiHQo6OxMYhS8tBqalfJycTY0JGBjM1FWVm+fsTDoU8PZnW1uygIM7Klfx3YycnkxGc8vKLxpge1Xa5EhxfKkpl4HUoKyvD/549ezIYjKFDh16+fBmX+ugYuIwSABfTrpUnAhDhgdPSqFYy5uOz7dEjzNvb/tSpDsnJTBgW/PyIIAO5ueS4h7m6Lmxo6JqTM2x+cncLD0Z4eO7O/8zfJcs3L1n+3wJZRUWVttNuHfYh9+RqU78P5nOaAryOQYMGoU1vV69ehWu0D0LKo2PgMk0A0bUa2SUAJz6eGkAAfvIIlzXqHiVKgYHltbXv8uTmEtP/JiYdwAgOCUFWLA9YUVFEpJmIiIBlVapetUrR0WjzKc7dDqRuf0fP70no4nezolPn5ZlH/j0n6a2qxf7g+O3NVvLhw4fwOtZTJp2QB9xbt25JeXQMXHYJIJZaL6ME4Kxe3SEoCLR5MhDqwtjNNoteOS59/f2sBM77E8PEkXk2G7O3Z1lYYL6+An8pscVo7Ngf9IsnOf/ZZ4z1ePu8me5HKyqJmU0bz/V2i546ZOERS99NdFq7Z09ye2AW/0rbJFmURgbVv3v37iD4yZSCggLkAlrKo2PgCkIAWXENxAN2UtKIDRvag8LzXmUv3l6p69Wo6/LwKz0XRnQ0m6visxcvVt6+fcbevYRZbGiYu3WrgFvFxXVPSFBbnjnQ1j6QU2i08O/AFbhDyD746mbDHYeQvdTj89Cwc50zhk0rHGdxwsjlAPU8gMB68sxJNDY2jhw5ctKkSbjUR8fAZZcAYgl1GSUAMeWflMSmeLODlM1bDkw3d/kuIuLrRYuYISHE8V97e2z6dGIJTEWlI3cWiJ8DYDMohYeD5vOVSdBwvYyJDvd13J6HLt7X1KPBJJjscffcXVzH7RI0HXkiTGBm6rrk5s2boZeDDXDz5k1c6qNj4IpDAJnwjCIiCIlrZtY1OXnusWOYlhYWGPjDjh3M4GBWdPTY4mJGQgKMGKAXcdavJ+0HdDBgmLGdUcjjnL31gydEpmc32ftx4lxLnrbzXi3Hn208323KgNaGFCOXfUhxogIR4Nq1a/C/U6dOAQEBTak60hYdA1cQAsiKayDhgE4cmnxgzsLD9fU3czdtYri5gSkMTGD4+g4qLWXGxNTfusWKjUWLaJiTU+/sbEhEkhuMYLiOXZQw3vziRPv7IQllwp8FzTXCIGdu4jOW++2qauKszFTbDeZhDxekv3WKqODJDEOEkZFRjx49pk+fjgR/U5C26Bi47BJALK1GpglALHp4eDDDwkZoGptEP4sqfLsgjFjBBemeW1hIiPY1a1hxcVRxQBTx9rY4exYLCZlsGdtrVlC/rKwv1q9nhYXdvNlQWXUMfz8moKgC/NYUNJeaVcXqI7i2y99ov5CNx9pJ7vfNFr2KSOMdAeBFQO+3tbXld/gj5dExcJoA0g9Odnav7Gyb8vLBVvPVLG/ouD9MzdoiMCc6WMNZvpwotWwZ09WVqaU1if3TODd/pSVLOtjasrheVRAwO7vOSUlYaKiKjuN4i//NdP9AxYfmVR6nb+xR4R7/blLVxDZCWX+lqoWAGHtRUVEg18PCwnI+xPPnz6U8OgYuuwQQq0/LlmsgHhCznE5OhNuItLS8/KKNGwuayslevLgTdykARDv0ZjXLQyNm7hltlDeRfXagdpSG/a9qVkf1rFYvXrqOGCLc3AKuXmWEh6tZHdh34a1h9L8Zaw78d6v38gVy5uVvhms1y6Ppe3Atl2dLMnmPj82ePVtgQFWQ/VIeHQOnCSATENGxD2g4PfLzlTgcdmxs4pLVk70flZ3HVczKhg5X07A9duo2PiP4Gctu/WzvOpwblZ7Y/hkWZuudN833tpbT9aqa/3bpTJ8135ydBA8dM2uzJvv6aKMCNcs9lpwXLI97Vcf+x/Nc4e9CmqNj4DJNANH7tLjRfmQUxGGahAT2O6/RNw2cDqvOPdjezKazU6CqZdlEx3rNeXUqZjsy1nywtxl6+TQjK61ZCSnL3p1Bc/OOmuRwfkrgsyHacZPm1117iOv7PXb1ighO2JGSIWD8kdFZZgRZJYBYQl3KXQO1OkBrgtGAHR7OWbq0W0KCz7VrWkk7x5ruBlYInDobP2ePbcqLyR43PfwTk5asNp0XNSvg7tK9+Hjz3TNcdmk735zud4bp59fUtBtNgDaAWH1a0QjADAz8Ni+P4e/PWbIE8/buGB8/0jW6pu6swMzQOOrWlal732q5PPh2lNNYk/IxZrWjpufO8qo5duJnwk+RwYysxkal1NTcMsGTpzQB2gA0AYSAmZAwcsMGwsVnTU39nTu5XFcoTZ00MHDYOnLm6pHGh74b5agyM2vghHhjl8L+Kl4zXHakZxPb48C2JqJyzJvXlB0CbXv06FH+wwAIUhsZAEEhCCATnlFaEe/CsHLnQxEI/3AuLszISB7/cLl5eaoW+/zX4qygl92s/TBDQw2bGrsl/6jb/m9mwJFJjn9U1xLboa3dVmvOO2LgsE3g4zQ0NAYMGMB/GEDKIwMgyCoBxOrTikYAfrCiombV1HxVVMTy8EhKzSks3o3SMUfH3sb24y3W/6Cfsv3lS4bB9InzT6fuw7Wdr7slXWN5PBg+Jfn7MS5qlkf2nX+rPu8vxAcedO7cuX///vyHAaQ8MgACTQA5B9oKMc3GRXnaqm+nR442ylOZf2fC/JubSojIqpinZ9+AIEicEtA4wGD9ePM9GrbHR05f98OURFWLvcOnLN9z7m1/1bXTfG///S8+0fFyYgrvUTJ0GCCF4n+FPAwg5ZEBEGgCyDPY0dGgeTCjogbqRq8rf6PneWfZftwp+fb0ha8Doonz8qAmsRITx8/ZDVrQt6P99LzvX7yPa7tcdIk7qmrzs7rVXuOwl0NZS0cAN+bsDlx1yyW6jucRd+/e7d69e0XFfxuEyMMAUh4ZAEFWCYCLeSpSal0DfVQwAwNnnTzZq6Sko6qladTL4QYbNWwPjpqRN9WWiAEDciGXe2xytnXQePNSNavynIPP1G3ujjRcC2PCQI1gHdMlXw+3GqIdZ7fo71mL3hA8iRTgsYvattTDAFIeGQBBhrsFTYBmwcnOJsJnhISMnLlipGGOuvWBtF24rtvz1CziwADhTTEw8HPrQDWrim9GzNNyPGwR/lLH9fbwqctHzywYZ7pTeeqy0UYbBoz30fN9PDvy5QiD7MLiXfxPIduW5zCAlEcGQJDhbiHWoTAZjWPectQ3NGjYHFlxEJ8R/PRHVuqc2Ec6rncqq46V19R0CAurevGib1ySeerbwRMj1K0r1K0ODNVOiC15672s/sfJaaqWRxyWvhxrtvcHrVjlWXsMAx/b+/Puw0MeOgQeBpDyyAAI4hFg6dKllpaWO3bsoCa6urru3Ut4lwe1D74VviO8JXB0dDx06BD5USwCyJBroFaHfUDp9MDGSY6XJ9vZF2+vLNhEnHMn7KKAACwysqdZuppledCikpRlhSFJu33DVmrY3NJy+a1771Ga805mV73VdLjFssh0T39hmfLfuWES9dwAqQIPA0h5ZAAEMQjw4sULNKGrpaVFTe/bt2869xDG1atX4duffhLmRbUlgFZeRQkbIdaZGEUmAMvVtYu9R79lmezMTGo6WhrjxCdibDYzNJSTlLRxYwEkxiWkMpTag5o0VCdpnOn2EdNW9xpoMMV2o7FnJX+DHz16tEOHDgIPA0h5ZAAEMQhQXFwM/dvJyYnBYDQ0NJDprUgA4Y7ETpw4sXXrVnJUFZcAsugYolVAnC2Oi2MGBwtsAVZIyICCAuOyss+tAiY4Xu6ntkDZpsTEjfAHYeGYMt58n5ZVjqrV+VlexwTud1i5cmVThwGkPDIAghgEMDY2Hjdu3J07d+CXLF68mEznJwCYO+7u7iEhIVQybNiw4ddffyU/VldXk3NkkB+USHg9+vr6PHvKx4wZA2+CXFPs1q0bJEI2eJaqqipoXPCgLVsEHxChQkY9o3xsVFRWdxsxGXNzYwQHf2uddOACrmFTvaHqzRSfO3n5RSY2Ycr6WWqWhy/+jmu4XJpgd3L6gp08Aym85aYOA0h5ZAAEUQnQ2NgIIx3YADg3Hs7o0aPJr3gIoKOj8/3338+dOxeEbvv27bdte7d+DvofVYQsWLAAxkR0PWDAgKlTpyorK6upqcFTunfvPnv27PHjxzs4OECp/v37L1y4ELQvpAKhNUVo2S5duujp6cHj4GNGc1FPID86Gk+DClByxs/ZPdZiZ/evx2myqzRsa5T1t6rOXNJnqNWoGRtHWp5kqmcOn5I52b1e3bqq8ARusPApz45o4dtypTkyAIKoBICRrl27dmgOKzMzE/oceb6BhwDDhg1DR+BevXoFHRS+RbujhBNg5MiRIDDs7OygCNwElMXXr1/j75fQv/jiC5A0X331FbIBOnfu3LFjRysrK3RDGBzQxLMQABvburNJC6C/du8zpu8QU7gYppdqGfe05BQ+xa1uisevpnYxP2jFTnC4rut+6oeJ0Wm73k6LejVYe/kP2qlTnPcbxz7ScrpaUfFBdBlZP2wkKgGgh5EWDIxuMKKFvw+/w0OA1dwDGQhVVVWQUlNTgzdHgGiuj/yJEyf6+vpCETCqkCOxS5cuoSEV9CWSAOiUHXqdOHfPCQwXzfxOhVwHEAi/iLUajvcnL3xm51+cX7h1vMUvEx3+GKaX9u3I+aAlggpUV4/rBb9QMT+wfP+LuTE31eaWGEc+Gmdx3MJxyc2GWzx3UwgCEJvCGQwQorrvATJ44MCB6FseAtS+91kJePToEaQUcbfjCidAEtdtN3IkBkUgBTkS2717NyLAxYsXSQLABaSEhoYiAsDgQCUAeiVUIP2nRe30SSCKb/SWIyB64/z4v8yT3oanEHOUo2bkZezFtZyfjZq+3sTnhH9UrtaCSypzdk20Pz4v+Q0oQqoW+31zcD3vV0tXCPAUTYohGYVIBIiLiwORHxkZGfMe5ubmZF/nIUB19X9TxWhDSGkp0XA8BLC3t+chwIsXL0ARAnUfioBdixyJgdmNCHDjxg2SAL169YKUwMDApgjAAxTBqqVN9fExwb5W1e6yiB7JJQbQbNm6ihX5p9BHA4fS6eHPdd3upBTUsNxvG8/1Gz1773D90knss2d+rdewrRs8IdLM9+ikeYeXrhTgKFchCABqPajm1BTo2WASILuehwDJyclkNujHkIImf4AA2e89EgPA3uUfAQBgMCAC4O/3FSL88ssvPCMA6FpIrvMQgB8ysQhQVXPSwPdO5a/4bJ9PGkLC0mX5CIPssUbLtZ3POYTstfXawE75N3R9vaZdhbrV/oHqQcr6Kw0D/tB2ubFhYz7/ACXTx8FwUQhw6tQp6G1r34dOIAGUAI0FTFUeAkDvPHHiBHy8fv06iHDy2Mp3331naGiI3EQWFBQAfwQS4MyZMyQBANDv4WNqaiqVAMgGILXPZgkgEwYAUDQm64xZ4IVNJbxB2wVmDlpUEhS3VSxiQ2Z7/xKeaRwd573D9VJ0nC+oW1dOmhn93WinobrJ/YZbqVkeUZu723nFP6PmnB/Pcuo10EB5auYs77qCzR/E1ZN/Avj7+3fq1Am0eZ70nJwcZJvyEAD0pfbt20MidHG0boDyZ2ZmgiEBnEGKjY+PDz8BwLzu3bs3SYCnT59qamrCRxg94D8YHiu5fpK7dOkyZMgQ8lCYcALIupUmEAsXFbMT/9ZyedKUkyyBMGCXGEX8rcn+vabuLHL4A/8Li8rGmZaozj1k4nNSxaxsmE7YWLMaTYfrIwxztBYctFn8Wt3hobGFj6r5Xi2nC6wFRyOWfhB/QP4JIAFAXwfDt7KyEk1lkrh06dKmTZsOHz7Mk47w9u1btBBma2uLUpo6UoTWFEU8FSnrb0ggirdX6gU9VbV8UlR6VPRSDqEHvTJxTaen0Omn2W/SZN+c6VkXuyjR3Td2qoHJtPlF/YZZDtVJtIp/mleLb6p7PtZk2xCtRd5BaRNnRJpGPdnzE645r+7YiQ/c+8j6CqMU6QZLliwZNGjQ6NGjSQI0daQI2R4iEkAmDABxAb9oU8m+xCWrm89Kwc2G22EpB9Oz90NxXaez53/HB2ms0Jpfq2K2Q8V0u7L+cmX9FSyHA6pWNdrOv+p5/ra+vH6s6YbRMwu/H+uuYnZuwoK7M5x51TOaAK0DEPNdu3atq6ubNGkSSQDhR4pEPOclEwbAJwDPHGtGziFtpyuDNMOmut+OX7VtivsVDZuaXSfujTM9s6OuXnnGnuFTloEZ0F/FyzTyblZukZrl1fSDuK7bTR5pIuvyRSo6B+j6Q4cOjePG/OEhgJAjRfwEQFP+VEAG+TMAJEB5RYXKnF26bqeSMz4Iow1t2F/FafjU5WPngCWwY6rPAxWzYl3Xc1rGizTtTlRee/vjlPJxpidHmRxTNlhnH1VDnqYnQROgFeDo6KitrY0MAx4CCDlSxE+Acj7IygrAx0ZA9EabxKebT+CzvGqp6Rs25A3RjjePaSysrB87q3hjXiHyQxoblzjJYb9BwHMN2wp164q9P+OTg16krhDgFkXWTxq1PQFKS0t79uxJ7q/mIYDwI0XNqjeyLp9aCxWVNePNf9Z2vZ++eg81vbKyZpjeUiJqhsP9sOR33qGnzS/UsLvKVAscb7ZjR2390MnLJi24ynK9bum8jP/Osq5htn3tAwMDGQxGu/eABkUfd+7c2eyRomZbX9ZfTyuCx8U0XCcszoRBsrBoJ4j2iopKMl3NYod7+Johk2ImsCtZbje/G+VIbIiwrJnocK6ymtcrhKy3cNvX/uXLl5WVlTAO8O+Y5feqx3OkSLiAl8sVgNbCOJPSSU53tU2SJrJ361nnUL/Snp2oOf+S5rzrfYeYmPjvHqAep2Z19OjFt5ODXxVv/2ARQA78zbQxAWpra/v16wciv0ePHiBLJk+e/OzZM7xpr3o8R4qEE0DOYuO1IqDRxpodP3kL17Q9uvX4m7EWjdW1p8lvDR23+61+axlWOdro4ASH+mF6GX7hqyexz5r48u7RoAnQIrx582bo0KG6urp//vknzj0j1qlTp5iYGFxkr3rCJ6EV+Rhks0jN2jrZ85Ky/haT4JfaLjeRCoSkSV5BySSHMz9MijUKvH35T5zlcSU5faPAm8iB1+G2JMC1a9egZx89+t9aJkh9fX19vOklMB4IJ4Csq6efANDji7dX3Wy4Nc87f8S0Japz906bXwSJPqGZw/TSVcx26bhcGztzlYnfaYHFaQK0CI2Njdu3b0fHxxBGjhyJpoCEL4GRQAQggsMJOvdEGwAiAkS+ut0v4+fsit/6dorvC+O5vmrWxwPX3hgw3nuc+YnBmuk6pilx8Sn8BeXAypIKGQmqTmJiIsj4b775Bq18CV8CI4H2+QgkADoD+Ul/hsyisrJGxfzk2Nkl+iFPWR6/L3D2UrXYOWzy4rGzNtsvugrm8tSgv2f7nucfbGkCtA6gf48ZM+azzz4DewCtfInoVU/IRjfaABALt27fKyzeU1RafrPhzhjjzeNMt6ta7A9fc19ldr7mvNqtp/CJTn/xz4HSBGhNPHz4UENDA7mWF9GrnpDjSLQBIBm4kSELlA12fTPCfpBmmPK0ler6vuPNd6zI4w0OiYsZqlA60cZGMFXRB6xevRo6LlgFInrVa4oAciCZ2gpAgOmzHZiq/ipmO1Xn3VC3Kq+pO9vUZIOsn4fE25AAb968ET2qVFNe9Zp6AbQFLBmgl6vOPTCIVTxi2sop7r/cfIxP9noA0kRIO9MEkATXr19XVlbGRI4q1ZRXvaYkPRgA9B44CZCwePl0vxtHz9VrziuZyD6s61o/ema5seexRXFJAqc75eCwUdsQAFpz0KBBokeVasqrXlMEoA0ACeAfuXbSTM7Y2XlTfW9Mmhmjos0eZ7Zrz89vZye88QvPJld8qboQTQBJgKJKgV1LpkgcVUrgQgxtAEgAd5+YsZbXnLP+sYskloSt3FZNYP8yVLdYg33TIrQetTP8t/HIUbOqMHDYikrJwW7zNiDA3bt3XV1dQfCTKRJHlQIFFL0DHi9ANAHERWHRLkOPO47L8ejlhL+g+YE7PDPfuCx/O1Aj2MyO0PJRU2vOO37kOq5u9wTtHZL185C4NEyDtiSqFLwVyMDjBw5SZF0sfXrU19enZ+9fkX/q/Xag4pnuR4dPWaZiVjaRfSogOg86OmhB0xeUTfZ6qut6FWWTg+MWbUyAFkaVErgbkTYAWgXQtjqmS6zjH207g5sGnEZNDf8LNv/nIZ0mgORolahS/ARAKtBHqrOiYWNe4fi5P09wuLd8HREFlV/hoQkgIY4fP94qUaVQhDZqihysTUoVqOfI+FcD5GCwffcDkpKS0Eb8T4MrV6789NNPPFGlRF//ooLnHbRwXgJM8O3bBbiAJdHQ0FBV9Z+DfFDYqL5Q5QnJaRum2Kyjuh7in3OTHwJAV2s2xkQrwsjIKDAwEAWTwsVf/6KCxysBz8f09PTExEQRawXW9rBhw/744w+ce1QfTPM+ffq4uLi8ePGCzDNjxozi4mJqqQkTJsj6TAg/QIioWZX7r/3H2Psc+ev4FU6aAOIBOnp1dTUKgQEEQG6fcfHXv6igqqH8BoCtre3s2bNFrF5kZCTUDS7OnTvXvXv3devWHT16dPz48T4+PigDsVNAVZVn4Nq5c6eampqIj5AVVFRUTbD7X9zWtzou16kChWoGyMF5SLxZAiDX/iRA+NXVEXtiybB2np6e0JUvXrwI3QKktaura3h4ONlkIFNBxj979gyFzYPO/RUXSkpKUGrAgAFLlix5/fp1s+tfSCojXLp0KSoqCkaJ1atXg2yGdwC1QvUkDQBUT+iampqaY8eOhTq8evUKFb9//z4oLVA8ISGBdNyLc8/mf/nll2fPnoVryDB//nyUfujQIagnuoaOTj2/hvDPP//AL0LNIk9ITt/oHH1s89bD1ESqGaAQBOjQoQPpFxrUX9BJkIpMhrWDntS/f3+Q33PmzFFXVweFAYW1Q27Qkb9oU1PT7777bu7cueRtBw8ejAigr69/+fLlpta/VFRULCwsvv766379+qEgAzAytG/fXktLy8rKCsxo6JE6OjpBQUGonsgAIOsJj/j222/79u0LGheaSoJuCnceMWKEjY0NvDy4BsMDPXTXrl2QE10DYeDOyFHXihUrxo0bh3NJBVa7wEaEccbPz0/ylyA7oJoBcnAeEheFABs3vjsQDYYyiDrUs8mwdjhXJPOHtYNE/D0BhgwZ8tdff1FvSxIA+hyIWOHrX0g1R5oMdNlgbrxbkPQmJibQ0SGntbU1DCnACmQAUOtJVYFgjBo6dCh8RPWE0UNDQwNUGvQt9GC4Ibp+/vw5kASUH0jp2rXr3r174W5QtqlQh2BpoL1Mcg+q1FcIAoDMMzY2RtejRo0ChQddk2Ht8PcxXUieID6gCMGIAFlZWTy3JQkA6nVZWVmz619wh06dOoGWAj3+wYMH0PRo18OCBQtglAAyjB49+vvvv0fvhlpPKgFQ6A1S5JMPamxsxLl6F1WKP3nyBFSslJSUK1eu4NzgBvb29uirhw8f3rt3j/pzYPQAnghpZXkCaQbIx56rZggAPxJ63uPHjy9cuAB95fjx4yi9qaBG+PuYLlQCUOcNEUgCQA87ePBgs+tfaJQA3QasBZ5boQ2JAFCNoLvz1JNKgK1bt2LcKK4j3mPgwIHkYAV6DlgFAtsIfj6wC54ODLSzs2NwAXIBBgqUoaamRviWDVlEUxH7SDNAIQgAinXHjh0LCwtDQ0NBByDTxSIAfzuSBAAjGJSfZte/9u3bB3nAZv3iiy94boUIAPUELQhMcJ56UgkAchpuApYxjwNdtA4NPx9sa4FtBOlQW7gAhoCqc/v2bbCkQUFC7qwBx44dQwfZBBaXRbj7clQtDxl5VBZs3sHzFan5KAQBADNnzgRVGDor9EsyUSwC8EtWKgHevHnTu3fv2NhY8lv+9S9Qt8DkRQ+6fv06ma7HBRJIyA7hqSeVAKgyR44cIb+FoSkiIgJdm5ube3h48P/833//HSxppCbBrVAwKJxrHJM2cUlJSbdu3QS2nozCzq8ofd/riAI8LOUQz1ekGSAH5yFxKgGGDx++/UMgwzQvLw8N+tRtC2IRAMQ2zywhlQA41z8uWMMgWeH6wIED5PoXUrVPnTrVs2dPpNaDKgJVRcoGVAxuPm/ePHgNII2QV12eegIBDA0NyY+6urogwtHsJ7xIqIaFhQX6ChgI3/I3EIwq5FovDAUg/F69egU/2cjIiFwfSExMBBNc7LaXYhRtO6Jhc0vH7U5N3Vn+b5EZIG8EwPiA5uaht4EZwNM5xCKAk5MT6FF9+vQhi0PPI6/5d0CQ618oVjb0aZC1SFEBIsFw0aVLFyAMpAcEBKC5fyCAjY0Nfz3DwsJANRo5ciTST6DTA8/BWvjuu+/atWunrq5OmrNwZ5Di5HIBwuXLl0HakSvBf/31l46OTi8uVFVVwRxH6cAxsjXkBkJ2uZGux+Rg23nzS9mgXkOHW7dunQR3RwSALn7r1q2ioiKwZak9rKnQGXTPAAAGQUlEQVQdECQgP5RCXCLx7NmzPXv2QDo6UkPGhQedhL+e8DhQ+ktLS8lz969fv66oqACrpra2ludxQ4YMKSsro6YAAc6fP09NAYUN6gNGNlygFGAF1J+Mb6AIQGaAohAAFICuXbtKNsVBEkDgtyJ6wBUOtP0ByoL5K3E9EdasWSP6vgkSQDw7OzuJHyqLQGaA/BMA/U6Q0BJvFBVCAFF2QIgCkEZIYWtJPRFglFBRUUG7IUTEy5cvR40aJeTIjrwCCR052AUojACgbIB4AwWdR1UQHQ8fPoyLixPYP4TsgBALiACampotqSeJa9euoTD3IgIM9+rq6hY+VBahEAT4qGh2BwQ/YMBl8gGJfzkYi2ULSO7I+nEwvA0JIMoOCB7UNwFEAP4QkTQ+HtC8M00AySHKDghRAO+APzwwjU8AOVgGxtuQAKLsgKBB42OjLZ3jNrsDggaNj422PNPZ1A4IGjQ+GdqSAM+ePQNVsmvXrkOHDlVSUhLlBDANGq2LNj7V//bt27q6us2bNzd12IoGjY8KmXdrQYNGS0ATgIZCgyYADYUGTQAaCg2aADQUGjQBaCg0aALQUGjQBKCh0KAJQEOhQROAhkKDJgANhQZNABoKDZoANBQaNAFoKDRoAtBQaCgEASIjI+3s7Mhw3AiPHz+2tLSsra1tq1rxw8vLa9euXQK/cnR0PHTonaNmV1fXvXv3Nnu3ZkO+4ooU9bUpKAQBNDQ0MAwjnTkjPHjwABI3b94s8W3FisEqCkh32fzo0aPHqlWr0HXfvn1JL+1NgRryFVf4qK9CoCgE6Nmzp5KSEtXrW8sJIFYMVlEghACvX78m/d6JQgAy5CtOR30VCkUhgL29vZaW1qhRo1DwPJyPAE2FT92wYQMKUIlQXV2N3DnyxGDdtGnT9evX6+rq4A6k3L1y5UpMTAykpKamkok8oWPDwsIuXLiAvkIEOH/+fGBgIHxFdRGQn59P+lAiCfDvv/9COihO3t7ecDeyK1NDvuJ01FehUBQCQA+ADtSpUycyrhGVAELCp3722WdUv4sLFiwwMDDAuS4tqDFY4RokbufOnYcOHYr8XGzbtq1Dhw78kV55QscOHjy4Y8eOSKdHcWN/+OEH6P16enqQLSMjAz0XOiWPCgTdHfKAaDcxMYE6tGvXDsVxwj8M+YrTUV+FQoEIgHPDwAAHLl++jFMIIDx8alMEwD9UgYAApKt3nBtoFbosGViSGumVJ3QsSNypU6dC14dqoLixf/75JyoFZNDR0UHX/AT46aefqN6Fw8PDv//+e3RNDfmK01FfhUKxCAAvHroC9CrobSQBhIdPFZ0Azs7OZLYDBw7AHRDTEMhIr/yhY0GtQhVAcWPJdJDoUHN0zU8A5FovKioK7snze3lCvuJ01NemoVgEANTW1oI1DL2BJIDw8KmiE2Dx4sVkNtA64ClkFBmcEumVP3Tso0ePUIwpFDeWTBdOAJwbYaR9+/ZQwylTpoCZAfdBGYSEfMUVNeprU1A4AgA8PT179OgBCgAigPDwqTwEAMHZFAGoEzgogB9pcOOUSK/8oWPB/oYUMHl5ZoGaJQDOjSOIgkSBAgbFEQeEhHzFFTLqqxAoIgHg1YIBCooQIoDw8KlAgOzsbPIrsCZFIcDJkyfhntTYGWSkV/7QsSD7IeX8+fNiEeD48eNg0pCDDFLkUIyzpkK+4ooa9VUIFJEA+PvoBOQskJDwqUAVQ0NDJMsLCgratWtHJQAZg5WHAABQpcCS5o/0yhM69saNG/A4ZHOLRYBybogK0LVQInwLH4EGeNMhX3FFjfoqBApKAAB0cZIAQsKngr0IKnKfPn2gm4JuDb2EJAA1Bis/AUCi9+/fnz/SK0/oWHjckCFDrl27hotJALDjQR+DW3355ZcwtkBNwsPDUQaBIV9xxY762hQUggCiQEj4VLCGN23adPjwYTRPSoI/BisPIAN/pFfhoWPFxcWLF0GDgjr89ttv1HT+kK84HfVVEGgCfGoIDx3bWpAs5CuueFFfaQJ8anwaAkgQ8hVXyKivNAE+NYSEjm1diBvyFVfIqK80AWgoNGgC0FBo0ASgodCgCUBDoUETgIZCgyYADYUGTQAaCg2aADQUGjQBaCg0aALQUGjQBKCh0Pg/147N0AL2350AAAAASUVORK5CYII=","width":600,"height":600,"sphereVerts":{"vb":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1],[0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0]],"it":[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270],[17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288],[18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271]],"material":[],"normals":null,"texcoords":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1]],"meshColor":"vertices"},"context":{"shiny":false,"rmarkdown":"html_document"},"crosstalk":{"key":[],"group":[],"id":[],"options":[]}});
+                         {"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":false,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0]},"rootSubscene":6,"objects":{"12":{"id":12,"type":"spheres","material":{},"vertices":[[68.36,22.72,34.48],[80.625,13.65,35.95],[67.16666,26.5,35.76667],[71.15,18.25,34],[59.76667,30.66667,39.85],[60,27.25,35],[80.63333,12.36667,34.33333],[47.26,39.58,39.72],[59.16667,27.53333,37.7],[74.1,17.1,33.63334],[71.95,21.85,41.05],[46.56667,40.46667,45.76667],[62.96667,27.63333,35.6],[72.575,21.525,31.85],[51.7,38.15,37],[59.7,26.3,40.1],[58,34.15,41.23333],[73.3,16.53333,30.9],[50.85,32.225,31.675],[75.8,18.175,33.55],[66.65,24.2,38.65],[56.85,34.3,39.1],[80.06667,13.16667,28.2],[57.025,36,32.475],[51.68,38.64,39.24],[48.925,39.625,38.925],[62.4,29.95,41.95],[47.2,41.05,43.15],[75.9,16.1,33.9],[79.5,12.9,40.1],[50.7,37,37.5],[60.63334,30.8,40.93333],[84.74,9.96,32.5],[52.35,31.25,33.8],[56.45,31.35,32.5],[71.95,14.75,33.7],[77.55,8.95,30.1],[88.65,4.9,39],[67.65,20.6,36.85],[48.35,39.05,43.75],[67.6,18.2,31.7],[69.95,14.7,32.35],[54.85,28.25,41.1],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.35,39.2,40.6],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[61.95,25.25,29.475],[70.7,24.76667,32.4],[53.675,38.85,40.66667],[70,18.8,36.03333],[73.375,18.35,31.825],[67.96,23.2,35.9],[59.11666,29.15,36.45],[65.3,29,34.16667],[55.23333,35.86666,38.76667],[72.7,19.1,36.15],[71.38,19.42,36.4],[61.4,26.66667,37.8],[49.75,39.675,37.05],[1.8,52.35,33.2],[76.1,14.5,32.1],[61.83333,23.33333,36.2],[52.85,34.75,42.9],[80.75,14.45,34.775],[58.7,33.7,40.3],[71.72,19.82,34.3],[73.1,20.6,35.85],[79.8,10.6,34.55],[56.2,34.05,33.85],[79.62,12.94,32.225],[72.25,20.425,36.7],[44.33333,43.3,38.7],[55.35,32.8,36.45],[74.4,16.83333,38.63334],[75.4,17.9,37.6],[65.1,23.9,43.9],[49.5,33.7,40],[82.3,12.65,40.53333],[70.56667,18.73333,39.85],[64.875,26.7,33.8],[53.55,38.9,38.7],[81.25,11.3,36.05],[68.25,23.25,33.8],[42.75,41.75,42.8],[72,20.4,41.66667],[48.5,38.85,37.5],[62.75,24.6,36.96667],[61,28.6,40.75],[52.2,34.4,40.6],[66.1,25.96667,31.15],[70.93333,14.66667,36.2],[67.06667,21.8,31.325],[67.7,23.6,32.8],[70.63333,15.56667,32.8],[74.1,15.8,35.5],[49.95,38.25,38.75],[54.46667,35.8,35.8],[73.25,17.45,35.4],[80.15,11,33.65],[57.7,28.1,36.2],[68.3,21.3,42.45],[78.5,14.7,30.6],[75.4,14.675,35.45],[55.75,33.85,40.25],[56.15,30.35,38.65],[70,18,34.2],[75.8,19.6,41.9],[70,18.5,34.83333],[69.65,22.25,36.65],[80.675,13.525,29.875],[65.7,25.9,33.15],[61,27.175,35.56667],[59.56667,29.8,38.83333],[88.1,6.4,31.4],[67.3,25.175,35.95],[53.1,36.5,32.4],[54.3,35.4,32],[67.9,21.75,35.1],[54.4,30.8,35.45],[63,26.6,35.2],[64.3,26.6,38.35],[59.36666,31.1,36.1],[66.85,22.7,33.15],[56.65,32.75,36.75],[70.74,19.8,34.175],[76.7,16.65,37.275],[71.73333,20.76667,33.475],[66.93333,24.33333,38.66667],[63.35,26.4,35.8],[66.9,24.4,39.4],[68.9,20.53333,33.5],[70.36667,21.43333,34.9],[76.1,17.7,36.45],[69,24.33333,36.2],[71.575,21.9,33.725],[60.1,29.4,35],[66,22.6,35],[54.6,31.9,36.95],[46.65,40.05,39.5],[40.1,48.1,38.5],[60.2,29.5,30.1],[75.45,19.05,36.3],[54,37.13334,41.25],[69.3,18.83333,40.2],[75.75,16.45,29.9],[56.1,30.15,35.95],[68.4,21.1,40.76667],[68.1,23.2,41.9],[65.23333,26.96667,37],[63.1,28.8,36.15],[53.52,36.44,36.68],[66.3,23,41.75],[64.7,22.06667,37.53333],[62.275,27.1,38.3],[44.4,44.15,38.65],[48.2,38.15,36.26],[72.4,19.575,34.025],[61.76667,26.03333,37.5],[66.63333,26.16667,39.43333],[67.85,23,42.1],[78.58572,14.92857,36.77143],[80.8,13.55,40.8],[62.6,25.3,39.7],[82.7,13,33.95],[68.5,25.45,38.55],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.3],[63.5,28.4,41.3],[87.85,5.45,36.25],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.45,42.53333],[60.9,30.6,44.5],[95.1,4.1,32.7],[87.13333,5.633333,29.52],[51.4,40,36],[91.01667,6.683333,29.01667],[70.5,18.2,33.1],[86.2,8.225,30.875],[87.66666,5.966667,31.1],[79.33334,10.26667,29.23333],[92.91666,5.15,28.92],[94.33334,3.233333,26.5],[86.8,6.25,31.8],[89.15,7.15,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[93.72,2.88,26.42],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,29.6],[95.5,2,26.9],[92.18,3.92,23.9],[88.57143,5.385714,26.575],[96.6,1.35,27.65],[90.725,4.075,30.65],[93.76667,2.2,25.575],[68.18,22.58,23.075],[91.2,3.7,27.5],[89.15,6.683333,29.08333],[92.2,4.7,34.8],[93.55,4.7,30.15],[87.1,8.6,24.1],[93,4.1,28.03333],[93.04,3.62,27.18333],[88.6,8.8,28.2],[94.54285,2.657143,24.67143],[69.45,16.75,38.65],[93.91111,2.877778,28.07778],[91.625,4.85,32.84],[88.4,5.333333,28.16667],[86.9,10,27.9],[94.78,1.58,22.31667],[91.6,4.575,27.6],[87.68,5.68,25.93333],[95.56667,1.466667,24.78],[89.425,6.125,30.7],[88.12,7.88,31.3],[94.88571,3.657143,24.86],[94.53333,3.166667,28.73333],[80.3,12.2,29.55],[86.375,5,28.925],[82.675,13.325,25.26667],[91.73333,6.5,30.96667],[81.75,14.625,31.16667],[95.225,1.95,29.2625],[90.55556,6.655556,26.46],[95.25,1.95,32.15],[94.33334,3.966667,22.76],[83.45,11.025,33.65],[88.85,5.5,26.675],[92.69167,2.825,23.50769],[64.7,26.7,29.4],[81.65,12.45,29.5],[88.85,4.1,31.1],[88.3,7.266667,31.3],[91.2,4.5,28.1],[84.26,11.98,26.92],[86.9,4.9,28.4],[90.7,3.833333,29],[90.1,7.1,21.5],[96.1,1.4,34.85],[90.3,4.7,31.9],[90.13333,5.833333,30.975],[95.3,2.25,28.8],[89.3,4.2,31.4],[88.4,9.6,26.55],[95.6,3.9,28.35],[92.96667,3.733333,28.9],[96.6,1.8,29.9],[90.7,6.52,27],[96.36667,1.3,28.05],[85.5,10.48,25.6],[93.15,1.5,23.95],[87.4,9.1,31.1],[92.1,3.766667,27.43333],[90.975,4.5,26.825],[79.8,9.65,32.25],[92.925,4.2,25.35],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[92.22222,5.433333,25.52222],[67.9,20.6,36.4],[87.3,7.15,31.25],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[93.7,2.05,33.6],[89.9,6.65,31.15],[93.83334,3.333333,23.91429],[95.46667,2.066667,32.3],[95.825,1.525,31.1],[91.6,6.1,27.9],[94.48,2.2,23.21],[97.1,1.95,28.13333],[89.575,7.375,31.8],[93,3,23.8],[78.85,15.9,31.4],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[85.7625,10.9125,23.65],[90.6,4.6,27],[93.85,3.65,18.55],[93,3.6,28.5],[98.8,0.15,23.2],[86.8,7.1,33],[93.65,2.85,24.4],[96,2.7,31.5],[87.12,4.74,32.64],[87.4,10.4,34.2],[89.95,5.15,24.2],[80.9,10.3,24.8],[92.75,3.4,30.95],[93.5,3.3,37.3],[95.8,1.9,31.9],[88.1,6.6,27.6],[91.7,5.35,27.4],[85.775,7.3,37.9],[93.2,3.95,29.26667],[96.1,2.1,34],[75.2,9.7,39.5],[89.26,4.78,31.25],[87.45715,8.1,25.25714],[92.8,4.033333,24.45],[93.3,2.65,30.85],[92.775,3.425,24],[70.7,15.6,38.6],[96.1,2,26.2],[94.2,3.56,22.18333],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[89.46667,4.8,26.66667],[93.05,2.4,22.7],[87.6,9.566667,25.6],[94,3.3,28.2],[90.4,5.9,32.06667],[96.375,1.8,26.2],[94.8,3.7,28.9],[94.375,3.725,25.6],[91.9,4.4,35.8],[91.6,5.225,22.7],[94.1,3.4,30],[89.24,7.3,30.1],[93.9,5.5,31.3],[91.25,4.375,22.93333],[79.5,15,30.7],[93.56,1.65,21.12222],[89,6.3,23.9],[95.15,2.3,27.26667],[87.7,8.3,26.93333]],"colors":[[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1]],"radii":[[1]],"centers":[[68.36,22.72,34.48],[80.625,13.65,35.95],[67.16666,26.5,35.76667],[71.15,18.25,34],[59.76667,30.66667,39.85],[60,27.25,35],[80.63333,12.36667,34.33333],[47.26,39.58,39.72],[59.16667,27.53333,37.7],[74.1,17.1,33.63334],[71.95,21.85,41.05],[46.56667,40.46667,45.76667],[62.96667,27.63333,35.6],[72.575,21.525,31.85],[51.7,38.15,37],[59.7,26.3,40.1],[58,34.15,41.23333],[73.3,16.53333,30.9],[50.85,32.225,31.675],[75.8,18.175,33.55],[66.65,24.2,38.65],[56.85,34.3,39.1],[80.06667,13.16667,28.2],[57.025,36,32.475],[51.68,38.64,39.24],[48.925,39.625,38.925],[62.4,29.95,41.95],[47.2,41.05,43.15],[75.9,16.1,33.9],[79.5,12.9,40.1],[50.7,37,37.5],[60.63334,30.8,40.93333],[84.74,9.96,32.5],[52.35,31.25,33.8],[56.45,31.35,32.5],[71.95,14.75,33.7],[77.55,8.95,30.1],[88.65,4.9,39],[67.65,20.6,36.85],[48.35,39.05,43.75],[67.6,18.2,31.7],[69.95,14.7,32.35],[54.85,28.25,41.1],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.35,39.2,40.6],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[61.95,25.25,29.475],[70.7,24.76667,32.4],[53.675,38.85,40.66667],[70,18.8,36.03333],[73.375,18.35,31.825],[67.96,23.2,35.9],[59.11666,29.15,36.45],[65.3,29,34.16667],[55.23333,35.86666,38.76667],[72.7,19.1,36.15],[71.38,19.42,36.4],[61.4,26.66667,37.8],[49.75,39.675,37.05],[1.8,52.35,33.2],[76.1,14.5,32.1],[61.83333,23.33333,36.2],[52.85,34.75,42.9],[80.75,14.45,34.775],[58.7,33.7,40.3],[71.72,19.82,34.3],[73.1,20.6,35.85],[79.8,10.6,34.55],[56.2,34.05,33.85],[79.62,12.94,32.225],[72.25,20.425,36.7],[44.33333,43.3,38.7],[55.35,32.8,36.45],[74.4,16.83333,38.63334],[75.4,17.9,37.6],[65.1,23.9,43.9],[49.5,33.7,40],[82.3,12.65,40.53333],[70.56667,18.73333,39.85],[64.875,26.7,33.8],[53.55,38.9,38.7],[81.25,11.3,36.05],[68.25,23.25,33.8],[42.75,41.75,42.8],[72,20.4,41.66667],[48.5,38.85,37.5],[62.75,24.6,36.96667],[61,28.6,40.75],[52.2,34.4,40.6],[66.1,25.96667,31.15],[70.93333,14.66667,36.2],[67.06667,21.8,31.325],[67.7,23.6,32.8],[70.63333,15.56667,32.8],[74.1,15.8,35.5],[49.95,38.25,38.75],[54.46667,35.8,35.8],[73.25,17.45,35.4],[80.15,11,33.65],[57.7,28.1,36.2],[68.3,21.3,42.45],[78.5,14.7,30.6],[75.4,14.675,35.45],[55.75,33.85,40.25],[56.15,30.35,38.65],[70,18,34.2],[75.8,19.6,41.9],[70,18.5,34.83333],[69.65,22.25,36.65],[80.675,13.525,29.875],[65.7,25.9,33.15],[61,27.175,35.56667],[59.56667,29.8,38.83333],[88.1,6.4,31.4],[67.3,25.175,35.95],[53.1,36.5,32.4],[54.3,35.4,32],[67.9,21.75,35.1],[54.4,30.8,35.45],[63,26.6,35.2],[64.3,26.6,38.35],[59.36666,31.1,36.1],[66.85,22.7,33.15],[56.65,32.75,36.75],[70.74,19.8,34.175],[76.7,16.65,37.275],[71.73333,20.76667,33.475],[66.93333,24.33333,38.66667],[63.35,26.4,35.8],[66.9,24.4,39.4],[68.9,20.53333,33.5],[70.36667,21.43333,34.9],[76.1,17.7,36.45],[69,24.33333,36.2],[71.575,21.9,33.725],[60.1,29.4,35],[66,22.6,35],[54.6,31.9,36.95],[46.65,40.05,39.5],[40.1,48.1,38.5],[60.2,29.5,30.1],[75.45,19.05,36.3],[54,37.13334,41.25],[69.3,18.83333,40.2],[75.75,16.45,29.9],[56.1,30.15,35.95],[68.4,21.1,40.76667],[68.1,23.2,41.9],[65.23333,26.96667,37],[63.1,28.8,36.15],[53.52,36.44,36.68],[66.3,23,41.75],[64.7,22.06667,37.53333],[62.275,27.1,38.3],[44.4,44.15,38.65],[48.2,38.15,36.26],[72.4,19.575,34.025],[61.76667,26.03333,37.5],[66.63333,26.16667,39.43333],[67.85,23,42.1],[78.58572,14.92857,36.77143],[80.8,13.55,40.8],[62.6,25.3,39.7],[82.7,13,33.95],[68.5,25.45,38.55],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.3],[63.5,28.4,41.3],[87.85,5.45,36.25],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.45,42.53333],[60.9,30.6,44.5],[95.1,4.1,32.7],[87.13333,5.633333,29.52],[51.4,40,36],[91.01667,6.683333,29.01667],[70.5,18.2,33.1],[86.2,8.225,30.875],[87.66666,5.966667,31.1],[79.33334,10.26667,29.23333],[92.91666,5.15,28.92],[94.33334,3.233333,26.5],[86.8,6.25,31.8],[89.15,7.15,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[93.72,2.88,26.42],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,29.6],[95.5,2,26.9],[92.18,3.92,23.9],[88.57143,5.385714,26.575],[96.6,1.35,27.65],[90.725,4.075,30.65],[93.76667,2.2,25.575],[68.18,22.58,23.075],[91.2,3.7,27.5],[89.15,6.683333,29.08333],[92.2,4.7,34.8],[93.55,4.7,30.15],[87.1,8.6,24.1],[93,4.1,28.03333],[93.04,3.62,27.18333],[88.6,8.8,28.2],[94.54285,2.657143,24.67143],[69.45,16.75,38.65],[93.91111,2.877778,28.07778],[91.625,4.85,32.84],[88.4,5.333333,28.16667],[86.9,10,27.9],[94.78,1.58,22.31667],[91.6,4.575,27.6],[87.68,5.68,25.93333],[95.56667,1.466667,24.78],[89.425,6.125,30.7],[88.12,7.88,31.3],[94.88571,3.657143,24.86],[94.53333,3.166667,28.73333],[80.3,12.2,29.55],[86.375,5,28.925],[82.675,13.325,25.26667],[91.73333,6.5,30.96667],[81.75,14.625,31.16667],[95.225,1.95,29.2625],[90.55556,6.655556,26.46],[95.25,1.95,32.15],[94.33334,3.966667,22.76],[83.45,11.025,33.65],[88.85,5.5,26.675],[92.69167,2.825,23.50769],[64.7,26.7,29.4],[81.65,12.45,29.5],[88.85,4.1,31.1],[88.3,7.266667,31.3],[91.2,4.5,28.1],[84.26,11.98,26.92],[86.9,4.9,28.4],[90.7,3.833333,29],[90.1,7.1,21.5],[96.1,1.4,34.85],[90.3,4.7,31.9],[90.13333,5.833333,30.975],[95.3,2.25,28.8],[89.3,4.2,31.4],[88.4,9.6,26.55],[95.6,3.9,28.35],[92.96667,3.733333,28.9],[96.6,1.8,29.9],[90.7,6.52,27],[96.36667,1.3,28.05],[85.5,10.48,25.6],[93.15,1.5,23.95],[87.4,9.1,31.1],[92.1,3.766667,27.43333],[90.975,4.5,26.825],[79.8,9.65,32.25],[92.925,4.2,25.35],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[92.22222,5.433333,25.52222],[67.9,20.6,36.4],[87.3,7.15,31.25],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[93.7,2.05,33.6],[89.9,6.65,31.15],[93.83334,3.333333,23.91429],[95.46667,2.066667,32.3],[95.825,1.525,31.1],[91.6,6.1,27.9],[94.48,2.2,23.21],[97.1,1.95,28.13333],[89.575,7.375,31.8],[93,3,23.8],[78.85,15.9,31.4],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[85.7625,10.9125,23.65],[90.6,4.6,27],[93.85,3.65,18.55],[93,3.6,28.5],[98.8,0.15,23.2],[86.8,7.1,33],[93.65,2.85,24.4],[96,2.7,31.5],[87.12,4.74,32.64],[87.4,10.4,34.2],[89.95,5.15,24.2],[80.9,10.3,24.8],[92.75,3.4,30.95],[93.5,3.3,37.3],[95.8,1.9,31.9],[88.1,6.6,27.6],[91.7,5.35,27.4],[85.775,7.3,37.9],[93.2,3.95,29.26667],[96.1,2.1,34],[75.2,9.7,39.5],[89.26,4.78,31.25],[87.45715,8.1,25.25714],[92.8,4.033333,24.45],[93.3,2.65,30.85],[92.775,3.425,24],[70.7,15.6,38.6],[96.1,2,26.2],[94.2,3.56,22.18333],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[89.46667,4.8,26.66667],[93.05,2.4,22.7],[87.6,9.566667,25.6],[94,3.3,28.2],[90.4,5.9,32.06667],[96.375,1.8,26.2],[94.8,3.7,28.9],[94.375,3.725,25.6],[91.9,4.4,35.8],[91.6,5.225,22.7],[94.1,3.4,30],[89.24,7.3,30.1],[93.9,5.5,31.3],[91.25,4.375,22.93333],[79.5,15,30.7],[93.56,1.65,21.12222],[89,6.3,23.9],[95.15,2.3,27.26667],[87.7,8.3,26.93333]],"ignoreExtent":false,"flags":3},"14":{"id":14,"type":"text","material":{"lit":false},"vertices":[[50.3,-9.763639,13.27982]],"colors":[[0,0,0,1]],"texts":[["Neutrophils(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[50.3,-9.763639,13.27982]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"15":{"id":15,"type":"text","material":{"lit":false},"vertices":[[-16.6219,26.25,13.27982]],"colors":[[0,0,0,1]],"texts":[["Lymphocyte(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.6219,26.25,13.27982]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"16":{"id":16,"type":"text","material":{"lit":false},"vertices":[[-16.6219,-9.763639,32.425]],"colors":[[0,0,0,1]],"texts":[["Albumin"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.6219,-9.763639,32.425]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"18":{"id":18,"type":"quads","material":{"lit":false,"back":"lines","uri":"data:image/png;base64,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"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true,"flags":8198},"10":{"id":10,"type":"light","vertices":[[0,0,1]],"colors":[[1,1,1,1],[1,1,1,1],[1,1,1,1]],"viewpoint":true,"finite":false},"9":{"id":9,"type":"background","material":{"fog":true},"colors":[[0.2980392,0.2980392,0.2980392,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"11":{"id":11,"type":"background","material":{"lit":false,"back":"lines"},"colors":[[1,1,1,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"17":{"id":17,"type":"background","material":{"lit":false,"back":"lines","uriId":18},"colors":[[1,1,1,1]],"ids":[[18]],"types":[["quads"]],"centers":[[0,0,0]],"objects":[{"id":{"id":18},"type":{"type":"quads"},"material":{"color":"#FFFFFF","lit":false,"texture":"/tmp/RtmpBTc3go/file13561b623a78.png","back":"lines"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true}],"sphere":false,"fogtype":"none","flags":0},"13":{"id":13,"type":"bboxdeco","material":{"front":"lines","back":"lines"},"vertices":[[20,"NA","NA"],[40,"NA","NA"],[60,"NA","NA"],[80,"NA","NA"],[100,"NA","NA"],["NA",0,"NA"],["NA",10,"NA"],["NA",20,"NA"],["NA",30,"NA"],["NA",40,"NA"],["NA",50,"NA"],["NA","NA",20],["NA","NA",25],["NA","NA",30],["NA","NA",35],["NA","NA",40],["NA","NA",45]],"colors":[[0,0,0,1]],"draw_front":true,"newIds":[26,27,28,29,30,31,32]},"6":{"id":6,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":6,"mouseMode":{"left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,286.4459],"modelMatrix":[[0.6761268,0,0,-34.00918],[0,0.4297156,2.220868,-83.29167],[0,-1.180634,0.8083299,-281.6644],[0,0,0,1]],"projMatrix":[[3.732051,0,0,0],[0,3.732051,0,0],[0,0,-3.863703,-1032.604],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,0.3420201,0.9396926,0],[0,-0.9396926,0.3420201,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[0.6761268,1.256404,2.363398],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":1,"bbox":[0.3209875,100.279,-0.6459222,53.14592,18.12688,46.72312],"windowRect":[492,1241,748,1497],"family":"sans","font":1,"cex":1,"useFreeType":true,"fontname":"/home/pienta/R/x86_64-pc-linux-gnu-library/3.4/rgl/fonts/FreeSans.ttf","maxClipPlanes":8,"glVersion":3,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[17,13,12,14,15,16,10,26,27,28,29,30,31,32],"subscenes":[],"flags":2643},"26":{"id":26,"type":"lines","material":{"lit":false},"vertices":[[20,-1.4528,17.69794],[100,-1.4528,17.69794],[20,-1.4528,17.69794],[20,-2.83794,16.96158],[40,-1.4528,17.69794],[40,-2.83794,16.96158],[60,-1.4528,17.69794],[60,-2.83794,16.96158],[80,-1.4528,17.69794],[80,-2.83794,16.96158],[100,-1.4528,17.69794],[100,-2.83794,16.96158]],"colors":[[0,0,0,1]],"centers":[[60,-1.4528,17.69794],[20,-2.14537,17.32976],[40,-2.14537,17.32976],[60,-2.14537,17.32976],[80,-2.14537,17.32976],[100,-2.14537,17.32976]],"ignoreExtent":true,"origId":13,"flags":64},"27":{"id":27,"type":"text","material":{"lit":false},"vertices":[[20,-5.60822,15.48888],[40,-5.60822,15.48888],[60,-5.60822,15.48888],[80,-5.60822,15.48888],[100,-5.60822,15.48888]],"colors":[[0,0,0,1]],"texts":[["20"],["40"],["60"],["80"],["100"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[20,-5.60822,15.48888],[40,-5.60822,15.48888],[60,-5.60822,15.48888],[80,-5.60822,15.48888],[100,-5.60822,15.48888]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"28":{"id":28,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,0,17.69794],[-1.178383,50,17.69794],[-1.178383,0,17.69794],[-3.752302,0,16.96158],[-1.178383,10,17.69794],[-3.752302,10,16.96158],[-1.178383,20,17.69794],[-3.752302,20,16.96158],[-1.178383,30,17.69794],[-3.752302,30,16.96158],[-1.178383,40,17.69794],[-3.752302,40,16.96158],[-1.178383,50,17.69794],[-3.752302,50,16.96158]],"colors":[[0,0,0,1]],"centers":[[-1.178383,25,17.69794],[-2.465343,0,17.32976],[-2.465343,10,17.32976],[-2.465343,20,17.32976],[-2.465343,30,17.32976],[-2.465343,40,17.32976],[-2.465343,50,17.32976]],"ignoreExtent":true,"origId":13,"flags":64},"29":{"id":29,"type":"text","material":{"lit":false},"vertices":[[-8.900141,0,15.48888],[-8.900141,10,15.48888],[-8.900141,20,15.48888],[-8.900141,30,15.48888],[-8.900141,40,15.48888],[-8.900141,50,15.48888]],"colors":[[0,0,0,1]],"texts":[["0"],["10"],["20"],["30"],["40"],["50"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.900141,0,15.48888],[-8.900141,10,15.48888],[-8.900141,20,15.48888],[-8.900141,30,15.48888],[-8.900141,40,15.48888],[-8.900141,50,15.48888]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"30":{"id":30,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,-1.4528,20],[-1.178383,-1.4528,45],[-1.178383,-1.4528,20],[-3.752302,-2.83794,20],[-1.178383,-1.4528,25],[-3.752302,-2.83794,25],[-1.178383,-1.4528,30],[-3.752302,-2.83794,30],[-1.178383,-1.4528,35],[-3.752302,-2.83794,35],[-1.178383,-1.4528,40],[-3.752302,-2.83794,40],[-1.178383,-1.4528,45],[-3.752302,-2.83794,45]],"colors":[[0,0,0,1]],"centers":[[-1.178383,-1.4528,32.5],[-2.465343,-2.14537,20],[-2.465343,-2.14537,25],[-2.465343,-2.14537,30],[-2.465343,-2.14537,35],[-2.465343,-2.14537,40],[-2.465343,-2.14537,45]],"ignoreExtent":true,"origId":13,"flags":64},"31":{"id":31,"type":"text","material":{"lit":false},"vertices":[[-8.900141,-5.60822,20],[-8.900141,-5.60822,25],[-8.900141,-5.60822,30],[-8.900141,-5.60822,35],[-8.900141,-5.60822,40],[-8.900141,-5.60822,45]],"colors":[[0,0,0,1]],"texts":[["20"],["25"],["30"],["35"],["40"],["45"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.900141,-5.60822,20],[-8.900141,-5.60822,25],[-8.900141,-5.60822,30],[-8.900141,-5.60822,35],[-8.900141,-5.60822,40],[-8.900141,-5.60822,45]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"32":{"id":32,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,-1.4528,17.69794],[-1.178383,53.9528,17.69794],[-1.178383,-1.4528,47.15206],[-1.178383,53.9528,47.15206],[-1.178383,-1.4528,17.69794],[-1.178383,-1.4528,47.15206],[-1.178383,53.9528,17.69794],[-1.178383,53.9528,47.15206],[-1.178383,-1.4528,17.69794],[101.7784,-1.4528,17.69794],[-1.178383,-1.4528,47.15206],[101.7784,-1.4528,47.15206],[-1.178383,53.9528,17.69794],[101.7784,53.9528,17.69794],[-1.178383,53.9528,47.15206],[101.7784,53.9528,47.15206],[101.7784,-1.4528,17.69794],[101.7784,53.9528,17.69794],[101.7784,-1.4528,47.15206],[101.7784,53.9528,47.15206],[101.7784,-1.4528,17.69794],[101.7784,-1.4528,47.15206],[101.7784,53.9528,17.69794],[101.7784,53.9528,47.15206]],"colors":[[0,0,0,1]],"centers":[[-1.178383,26.25,17.69794],[-1.178383,26.25,47.15206],[-1.178383,-1.4528,32.425],[-1.178383,53.9528,32.425],[50.3,-1.4528,17.69794],[50.3,-1.4528,47.15206],[50.3,53.9528,17.69794],[50.3,53.9528,47.15206],[101.7784,26.25,17.69794],[101.7784,26.25,47.15206],[101.7784,-1.4528,32.425],[101.7784,53.9528,32.425]],"ignoreExtent":true,"origId":13,"flags":64}},"snapshot":"data:image/png;base64,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","width":600,"height":600,"sphereVerts":{"vb":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1],[0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0]],"it":[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270],[17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288],[18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271]],"material":[],"normals":null,"texcoords":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1]],"meshColor":"vertices"},"context":{"shiny":false,"rmarkdown":"html_document"},"crosstalk":{"key":[],"group":[],"id":[],"options":[]}});
   rgl.prefix = "";
 </script>
 
@@ -8525,7 +6688,7 @@ rgltimerClass = function(Tick, startTime, interval, stopTime, stepSize, value, r
 	</body>
 	</html><!--/html_preserve-->
 
-## Most common biomarkers
+## Common biomarkers' change in time
 
 
 ```r
@@ -8539,66 +6702,117 @@ foo <- rbind(most_tested_death, most_tested_survival)
 
 patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup() %>% select(PATIENT_ID, RE_DATE,`neutrophils(%)`,  `(%)lymphocyte`, albumin, outcome),  by="PATIENT_ID") %>% filter(!is.na(`neutrophils(%)`) |  !is.na(`(%)lymphocyte`) | !is.na(albumin))
 
-#neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
+neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
 
-#neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-#  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
-#    geom_line() +
-#    geom_point() +
-#  facet_grid(rows=vars(outcome)) +
-#    ggtitle("Neutrophils (%) during patient hospitalization") +
-#    theme_ipsum() +
-#    ylab("Neutrophils (%)") +
-#    transition_reveal(RE_DATE)
+neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Neutrophils (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Neutrophils (%)") +
+    transition_reveal(RE_DATE)
+```
 
+![](COVID-19-analysis_files/figure-html/most_common_biomarkers-1.gif)<!-- -->
+
+```r
 #anim_save("neutrophils_seq.gif")
 
-#lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
+lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
 
-#lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-#  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
-#    geom_line() +
-#    geom_point() +
-#  facet_grid(rows=vars(outcome)) +
-#    ggtitle("Lymphocyte (%) during patient hospitalization") +
-#    theme_ipsum() +
-#    ylab("Lymphocyte (%)") +
-#    transition_reveal(RE_DATE)
+lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`(%)lymphocyte`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Lymphocyte (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Lymphocyte (%)") +
+    transition_reveal(RE_DATE)
+```
 
+![](COVID-19-analysis_files/figure-html/most_common_biomarkers-2.gif)<!-- -->
+
+```r
 #anim_save("lymphocyte_seq.gif")
 
-#albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
+albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
 
-#albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-#  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
-#    geom_line() +
-#    geom_point() +
-#  facet_grid(rows=vars(outcome)) +
-#    ggtitle("Albumin value during patient hospitalization") +
-#    theme_ipsum() +
-#    ylab("Albumin") +
-#    transition_reveal(RE_DATE)
+albumin_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=albumin, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Albumin value during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Albumin") +
+    transition_reveal(RE_DATE)
+```
 
+![](COVID-19-analysis_files/figure-html/most_common_biomarkers-3.gif)<!-- -->
+
+```r
 #anim_save("albumin_seq.gif")
 ```
 
 ## Prediction model
 
+In order to build an appropriate model, there is a need for the data cleaning. There shouldn't be any `NA` in the data set. Moreover, every considered patient should have all of considered biomarkers tested at least once. For building the model purpose, the last existing test of each biomarker for each patient was taken. As it was shown before, many biomarkers are unsuitable because of containing too many `NA` in theirs columns. Which means that they should be removed from the data set. Below is the list of remaining columns:
+
+<ul>
+<b>
+  <li>outcome</li>
+  <li>age</li>
+  <li>gender</li>
+  <li>hemoglobin</li>
+  <li>eosinophils(%)</li>
+  <li>Alkaline phosphatas</li>
+  <li>albumin</li>
+  <li>basophil(%)</li>
+  <li>Total bilirubin</li>
+  <li>Platelet count</li>
+  <li>monocytes(%)</li>
+  <li>neutrophils(%)</li>
+  <li>total protein</li>
+  <li>mean corpuscular volume</li>
+  <li>hematocrit</li>
+  <li>White blood cell count</li>
+  <li>mean corpuscular hemoglobin concentration</li>
+  <li>Urea</li>
+  <li>lymphocyte count</li>
+  <li>Red blood cell count</li>
+  <li>Eosinophil count</li>
+  <li>neutrophils count</li>
+  <li>Direct bilirubin</li>
+  <li>(%)lymphocyte</li>
+  <li>Total cholesterol</li>
+  <li>aspartate aminotransferase</li>
+  <li>Uric acid</li>
+  <li>HCO3-</li>
+  <li>Lactate dehydrogenase</li>
+  <li>monocytes count</li>
+  <li>globulin</li>
+  <li>γ-glutamyl transpeptidase</li>
+  <li>basophil count(#)</li>
+  <li>mean corpuscular hemoglobin</li>
+  <li>glutamic-pyruvic transaminase</li>
+  <li>eGFR</li>
+  <li>creatinine</li>
+  </b>
+</ul>  
+
+With condition of existing at least one of listed above biomarkers tests, 19 patients should be ignored in building model process.
+
 
 ```r
-#last_test_df %>% select(hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine)
-
-#Taking these that has at most 19 NA's (18 it's common lowest level of NA among all columns)
-#IMO that's already cleaned right now
-
-
-#cleaned_df %>% summary()
-
+cleaned_df <- cleaned_df %>% select(-PATIENT_ID)
 set.seed(23)
 inTraining <- 
     createDataPartition(
         y = cleaned_df$outcome,
-        p = .75,
+        p = .70,
         list = FALSE)
 
 
@@ -8630,36 +6844,63 @@ confusionMatrix(data = rfClasses, testing$outcome)
 ## 
 ##           Reference
 ## Prediction Death Survival
-##   Death       40        0
-##   Survival     0       48
-##                                      
-##                Accuracy : 1          
-##                  95% CI : (0.9589, 1)
-##     No Information Rate : 0.5455     
-##     P-Value [Acc > NIR] : < 2.2e-16  
-##                                      
-##                   Kappa : 1          
-##                                      
-##  Mcnemar's Test P-Value : NA         
-##                                      
-##             Sensitivity : 1.0000     
-##             Specificity : 1.0000     
-##          Pos Pred Value : 1.0000     
-##          Neg Pred Value : 1.0000     
-##              Prevalence : 0.4545     
-##          Detection Rate : 0.4545     
-##    Detection Prevalence : 0.4545     
-##       Balanced Accuracy : 1.0000     
-##                                      
-##        'Positive' Class : Death      
+##   Death       48        1
+##   Survival     0       56
+##                                           
+##                Accuracy : 0.9905          
+##                  95% CI : (0.9481, 0.9998)
+##     No Information Rate : 0.5429          
+##     P-Value [Acc > NIR] : <2e-16          
+##                                           
+##                   Kappa : 0.9808          
+##                                           
+##  Mcnemar's Test P-Value : 1               
+##                                           
+##             Sensitivity : 1.0000          
+##             Specificity : 0.9825          
+##          Pos Pred Value : 0.9796          
+##          Neg Pred Value : 1.0000          
+##              Prevalence : 0.4571          
+##          Detection Rate : 0.4571          
+##    Detection Prevalence : 0.4667          
+##       Balanced Accuracy : 0.9912          
+##                                           
+##        'Positive' Class : Death           
 ## 
 ```
 
-```r
-#df %>% group_by(PATIENT_ID) %>% summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) ))
 
-#TODO:
-# 1. Show how many patients died before any test has been taken
-# 2. Clean data before prediction and maybe use this cleaned data in some visualizations before?
-# 3. Describe model of outcome prediction
+### Imporance of attributes
+
+
+```r
+varImp(fit)
+```
+
+```
+## rf variable importance
+## 
+##   only 20 most important variables shown (out of 36)
+## 
+##                              Overall
+## `Lactate dehydrogenase`      100.000
+## `(%)lymphocyte`               56.749
+## `neutrophils(%)`              31.971
+## `Eosinophil count`            17.594
+## albumin                       15.974
+## `neutrophils count`           14.715
+## `monocytes(%)`                14.162
+## `Platelet count`              13.067
+## `lymphocyte count`            10.040
+## `aspartate aminotransferase`   9.925
+## `eosinophils(%)`               6.399
+## age                            3.518
+## `Direct bilirubin`             3.514
+## `Total cholesterol`            3.081
+## `HCO3-`                        2.540
+## Urea                           2.374
+## eGFR                           2.171
+## `γ-glutamyl transpeptidase`    1.967
+## `Alkaline phosphatase`         1.607
+## `total protein`                1.047
 ```
