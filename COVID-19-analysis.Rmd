@@ -44,7 +44,7 @@ df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 ```{r, clean_dataset}
 
 patients_df <- df %>% group_by(`Admission time`, `Discharge time`, gender, age, outcome) %>%
-summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), `Total blood tests` = n()) 
+summarise(PATIENT_ID = sum(PATIENT_ID, na.rm = TRUE), `Total records` = n()) 
 
 patients_df <- patients_df %>%
     mutate(`Days in hospital` = ceiling(difftime(`Discharge time`, `Admission time`, units = "days")))
@@ -61,8 +61,33 @@ patients_df <- patients_df %>% mutate(gender = as.factor(gender))
 df$outcome<-ifelse(df$outcome==1, 'Death', 'Survival')
 df <- df %>% mutate(outcome = as.factor(outcome))
 
+#no_re_date_summary <- df %>% filter(is.na(RE_DATE))
+
 patients_df$outcome<-ifelse(patients_df$outcome==1, 'Death', 'Survival')
 patients_df <- patients_df %>% mutate(outcome = as.factor(outcome))
+
+patients_df <- df %>% group_by(PATIENT_ID, outcome, `Admission time`, `Discharge time`, gender, age) %>% summarise(missing_test=is.na(RE_DATE)) %>%
+  group_by(PATIENT_ID, outcome, `Admission time`, `Discharge time`, gender, age) %>%
+  summarise(test_provided = ifelse(missing_test, 0, 1)) %>%
+  group_by(PATIENT_ID, outcome, `Admission time`, `Discharge time`, gender, age) %>%
+  summarise(`Total blood tests`=sum(test_provided)) %>%
+  mutate(`Days in hospital` = ceiling(difftime(`Discharge time`, `Admission time`, units = "days")))
+
+last_test_df <- df %>% 
+  group_by(PATIENT_ID, outcome, gender, age) %>% 
+  fill_(names(df)) %>% 
+  fill_(names(df), "up") %>% 
+  summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) last(x,order_by = is.na(x)))
+
+
+cleaned_df <- last_test_df %>% ungroup() %>% select(PATIENT_ID, outcome, age, gender, hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine) %>% filter_all(function(x) !is.na(x)) 
+```
+
+## Removed data
+
+```{r, removed_data}
+patients_df %>% filter(`Total blood tests`==0) 
+
 ```
 
 ## Patients summary
@@ -124,6 +149,17 @@ tbl_summary(
 
 ```
 
+## Something more about data set
+```{r, more_about}
+df %>% group_by(PATIENT_ID, outcome) %>% summarise(missing_test=is.na(RE_DATE)) %>%
+  group_by(PATIENT_ID, outcome) %>%
+  summarise(test_provided = ifelse(missing_test, 0, 1)) %>%
+  group_by(PATIENT_ID, outcome) %>%
+  summarise(tests_provided=sum(test_provided))
+
+
+
+```
 ### Finding correlation
 
 Finding correlation between outcome and other variables. Ignoring `Admission time`, `PATIENT_ID`, `RE_DATE` and `Discharge time` and dropping `outcome` which correlation with itself is equal to `1.0`.
@@ -261,21 +297,13 @@ patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup
 
 ```{r,prediction_model} 
 
-last_test_df <- df %>% 
-  group_by(PATIENT_ID, outcome, gender, age) %>% 
-  fill_(names(df)) %>% 
-  fill_(names(df), "up") %>% 
-  summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) last(x,order_by = is.na(x)))
-
-last_test_df %>% select(hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine)
+#last_test_df %>% select(hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine)
 
 #Taking these that has at most 19 NA's (18 it's common lowest level of NA among all columns)
-
 #IMO that's already cleaned right now
 
-cleaned_df <- last_test_df %>% ungroup() %>% select(outcome, age, gender, hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine) %>% filter_all(function(x) !is.na(x)) 
 
-cleaned_df %>% summary()
+#cleaned_df %>% summary()
 
 set.seed(23)
 inTraining <- 
