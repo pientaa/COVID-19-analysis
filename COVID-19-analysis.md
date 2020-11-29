@@ -1,7 +1,7 @@
 ---
 title: "COVID-19 Analysis"
 author: "Łukasz Pięta"
-date: "11/11/2020"
+date: "29/11/2020"
 output: 
   html_document: 
     keep_md: yes
@@ -13,16 +13,869 @@ output:
 
 
 
+## Executive summary
+
+Following report is inspired by [the article](https://www.nature.com/articles/s42256-020-0180-7), in which lactic dehydrogenase (LDH), lymphocyte and high-sensitivity C-reactive protein (hs-CRP) were used to build prediction model, which determines if patient (with COVID-19) will survive or not with more than 90% accuracy. </br> </br>
+In this report, firstly, all biomarkers are visualized with basic statistics. Then, patients distribution (age and gender) is analyzed and visualized with histograms and table that shows also time of hospitalization and number of total blood tests taken. </br>
+After pre-processing, some of patients are removed from data set, because they didn't have any test registered, which makes further analysis impossible. After that, all biomarkers summary is presented in the table. </br> </br>
+Finding which biomarkers are correlated with outcome (dead or survived) helps to take a closer look at the most important columns in the data set and their impact on actual course of illness. So there are three most correlated biomarkers:
+
+<ul>
+<b>
+  <li>(%)lymphocyte</li>
+  <li>neutrophils(%)</li>
+  <li>albumin</li>
+</b>
+</ul>
+ 
+ After an appropriate data cleaning, there is the prediction model build that reaches accuracy of 99%. **Lactate dehydrogenase** turned out to be the most important attribute in prediction, then **lymphocytes** comes and **neutrophils** at the third place. This makes following report reliable and consistent with the article mentioned above, where LDH is also the most important variable and lymphocyte is at the second place.
 
 
 
-## Read data
 
 ```r
 df <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 ```
 
-## Clean dataset
+## Biomarkers
+
+```r
+no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE', 'PATIENT_ID', 'age', 'gender' ))
+tbl_summary(
+    no_dates_df,
+    by = outcome,
+    missing = "no"
+            ) %>%
+    add_n() %>%
+    modify_header(label = "**Biomarker**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Final patient outcome related to the test**") %>%
+    bold_labels() 
+```
+
+<!--html_preserve--><style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#xstfpgytrx .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#xstfpgytrx .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#xstfpgytrx .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#xstfpgytrx .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#xstfpgytrx .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#xstfpgytrx .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#xstfpgytrx .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#xstfpgytrx .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#xstfpgytrx .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#xstfpgytrx .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#xstfpgytrx .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#xstfpgytrx .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#xstfpgytrx .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#xstfpgytrx .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xstfpgytrx .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xstfpgytrx .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#xstfpgytrx .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#xstfpgytrx .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xstfpgytrx .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#xstfpgytrx .gt_left {
+  text-align: left;
+}
+
+#xstfpgytrx .gt_center {
+  text-align: center;
+}
+
+#xstfpgytrx .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#xstfpgytrx .gt_font_normal {
+  font-weight: normal;
+}
+
+#xstfpgytrx .gt_font_bold {
+  font-weight: bold;
+}
+
+#xstfpgytrx .gt_font_italic {
+  font-style: italic;
+}
+
+#xstfpgytrx .gt_super {
+  font-size: 65%;
+}
+
+#xstfpgytrx .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="xstfpgytrx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_center gt_columns_bottom_border" rowspan="2" colspan="1"><strong>Biomarker</strong></th>
+      <th class="gt_col_heading gt_center gt_columns_bottom_border" rowspan="2" colspan="1"><strong>N</strong></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>Final patient outcome related to the test</strong></span>
+      </th>
+    </tr>
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>0</strong>, N = 3,215<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>1</strong>, N = 2,905<sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Hypersensitive cardiac troponinI</td>
+      <td class="gt_row gt_center">507</td>
+      <td class="gt_row gt_center">3 (2, 7)</td>
+      <td class="gt_row gt_center">70 (18, 631)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">hemoglobin</td>
+      <td class="gt_row gt_center">975</td>
+      <td class="gt_row gt_center">127 (116, 138)</td>
+      <td class="gt_row gt_center">123 (110, 135)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Serum chloride</td>
+      <td class="gt_row gt_center">975</td>
+      <td class="gt_row gt_center">101 (99, 103)</td>
+      <td class="gt_row gt_center">104 (100, 111)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin time</td>
+      <td class="gt_row gt_center">662</td>
+      <td class="gt_row gt_center">13.6 (13.1, 14.1)</td>
+      <td class="gt_row gt_center">16.3 (15.0, 18.2)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">procalcitonin</td>
+      <td class="gt_row gt_center">459</td>
+      <td class="gt_row gt_center">0.04 (0.02, 0.06)</td>
+      <td class="gt_row gt_center">0.38 (0.14, 1.13)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">eosinophils(%)</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">0.70 (0.00, 1.80)</td>
+      <td class="gt_row gt_center">0.00 (0.00, 0.10)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 2 receptor</td>
+      <td class="gt_row gt_center">268</td>
+      <td class="gt_row gt_center">529 (400, 742)</td>
+      <td class="gt_row gt_center">1,180 (807, 1,603)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Alkaline phosphatase</td>
+      <td class="gt_row gt_center">930</td>
+      <td class="gt_row gt_center">60 (50, 75)</td>
+      <td class="gt_row gt_center">83 (64, 123)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">albumin</td>
+      <td class="gt_row gt_center">934</td>
+      <td class="gt_row gt_center">36 (34, 39)</td>
+      <td class="gt_row gt_center">28 (24, 31)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">basophil(%)</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">0.20 (0.10, 0.40)</td>
+      <td class="gt_row gt_center">0.10 (0.10, 0.20)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 10</td>
+      <td class="gt_row gt_center">267</td>
+      <td class="gt_row gt_center">5 (5, 8)</td>
+      <td class="gt_row gt_center">11 (6, 17)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Total bilirubin</td>
+      <td class="gt_row gt_center">930</td>
+      <td class="gt_row gt_center">8 (6, 12)</td>
+      <td class="gt_row gt_center">14 (10, 25)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Platelet count</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">229 (176, 290)</td>
+      <td class="gt_row gt_center">112 (55, 174)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">monocytes(%)</td>
+      <td class="gt_row gt_center">958</td>
+      <td class="gt_row gt_center">8.2 (6.3, 10.0)</td>
+      <td class="gt_row gt_center">3.0 (2.0, 4.7)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">antithrombin</td>
+      <td class="gt_row gt_center">330</td>
+      <td class="gt_row gt_center">93 (86, 103)</td>
+      <td class="gt_row gt_center">80 (70, 92)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 8</td>
+      <td class="gt_row gt_center">268</td>
+      <td class="gt_row gt_center">11 (7, 19)</td>
+      <td class="gt_row gt_center">30 (18, 61)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">indirect bilirubin</td>
+      <td class="gt_row gt_center">906</td>
+      <td class="gt_row gt_center">4.9 (3.4, 7.1)</td>
+      <td class="gt_row gt_center">6.2 (4.2, 9.2)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell distribution width</td>
+      <td class="gt_row gt_center">923</td>
+      <td class="gt_row gt_center">12.20 (11.80, 12.80)</td>
+      <td class="gt_row gt_center">13.20 (12.40, 14.40)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils(%)</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">66 (56, 76)</td>
+      <td class="gt_row gt_center">92 (88, 95)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">total protein</td>
+      <td class="gt_row gt_center">931</td>
+      <td class="gt_row gt_center">68 (65, 72)</td>
+      <td class="gt_row gt_center">62 (57, 68)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Quantification of Treponema pallidum antibodies</td>
+      <td class="gt_row gt_center">279</td>
+      <td class="gt_row gt_center">0.05 (0.04, 0.07)</td>
+      <td class="gt_row gt_center">0.06 (0.04, 0.07)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin activity</td>
+      <td class="gt_row gt_center">659</td>
+      <td class="gt_row gt_center">94 (88, 103)</td>
+      <td class="gt_row gt_center">66 (56, 78)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">HBsAg</td>
+      <td class="gt_row gt_center">279</td>
+      <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
+      <td class="gt_row gt_center">0.01 (0.00, 0.02)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular volume</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">89.8 (86.8, 91.9)</td>
+      <td class="gt_row gt_center">91.3 (87.1, 96.4)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">hematocrit</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">37.1 (34.3, 39.9)</td>
+      <td class="gt_row gt_center">35.9 (32.5, 39.8)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">White blood cell count</td>
+      <td class="gt_row gt_center">1,127</td>
+      <td class="gt_row gt_center">6 (4, 8)</td>
+      <td class="gt_row gt_center">12 (8, 17)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Tumor necrosis factorα</td>
+      <td class="gt_row gt_center">268</td>
+      <td class="gt_row gt_center">8 (6, 10)</td>
+      <td class="gt_row gt_center">11 (8, 17)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin concentration</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">343 (335, 350)</td>
+      <td class="gt_row gt_center">342 (331, 350)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">fibrinogen</td>
+      <td class="gt_row gt_center">566</td>
+      <td class="gt_row gt_center">4.40 (3.56, 5.34)</td>
+      <td class="gt_row gt_center">3.92 (2.44, 5.63)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 1β</td>
+      <td class="gt_row gt_center">268</td>
+      <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
+      <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Urea</td>
+      <td class="gt_row gt_center">936</td>
+      <td class="gt_row gt_center">4 (3, 5)</td>
+      <td class="gt_row gt_center">11 (7, 17)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">lymphocyte count</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">1.25 (0.87, 1.62)</td>
+      <td class="gt_row gt_center">0.46 (0.31, 0.69)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">PH value</td>
+      <td class="gt_row gt_center">384</td>
+      <td class="gt_row gt_center">6.50 (6.00, 7.00)</td>
+      <td class="gt_row gt_center">6.50 (6.00, 7.41)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell count</td>
+      <td class="gt_row gt_center">1,127</td>
+      <td class="gt_row gt_center">4.2 (3.8, 4.7)</td>
+      <td class="gt_row gt_center">4.0 (3.6, 4.6)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Eosinophil count</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">0.03 (0.00, 0.09)</td>
+      <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Corrected calcium</td>
+      <td class="gt_row gt_center">914</td>
+      <td class="gt_row gt_center">2.37 (2.27, 2.44)</td>
+      <td class="gt_row gt_center">2.35 (2.27, 2.44)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Serum potassium</td>
+      <td class="gt_row gt_center">980</td>
+      <td class="gt_row gt_center">4.28 (3.92, 4.62)</td>
+      <td class="gt_row gt_center">4.60 (4.04, 5.27)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">glucose</td>
+      <td class="gt_row gt_center">775</td>
+      <td class="gt_row gt_center">5.7 (5.0, 7.6)</td>
+      <td class="gt_row gt_center">9.1 (6.9, 13.3)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils count</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">3.5 (2.4, 5.2)</td>
+      <td class="gt_row gt_center">10.8 (7.0, 15.2)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Direct bilirubin</td>
+      <td class="gt_row gt_center">930</td>
+      <td class="gt_row gt_center">4 (2, 5)</td>
+      <td class="gt_row gt_center">8 (5, 14)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Mean platelet volume</td>
+      <td class="gt_row gt_center">862</td>
+      <td class="gt_row gt_center">10.40 (9.90, 11.00)</td>
+      <td class="gt_row gt_center">11.30 (10.70, 12.20)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">ferritin</td>
+      <td class="gt_row gt_center">283</td>
+      <td class="gt_row gt_center">504 (235, 834)</td>
+      <td class="gt_row gt_center">1,636 (928, 2,517)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">RBC distribution width SD</td>
+      <td class="gt_row gt_center">923</td>
+      <td class="gt_row gt_center">39.5 (37.6, 41.4)</td>
+      <td class="gt_row gt_center">43.7 (39.9, 48.5)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Thrombin time</td>
+      <td class="gt_row gt_center">566</td>
+      <td class="gt_row gt_center">16.40 (15.60, 17.30)</td>
+      <td class="gt_row gt_center">17.30 (15.80, 19.75)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">(%)lymphocyte</td>
+      <td class="gt_row gt_center">958</td>
+      <td class="gt_row gt_center">24 (16, 33)</td>
+      <td class="gt_row gt_center">4 (2, 7)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">HCV antibody quantification</td>
+      <td class="gt_row gt_center">279</td>
+      <td class="gt_row gt_center">0.06 (0.04, 0.08)</td>
+      <td class="gt_row gt_center">0.07 (0.04, 0.11)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">D-D dimer</td>
+      <td class="gt_row gt_center">630</td>
+      <td class="gt_row gt_center">1 (0, 1)</td>
+      <td class="gt_row gt_center">19 (3, 21)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Total cholesterol</td>
+      <td class="gt_row gt_center">931</td>
+      <td class="gt_row gt_center">3.93 (3.39, 4.48)</td>
+      <td class="gt_row gt_center">3.32 (2.72, 3.88)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">aspartate aminotransferase</td>
+      <td class="gt_row gt_center">935</td>
+      <td class="gt_row gt_center">21 (17, 29)</td>
+      <td class="gt_row gt_center">38 (25, 59)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Uric acid</td>
+      <td class="gt_row gt_center">934</td>
+      <td class="gt_row gt_center">240 (193, 304)</td>
+      <td class="gt_row gt_center">245 (166, 374)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">HCO3-</td>
+      <td class="gt_row gt_center">934</td>
+      <td class="gt_row gt_center">24.7 (22.8, 26.7)</td>
+      <td class="gt_row gt_center">21.8 (18.8, 24.7)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">calcium</td>
+      <td class="gt_row gt_center">979</td>
+      <td class="gt_row gt_center">2.17 (2.10, 2.25)</td>
+      <td class="gt_row gt_center">2.00 (1.90, 2.08)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Amino-terminal brain natriuretic peptide precursor(NT-proBNP)</td>
+      <td class="gt_row gt_center">475</td>
+      <td class="gt_row gt_center">64 (23, 166)</td>
+      <td class="gt_row gt_center">1,467 (516, 4,578)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Lactate dehydrogenase</td>
+      <td class="gt_row gt_center">934</td>
+      <td class="gt_row gt_center">220 (189, 278)</td>
+      <td class="gt_row gt_center">593 (431, 840)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">platelet large cell ratio</td>
+      <td class="gt_row gt_center">862</td>
+      <td class="gt_row gt_center">28 (23, 33)</td>
+      <td class="gt_row gt_center">35 (30, 42)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 6</td>
+      <td class="gt_row gt_center">272</td>
+      <td class="gt_row gt_center">8 (2, 21)</td>
+      <td class="gt_row gt_center">66 (30, 142)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Fibrin degradation products</td>
+      <td class="gt_row gt_center">330</td>
+      <td class="gt_row gt_center">4 (4, 4)</td>
+      <td class="gt_row gt_center">114 (18, 150)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">monocytes count</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">0.43 (0.32, 0.58)</td>
+      <td class="gt_row gt_center">0.36 (0.20, 0.58)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">PLT distribution width</td>
+      <td class="gt_row gt_center">862</td>
+      <td class="gt_row gt_center">11.70 (10.70, 13.00)</td>
+      <td class="gt_row gt_center">13.60 (12.10, 15.93)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">globulin</td>
+      <td class="gt_row gt_center">930</td>
+      <td class="gt_row gt_center">31.8 (29.5, 35.2)</td>
+      <td class="gt_row gt_center">34.1 (30.2, 38.2)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">γ-glutamyl transpeptidase</td>
+      <td class="gt_row gt_center">930</td>
+      <td class="gt_row gt_center">29 (19, 46)</td>
+      <td class="gt_row gt_center">42 (27, 79)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">International standard ratio</td>
+      <td class="gt_row gt_center">659</td>
+      <td class="gt_row gt_center">1.04 (0.99, 1.09)</td>
+      <td class="gt_row gt_center">1.31 (1.17, 1.48)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">basophil count(#)</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">0.010 (0.010, 0.020)</td>
+      <td class="gt_row gt_center">0.010 (0.010, 0.030)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">2019-nCoV nucleic acid detection</td>
+      <td class="gt_row gt_center">501</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center"></td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">-1</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">444 (100%)</td>
+      <td class="gt_row gt_center">57 (100%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin</td>
+      <td class="gt_row gt_center">957</td>
+      <td class="gt_row gt_center">30.70 (29.60, 31.90)</td>
+      <td class="gt_row gt_center">31.20 (29.90, 32.70)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Activation of partial thromboplastin time</td>
+      <td class="gt_row gt_center">568</td>
+      <td class="gt_row gt_center">39 (35, 43)</td>
+      <td class="gt_row gt_center">40 (36, 45)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">High sensitivity C-reactive protein</td>
+      <td class="gt_row gt_center">737</td>
+      <td class="gt_row gt_center">7 (2, 35)</td>
+      <td class="gt_row gt_center">114 (65, 191)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">HIV antibody quantification</td>
+      <td class="gt_row gt_center">278</td>
+      <td class="gt_row gt_center">0.09 (0.08, 0.11)</td>
+      <td class="gt_row gt_center">0.08 (0.07, 0.11)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">serum sodium</td>
+      <td class="gt_row gt_center">975</td>
+      <td class="gt_row gt_center">140 (138, 141)</td>
+      <td class="gt_row gt_center">142 (138, 148)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">thrombocytocrit</td>
+      <td class="gt_row gt_center">862</td>
+      <td class="gt_row gt_center">0.24 (0.19, 0.30)</td>
+      <td class="gt_row gt_center">0.15 (0.10, 0.21)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">ESR</td>
+      <td class="gt_row gt_center">383</td>
+      <td class="gt_row gt_center">26 (13, 40)</td>
+      <td class="gt_row gt_center">36 (16, 59)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">glutamic-pyruvic transaminase</td>
+      <td class="gt_row gt_center">931</td>
+      <td class="gt_row gt_center">21 (15, 36)</td>
+      <td class="gt_row gt_center">26 (18, 44)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">eGFR</td>
+      <td class="gt_row gt_center">936</td>
+      <td class="gt_row gt_center">100 (85, 114)</td>
+      <td class="gt_row gt_center">72 (43, 91)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">creatinine</td>
+      <td class="gt_row gt_center">936</td>
+      <td class="gt_row gt_center">64 (54, 83)</td>
+      <td class="gt_row gt_center">88 (68, 130)</td>
+    </tr>
+  </tbody>
+  
+  <tfoot>
+    <tr class="gt_footnotes">
+      <td colspan="4">
+        <p class="gt_footnote">
+          <sup class="gt_footnote_marks">
+            <em>1</em>
+          </sup>
+           
+          Statistics presented: Median (IQR); n (%)
+          <br />
+        </p>
+      </td>
+    </tr>
+  </tfoot>
+</table></div><!--/html_preserve-->
+
+## Clean data set
+
+Data after cleaning:
+
 
 ```r
 patients_df <- df %>% group_by(`Admission time`, `Discharge time`, gender, age, outcome) %>%
@@ -60,17 +913,11 @@ last_test_df <- df %>%
 
 
 cleaned_df <- last_test_df %>% ungroup() %>% select(PATIENT_ID, outcome, age, gender, hemoglobin, `eosinophils(%)`, `Alkaline phosphatase`, albumin, `basophil(%)`, `Total bilirubin`, `Platelet count`, `monocytes(%)`, `neutrophils(%)`, `total protein`, `mean corpuscular volume`, hematocrit, `White blood cell count`, `mean corpuscular hemoglobin concentration`, Urea, `lymphocyte count`, `Red blood cell count`, `Eosinophil count`, `neutrophils count`, `Direct bilirubin`, `(%)lymphocyte`, `Total cholesterol`, `aspartate aminotransferase`, `Uric acid`, `HCO3-`, `Lactate dehydrogenase`, `monocytes count`, globulin, `γ-glutamyl transpeptidase`, `basophil count(#)`, `mean corpuscular hemoglobin`, `glutamic-pyruvic transaminase`, eGFR, creatinine) %>% filter_all(function(x) !is.na(x)) 
-```
 
-## Patients summary
-
-```r
-patients_summary <- patients_df %>% ungroup() %>% select(-c(age, PATIENT_ID))
 
 tbl_summary(
-    patients_summary,
-    by = outcome,
-    label = gender ~ "Gender",
+    cleaned_df %>% ungroup() %>% select(-PATIENT_ID),
+    by = outcome
 ) %>%
     add_n() %>%
     modify_header(label = "") %>%
@@ -82,7 +929,7 @@ tbl_summary(
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#rfhzboblej .gt_table {
+#tnckggmbqe .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -107,7 +954,7 @@ tbl_summary(
   border-left-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_heading {
+#tnckggmbqe .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -119,7 +966,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_title {
+#tnckggmbqe .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -129,7 +976,7 @@ tbl_summary(
   border-bottom-width: 0;
 }
 
-#rfhzboblej .gt_subtitle {
+#tnckggmbqe .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -139,13 +986,13 @@ tbl_summary(
   border-top-width: 0;
 }
 
-#rfhzboblej .gt_bottom_border {
+#tnckggmbqe .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_col_headings {
+#tnckggmbqe .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -160,7 +1007,7 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_col_heading {
+#tnckggmbqe .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -180,7 +1027,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#rfhzboblej .gt_column_spanner_outer {
+#tnckggmbqe .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -192,15 +1039,15 @@ tbl_summary(
   padding-right: 4px;
 }
 
-#rfhzboblej .gt_column_spanner_outer:first-child {
+#tnckggmbqe .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rfhzboblej .gt_column_spanner_outer:last-child {
+#tnckggmbqe .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rfhzboblej .gt_column_spanner {
+#tnckggmbqe .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -212,7 +1059,7 @@ tbl_summary(
   width: 100%;
 }
 
-#rfhzboblej .gt_group_heading {
+#tnckggmbqe .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -234,7 +1081,7 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#rfhzboblej .gt_empty_group_heading {
+#tnckggmbqe .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -249,15 +1096,15 @@ tbl_summary(
   vertical-align: middle;
 }
 
-#rfhzboblej .gt_from_md > :first-child {
+#tnckggmbqe .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rfhzboblej .gt_from_md > :last-child {
+#tnckggmbqe .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rfhzboblej .gt_row {
+#tnckggmbqe .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -276,7 +1123,7 @@ tbl_summary(
   overflow-x: hidden;
 }
 
-#rfhzboblej .gt_stub {
+#tnckggmbqe .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -288,7 +1135,7 @@ tbl_summary(
   padding-left: 12px;
 }
 
-#rfhzboblej .gt_summary_row {
+#tnckggmbqe .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -298,7 +1145,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#rfhzboblej .gt_first_summary_row {
+#tnckggmbqe .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -308,7 +1155,7 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_grand_summary_row {
+#tnckggmbqe .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -318,7 +1165,7 @@ tbl_summary(
   padding-right: 5px;
 }
 
-#rfhzboblej .gt_first_grand_summary_row {
+#tnckggmbqe .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -328,11 +1175,11 @@ tbl_summary(
   border-top-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_striped {
+#tnckggmbqe .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rfhzboblej .gt_table_body {
+#tnckggmbqe .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -341,7 +1188,7 @@ tbl_summary(
   border-bottom-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_footnotes {
+#tnckggmbqe .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -355,13 +1202,13 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_footnote {
+#tnckggmbqe .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#rfhzboblej .gt_sourcenotes {
+#tnckggmbqe .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -375,46 +1222,725 @@ tbl_summary(
   border-right-color: #D3D3D3;
 }
 
-#rfhzboblej .gt_sourcenote {
+#tnckggmbqe .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#rfhzboblej .gt_left {
+#tnckggmbqe .gt_left {
   text-align: left;
 }
 
-#rfhzboblej .gt_center {
+#tnckggmbqe .gt_center {
   text-align: center;
 }
 
-#rfhzboblej .gt_right {
+#tnckggmbqe .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rfhzboblej .gt_font_normal {
+#tnckggmbqe .gt_font_normal {
   font-weight: normal;
 }
 
-#rfhzboblej .gt_font_bold {
+#tnckggmbqe .gt_font_bold {
   font-weight: bold;
 }
 
-#rfhzboblej .gt_font_italic {
+#tnckggmbqe .gt_font_italic {
   font-style: italic;
 }
 
-#rfhzboblej .gt_super {
+#tnckggmbqe .gt_super {
   font-size: 65%;
 }
 
-#rfhzboblej .gt_footnote_marks {
+#tnckggmbqe .gt_footnote_marks {
   font-style: italic;
   font-size: 65%;
 }
 </style>
-<div id="rfhzboblej" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+<div id="tnckggmbqe" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Overall</strong>, N = 354<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 162<sup class="gt_footnote_marks">1</sup></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 192<sup class="gt_footnote_marks">1</sup></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">age</td>
+      <td class="gt_row gt_center">62 (46, 70)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">69 (62, 77)</td>
+      <td class="gt_row gt_center">51 (37, 62)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">gender</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center"></td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Female</td>
+      <td class="gt_row gt_center">147 (42%)</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">45 (28%)</td>
+      <td class="gt_row gt_center">102 (53%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Male</td>
+      <td class="gt_row gt_center">207 (58%)</td>
+      <td class="gt_row gt_center"></td>
+      <td class="gt_row gt_center">117 (72%)</td>
+      <td class="gt_row gt_center">90 (47%)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">hemoglobin</td>
+      <td class="gt_row gt_center">125 (112, 138)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">120 (108, 138)</td>
+      <td class="gt_row gt_center">127 (117, 138)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">eosinophils(%)</td>
+      <td class="gt_row gt_center">0.20 (0.00, 1.50)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">0.00 (0.00, 0.10)</td>
+      <td class="gt_row gt_center">1.30 (0.60, 2.10)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Alkaline phosphatase</td>
+      <td class="gt_row gt_center">72 (54, 98)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">94 (68, 131)</td>
+      <td class="gt_row gt_center">60 (50, 75)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">albumin</td>
+      <td class="gt_row gt_center">33.2 (28.2, 37.6)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">27.6 (24.1, 31.1)</td>
+      <td class="gt_row gt_center">37.1 (34.1, 39.3)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">basophil(%)</td>
+      <td class="gt_row gt_center">0.20 (0.10, 0.40)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">0.10 (0.10, 0.20)</td>
+      <td class="gt_row gt_center">0.30 (0.20, 0.50)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Total bilirubin</td>
+      <td class="gt_row gt_center">11 (7, 16)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">13 (10, 22)</td>
+      <td class="gt_row gt_center">8 (6, 12)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Platelet count</td>
+      <td class="gt_row gt_center">189 (113, 257)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">109 (54, 168)</td>
+      <td class="gt_row gt_center">242 (196, 299)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">monocytes(%)</td>
+      <td class="gt_row gt_center">6.2 (2.9, 8.9)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">2.8 (2.0, 4.6)</td>
+      <td class="gt_row gt_center">8.4 (7.0, 10.1)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils(%)</td>
+      <td class="gt_row gt_center">78 (62, 92)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">93 (88, 95)</td>
+      <td class="gt_row gt_center">64 (55, 71)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">total protein</td>
+      <td class="gt_row gt_center">66 (61, 70)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">62 (57, 68)</td>
+      <td class="gt_row gt_center">68 (65, 71)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular volume</td>
+      <td class="gt_row gt_center">90.5 (87.0, 94.3)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">91.2 (87.1, 96.2)</td>
+      <td class="gt_row gt_center">90.1 (87.0, 92.7)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">hematocrit</td>
+      <td class="gt_row gt_center">36.3 (33.0, 40.2)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">35.3 (32.1, 40.6)</td>
+      <td class="gt_row gt_center">37.0 (34.1, 40.1)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">White blood cell count</td>
+      <td class="gt_row gt_center">8 (5, 13)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">12 (8, 17)</td>
+      <td class="gt_row gt_center">6 (4, 8)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin concentration</td>
+      <td class="gt_row gt_center">342 (332, 349)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">342 (328, 350)</td>
+      <td class="gt_row gt_center">342 (334, 349)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Urea</td>
+      <td class="gt_row gt_center">5 (4, 11)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">12 (7, 20)</td>
+      <td class="gt_row gt_center">4 (3, 5)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">lymphocyte count</td>
+      <td class="gt_row gt_center">0.98 (0.52, 1.54)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">0.50 (0.30, 0.72)</td>
+      <td class="gt_row gt_center">1.47 (1.11, 1.81)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell count</td>
+      <td class="gt_row gt_center">4.10 (3.55, 4.65)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">3.96 (3.51, 4.62)</td>
+      <td class="gt_row gt_center">4.16 (3.60, 4.65)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Eosinophil count</td>
+      <td class="gt_row gt_center">0.02 (0.00, 0.09)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
+      <td class="gt_row gt_center">0.08 (0.03, 0.12)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils count</td>
+      <td class="gt_row gt_center">5 (3, 11)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">12 (8, 16)</td>
+      <td class="gt_row gt_center">3 (3, 5)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Direct bilirubin</td>
+      <td class="gt_row gt_center">5 (3, 7)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">7 (5, 12)</td>
+      <td class="gt_row gt_center">3 (2, 5)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">(%)lymphocyte</td>
+      <td class="gt_row gt_center">14 (4, 28)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">4 (2, 7)</td>
+      <td class="gt_row gt_center">26 (19, 33)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Total cholesterol</td>
+      <td class="gt_row gt_center">3.72 (2.95, 4.37)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">3.13 (2.58, 3.65)</td>
+      <td class="gt_row gt_center">4.25 (3.65, 4.71)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">aspartate aminotransferase</td>
+      <td class="gt_row gt_center">25 (19, 41)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">40 (28, 66)</td>
+      <td class="gt_row gt_center">20 (16, 25)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Uric acid</td>
+      <td class="gt_row gt_center">260 (198, 346)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">258 (188, 391)</td>
+      <td class="gt_row gt_center">260 (204, 326)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">HCO3-</td>
+      <td class="gt_row gt_center">23.9 (20.9, 26.4)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">21.0 (17.5, 23.6)</td>
+      <td class="gt_row gt_center">25.6 (23.8, 27.4)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">Lactate dehydrogenase</td>
+      <td class="gt_row gt_center">274 (197, 615)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">652 (471, 889)</td>
+      <td class="gt_row gt_center">202 (177, 240)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">monocytes count</td>
+      <td class="gt_row gt_center">0.43 (0.31, 0.61)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">0.38 (0.20, 0.60)</td>
+      <td class="gt_row gt_center">0.47 (0.37, 0.62)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">globulin</td>
+      <td class="gt_row gt_center">32.4 (28.9, 35.7)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">34.1 (30.7, 38.0)</td>
+      <td class="gt_row gt_center">30.9 (28.1, 33.4)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">γ-glutamyl transpeptidase</td>
+      <td class="gt_row gt_center">33 (21, 55)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">42 (27, 75)</td>
+      <td class="gt_row gt_center">28 (18, 44)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">basophil count(#)</td>
+      <td class="gt_row gt_center">0.020 (0.010, 0.030)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">0.010 (0.010, 0.030)</td>
+      <td class="gt_row gt_center">0.020 (0.010, 0.030)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin</td>
+      <td class="gt_row gt_center">30.90 (29.70, 32.20)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">31.20 (29.92, 32.48)</td>
+      <td class="gt_row gt_center">30.80 (29.60, 32.12)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">glutamic-pyruvic transaminase</td>
+      <td class="gt_row gt_center">26 (17, 42)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">29 (18, 47)</td>
+      <td class="gt_row gt_center">24 (16, 38)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">eGFR</td>
+      <td class="gt_row gt_center">90 (67, 105)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">68 (35, 92)</td>
+      <td class="gt_row gt_center">99 (86, 112)</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left" style="font-weight: bold;">creatinine</td>
+      <td class="gt_row gt_center">74 (58, 97)</td>
+      <td class="gt_row gt_center">354</td>
+      <td class="gt_row gt_center">94 (65, 151)</td>
+      <td class="gt_row gt_center">65 (55, 83)</td>
+    </tr>
+  </tbody>
+  
+  <tfoot>
+    <tr class="gt_footnotes">
+      <td colspan="5">
+        <p class="gt_footnote">
+          <sup class="gt_footnote_marks">
+            <em>1</em>
+          </sup>
+           
+          Statistics presented: Median (IQR); n (%)
+          <br />
+        </p>
+      </td>
+    </tr>
+  </tfoot>
+</table></div><!--/html_preserve-->
+
+### Removed data
+
+It's good to note, that there are patients, who didn't have any test taken.
+
+
+```r
+patients_df %>% filter(`Total blood tests`==0) 
+```
+
+<div class="kable-table">
+
+| PATIENT_ID|outcome  |Admission time      |Discharge time      |gender | age| Total blood tests|Days in hospital |
+|----------:|:--------|:-------------------|:-------------------|:------|---:|-----------------:|:----------------|
+|        187|Survival |2020-02-17 18:56:09 |2020-02-20 20:55:31 |Male   |  44|                 0|4 days           |
+|        189|Survival |2020-02-10 04:37:30 |2020-02-10 13:54:23 |Male   |  61|                 0|1 days           |
+|        192|Survival |2020-02-16 17:14:30 |2020-02-16 21:05:17 |Male   |  34|                 0|1 days           |
+|        197|Survival |2020-02-10 05:01:15 |2020-02-11 15:40:41 |Male   |  67|                 0|2 days           |
+|        200|Survival |2020-02-16 04:41:21 |2020-02-16 15:26:13 |Male   |  25|                 0|1 days           |
+|        201|Survival |2020-02-17 21:30:07 |2020-02-20 13:05:11 |Male   |  39|                 0|3 days           |
+|        253|Death    |2020-02-13 21:05:54 |2020-02-14 11:00:05 |Male   |  51|                 0|1 days           |
+|        268|Death    |2020-02-14 11:46:36 |2020-02-15 10:15:28 |Male   |  69|                 0|1 days           |
+|        285|Death    |2020-01-31 23:20:40 |2020-02-01 03:16:34 |Male   |  63|                 0|1 days           |
+|        289|Death    |2020-02-01 02:12:05 |2020-02-01 10:54:57 |Male   |  63|                 0|1 days           |
+|        311|Death    |2020-02-11 23:45:15 |2020-02-15 09:02:41 |Female |  77|                 0|4 days           |
+|        347|Death    |2020-02-11 22:25:20 |2020-02-15 10:03:32 |Female |  80|                 0|4 days           |
+|        354|Death    |2020-02-03 21:22:41 |2020-02-04 01:03:11 |Male   |  57|                 0|1 days           |
+|        359|Death    |2020-02-11 01:42:48 |2020-02-14 09:38:13 |Male   |  65|                 0|4 days           |
+
+</div>
+
+
+## Patients summary
+
+```r
+patients_summary <- patients_df %>% ungroup() %>% select(-c(age, PATIENT_ID))
+
+tbl_summary(
+    patients_summary,
+    by = outcome,
+    label = gender ~ "Gender",
+) %>%
+    add_n() %>%
+    modify_header(label = "") %>%
+    add_overall() %>%
+    bold_labels() 
+```
+
+<!--html_preserve--><style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#okxyykvnyp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#okxyykvnyp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#okxyykvnyp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#okxyykvnyp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#okxyykvnyp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#okxyykvnyp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#okxyykvnyp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#okxyykvnyp .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#okxyykvnyp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#okxyykvnyp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#okxyykvnyp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#okxyykvnyp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#okxyykvnyp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#okxyykvnyp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#okxyykvnyp .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#okxyykvnyp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#okxyykvnyp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#okxyykvnyp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#okxyykvnyp .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#okxyykvnyp .gt_left {
+  text-align: left;
+}
+
+#okxyykvnyp .gt_center {
+  text-align: center;
+}
+
+#okxyykvnyp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#okxyykvnyp .gt_font_normal {
+  font-weight: normal;
+}
+
+#okxyykvnyp .gt_font_bold {
+  font-weight: bold;
+}
+
+#okxyykvnyp .gt_font_italic {
+  font-style: italic;
+}
+
+#okxyykvnyp .gt_super {
+  font-size: 65%;
+}
+
+#okxyykvnyp .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="okxyykvnyp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
   
   <thead class="gt_col_headings">
     <tr>
@@ -486,7 +2012,7 @@ tbl_summary(
 
 ![](COVID-19-analysis_files/figure-html/data_transformed-1.png)<!-- -->
 
-### Patients grouped by outcome, age and gender
+### Grouped by outcome, age and gender
 
 ```r
  ggplot(patients_df, aes(x=age,fill=outcome)) + geom_histogram(binwidth = 1) + facet_grid(outcome ~ gender) + scale_x_continuous(name="Age", limits=c(min(df$age), max(df$age)), breaks = seq(0, 100, by=10)) + scale_y_continuous(name = "Number of patients", limits = c(0,9), breaks = seq(0,9, by=1)) +
@@ -495,7 +2021,7 @@ tbl_summary(
 
 ![](COVID-19-analysis_files/figure-html/gender_distribution-1.png)<!-- -->
 
-### Patients grouped by outcome and hospitalization duration
+### Grouped by outcome and hospitalization duration
 
 ```r
 ggplot(patients_df, aes(x=`Days in hospital`, fill=outcome)) + geom_histogram(binwidth = 1) + facet_grid(. ~ outcome)  + ylab("Number of patients") +
@@ -504,7 +2030,7 @@ ggplot(patients_df, aes(x=`Days in hospital`, fill=outcome)) + geom_histogram(bi
 
 ![](COVID-19-analysis_files/figure-html/hospitalization_duration-1.png)<!-- -->
 
-### Patients grouped by outcome and total blood tests taken
+### Grouped by outcome and total blood tests taken
 
 ```r
 ggplot(patients_df, aes(x=`Total blood tests`, fill=outcome)) + geom_histogram(binwidth = 1) + facet_grid(. ~ outcome)  + ylab("Number of patients") +
@@ -515,876 +2041,13 @@ ggplot(patients_df, aes(x=`Total blood tests`, fill=outcome)) + geom_histogram(b
 
 ![](COVID-19-analysis_files/figure-html/total_blood_tests-1.png)<!-- -->
 
-## Removed data
-
-
-```r
-patients_df %>% filter(`Total blood tests`==0) 
-```
-
-<div class="kable-table">
-
-| PATIENT_ID|outcome  |Admission time      |Discharge time      |gender | age| Total blood tests|Days in hospital |
-|----------:|:--------|:-------------------|:-------------------|:------|---:|-----------------:|:----------------|
-|        187|Survival |2020-02-17 18:56:09 |2020-02-20 20:55:31 |Male   |  44|                 0|4 days           |
-|        189|Survival |2020-02-10 04:37:30 |2020-02-10 13:54:23 |Male   |  61|                 0|1 days           |
-|        192|Survival |2020-02-16 17:14:30 |2020-02-16 21:05:17 |Male   |  34|                 0|1 days           |
-|        197|Survival |2020-02-10 05:01:15 |2020-02-11 15:40:41 |Male   |  67|                 0|2 days           |
-|        200|Survival |2020-02-16 04:41:21 |2020-02-16 15:26:13 |Male   |  25|                 0|1 days           |
-|        201|Survival |2020-02-17 21:30:07 |2020-02-20 13:05:11 |Male   |  39|                 0|3 days           |
-|        253|Death    |2020-02-13 21:05:54 |2020-02-14 11:00:05 |Male   |  51|                 0|1 days           |
-|        268|Death    |2020-02-14 11:46:36 |2020-02-15 10:15:28 |Male   |  69|                 0|1 days           |
-|        285|Death    |2020-01-31 23:20:40 |2020-02-01 03:16:34 |Male   |  63|                 0|1 days           |
-|        289|Death    |2020-02-01 02:12:05 |2020-02-01 10:54:57 |Male   |  63|                 0|1 days           |
-|        311|Death    |2020-02-11 23:45:15 |2020-02-15 09:02:41 |Female |  77|                 0|4 days           |
-|        347|Death    |2020-02-11 22:25:20 |2020-02-15 10:03:32 |Female |  80|                 0|4 days           |
-|        354|Death    |2020-02-03 21:22:41 |2020-02-04 01:03:11 |Male   |  57|                 0|1 days           |
-|        359|Death    |2020-02-11 01:42:48 |2020-02-14 09:38:13 |Male   |  65|                 0|4 days           |
-
-</div>
-
-## Biomarkers
-
-```r
-no_dates_df <- df %>% select(-c('Admission time', 'Discharge time', 'RE_DATE', 'PATIENT_ID', 'age', 'gender' ))
-tbl_summary(
-    no_dates_df,
-    by = outcome,
-    missing = "no"
-            ) %>%
-    add_n() %>%
-    modify_header(label = "**Biomarker**") %>%
-  modify_spanning_header(c("stat_1", "stat_2") ~ "**Final patient outcome related to the test**") %>%
-    bold_labels() 
-```
-
-<!--html_preserve--><style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-#llmgqhurfo .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#llmgqhurfo .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 4px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#llmgqhurfo .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#llmgqhurfo .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#llmgqhurfo .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#llmgqhurfo .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#llmgqhurfo .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#llmgqhurfo .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#llmgqhurfo .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#llmgqhurfo .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#llmgqhurfo .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#llmgqhurfo .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#llmgqhurfo .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#llmgqhurfo .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#llmgqhurfo .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#llmgqhurfo .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#llmgqhurfo .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#llmgqhurfo .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#llmgqhurfo .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#llmgqhurfo .gt_left {
-  text-align: left;
-}
-
-#llmgqhurfo .gt_center {
-  text-align: center;
-}
-
-#llmgqhurfo .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#llmgqhurfo .gt_font_normal {
-  font-weight: normal;
-}
-
-#llmgqhurfo .gt_font_bold {
-  font-weight: bold;
-}
-
-#llmgqhurfo .gt_font_italic {
-  font-style: italic;
-}
-
-#llmgqhurfo .gt_super {
-  font-size: 65%;
-}
-
-#llmgqhurfo .gt_footnote_marks {
-  font-style: italic;
-  font-size: 65%;
-}
-</style>
-<div id="llmgqhurfo" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_center gt_columns_bottom_border" rowspan="2" colspan="1"><strong>Biomarker</strong></th>
-      <th class="gt_col_heading gt_center gt_columns_bottom_border" rowspan="2" colspan="1"><strong>N</strong></th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
-        <span class="gt_column_spanner"><strong>Final patient outcome related to the test</strong></span>
-      </th>
-    </tr>
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 2,905<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 3,215<sup class="gt_footnote_marks">1</sup></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Hypersensitive cardiac troponinI</td>
-      <td class="gt_row gt_center">507</td>
-      <td class="gt_row gt_center">70 (18, 631)</td>
-      <td class="gt_row gt_center">3 (2, 7)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">hemoglobin</td>
-      <td class="gt_row gt_center">975</td>
-      <td class="gt_row gt_center">123 (110, 135)</td>
-      <td class="gt_row gt_center">127 (116, 138)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Serum chloride</td>
-      <td class="gt_row gt_center">975</td>
-      <td class="gt_row gt_center">104 (100, 111)</td>
-      <td class="gt_row gt_center">101 (99, 103)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin time</td>
-      <td class="gt_row gt_center">662</td>
-      <td class="gt_row gt_center">16.3 (15.0, 18.2)</td>
-      <td class="gt_row gt_center">13.6 (13.1, 14.1)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">procalcitonin</td>
-      <td class="gt_row gt_center">459</td>
-      <td class="gt_row gt_center">0.38 (0.14, 1.13)</td>
-      <td class="gt_row gt_center">0.04 (0.02, 0.06)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">eosinophils(%)</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">0.00 (0.00, 0.10)</td>
-      <td class="gt_row gt_center">0.70 (0.00, 1.80)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 2 receptor</td>
-      <td class="gt_row gt_center">268</td>
-      <td class="gt_row gt_center">1,180 (807, 1,603)</td>
-      <td class="gt_row gt_center">529 (400, 742)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Alkaline phosphatase</td>
-      <td class="gt_row gt_center">930</td>
-      <td class="gt_row gt_center">83 (64, 123)</td>
-      <td class="gt_row gt_center">60 (50, 75)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">albumin</td>
-      <td class="gt_row gt_center">934</td>
-      <td class="gt_row gt_center">28 (24, 31)</td>
-      <td class="gt_row gt_center">36 (34, 39)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">basophil(%)</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">0.10 (0.10, 0.20)</td>
-      <td class="gt_row gt_center">0.20 (0.10, 0.40)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 10</td>
-      <td class="gt_row gt_center">267</td>
-      <td class="gt_row gt_center">11 (6, 17)</td>
-      <td class="gt_row gt_center">5 (5, 8)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Total bilirubin</td>
-      <td class="gt_row gt_center">930</td>
-      <td class="gt_row gt_center">14 (10, 25)</td>
-      <td class="gt_row gt_center">8 (6, 12)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Platelet count</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">112 (55, 174)</td>
-      <td class="gt_row gt_center">229 (176, 290)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">monocytes(%)</td>
-      <td class="gt_row gt_center">958</td>
-      <td class="gt_row gt_center">3.0 (2.0, 4.7)</td>
-      <td class="gt_row gt_center">8.2 (6.3, 10.0)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">antithrombin</td>
-      <td class="gt_row gt_center">330</td>
-      <td class="gt_row gt_center">80 (70, 92)</td>
-      <td class="gt_row gt_center">93 (86, 103)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 8</td>
-      <td class="gt_row gt_center">268</td>
-      <td class="gt_row gt_center">30 (18, 61)</td>
-      <td class="gt_row gt_center">11 (7, 19)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">indirect bilirubin</td>
-      <td class="gt_row gt_center">906</td>
-      <td class="gt_row gt_center">6.2 (4.2, 9.2)</td>
-      <td class="gt_row gt_center">4.9 (3.4, 7.1)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell distribution width</td>
-      <td class="gt_row gt_center">923</td>
-      <td class="gt_row gt_center">13.20 (12.40, 14.40)</td>
-      <td class="gt_row gt_center">12.20 (11.80, 12.80)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils(%)</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">92 (88, 95)</td>
-      <td class="gt_row gt_center">66 (56, 76)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">total protein</td>
-      <td class="gt_row gt_center">931</td>
-      <td class="gt_row gt_center">62 (57, 68)</td>
-      <td class="gt_row gt_center">68 (65, 72)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Quantification of Treponema pallidum antibodies</td>
-      <td class="gt_row gt_center">279</td>
-      <td class="gt_row gt_center">0.06 (0.04, 0.07)</td>
-      <td class="gt_row gt_center">0.05 (0.04, 0.07)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Prothrombin activity</td>
-      <td class="gt_row gt_center">659</td>
-      <td class="gt_row gt_center">66 (56, 78)</td>
-      <td class="gt_row gt_center">94 (88, 103)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HBsAg</td>
-      <td class="gt_row gt_center">279</td>
-      <td class="gt_row gt_center">0.01 (0.00, 0.02)</td>
-      <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular volume</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">91.3 (87.1, 96.4)</td>
-      <td class="gt_row gt_center">89.8 (86.8, 91.9)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">hematocrit</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">35.9 (32.5, 39.8)</td>
-      <td class="gt_row gt_center">37.1 (34.3, 39.9)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">White blood cell count</td>
-      <td class="gt_row gt_center">1,127</td>
-      <td class="gt_row gt_center">12 (8, 17)</td>
-      <td class="gt_row gt_center">6 (4, 8)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Tumor necrosis factorα</td>
-      <td class="gt_row gt_center">268</td>
-      <td class="gt_row gt_center">11 (8, 17)</td>
-      <td class="gt_row gt_center">8 (6, 10)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin concentration</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">342 (331, 350)</td>
-      <td class="gt_row gt_center">343 (335, 350)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">fibrinogen</td>
-      <td class="gt_row gt_center">566</td>
-      <td class="gt_row gt_center">3.92 (2.44, 5.63)</td>
-      <td class="gt_row gt_center">4.40 (3.56, 5.34)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 1β</td>
-      <td class="gt_row gt_center">268</td>
-      <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
-      <td class="gt_row gt_center">5.0 (5.0, 5.0)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Urea</td>
-      <td class="gt_row gt_center">936</td>
-      <td class="gt_row gt_center">11 (7, 17)</td>
-      <td class="gt_row gt_center">4 (3, 5)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">lymphocyte count</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">0.46 (0.31, 0.69)</td>
-      <td class="gt_row gt_center">1.25 (0.87, 1.62)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">PH value</td>
-      <td class="gt_row gt_center">384</td>
-      <td class="gt_row gt_center">6.50 (6.00, 7.41)</td>
-      <td class="gt_row gt_center">6.50 (6.00, 7.00)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Red blood cell count</td>
-      <td class="gt_row gt_center">1,127</td>
-      <td class="gt_row gt_center">4.0 (3.6, 4.6)</td>
-      <td class="gt_row gt_center">4.2 (3.8, 4.7)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Eosinophil count</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">0.00 (0.00, 0.01)</td>
-      <td class="gt_row gt_center">0.03 (0.00, 0.09)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Corrected calcium</td>
-      <td class="gt_row gt_center">914</td>
-      <td class="gt_row gt_center">2.35 (2.27, 2.44)</td>
-      <td class="gt_row gt_center">2.37 (2.27, 2.44)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Serum potassium</td>
-      <td class="gt_row gt_center">980</td>
-      <td class="gt_row gt_center">4.60 (4.04, 5.27)</td>
-      <td class="gt_row gt_center">4.28 (3.92, 4.62)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">glucose</td>
-      <td class="gt_row gt_center">775</td>
-      <td class="gt_row gt_center">9.1 (6.9, 13.3)</td>
-      <td class="gt_row gt_center">5.7 (5.0, 7.6)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">neutrophils count</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">10.8 (7.0, 15.2)</td>
-      <td class="gt_row gt_center">3.5 (2.4, 5.2)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Direct bilirubin</td>
-      <td class="gt_row gt_center">930</td>
-      <td class="gt_row gt_center">8 (5, 14)</td>
-      <td class="gt_row gt_center">4 (2, 5)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Mean platelet volume</td>
-      <td class="gt_row gt_center">862</td>
-      <td class="gt_row gt_center">11.30 (10.70, 12.20)</td>
-      <td class="gt_row gt_center">10.40 (9.90, 11.00)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">ferritin</td>
-      <td class="gt_row gt_center">283</td>
-      <td class="gt_row gt_center">1,636 (928, 2,517)</td>
-      <td class="gt_row gt_center">504 (235, 834)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">RBC distribution width SD</td>
-      <td class="gt_row gt_center">923</td>
-      <td class="gt_row gt_center">43.7 (39.9, 48.5)</td>
-      <td class="gt_row gt_center">39.5 (37.6, 41.4)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Thrombin time</td>
-      <td class="gt_row gt_center">566</td>
-      <td class="gt_row gt_center">17.30 (15.80, 19.75)</td>
-      <td class="gt_row gt_center">16.40 (15.60, 17.30)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">(%)lymphocyte</td>
-      <td class="gt_row gt_center">958</td>
-      <td class="gt_row gt_center">4 (2, 7)</td>
-      <td class="gt_row gt_center">24 (16, 33)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HCV antibody quantification</td>
-      <td class="gt_row gt_center">279</td>
-      <td class="gt_row gt_center">0.07 (0.04, 0.11)</td>
-      <td class="gt_row gt_center">0.06 (0.04, 0.08)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">D-D dimer</td>
-      <td class="gt_row gt_center">630</td>
-      <td class="gt_row gt_center">19 (3, 21)</td>
-      <td class="gt_row gt_center">1 (0, 1)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Total cholesterol</td>
-      <td class="gt_row gt_center">931</td>
-      <td class="gt_row gt_center">3.32 (2.72, 3.88)</td>
-      <td class="gt_row gt_center">3.93 (3.39, 4.48)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">aspartate aminotransferase</td>
-      <td class="gt_row gt_center">935</td>
-      <td class="gt_row gt_center">38 (25, 59)</td>
-      <td class="gt_row gt_center">21 (17, 29)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Uric acid</td>
-      <td class="gt_row gt_center">934</td>
-      <td class="gt_row gt_center">245 (166, 374)</td>
-      <td class="gt_row gt_center">240 (193, 304)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HCO3-</td>
-      <td class="gt_row gt_center">934</td>
-      <td class="gt_row gt_center">21.8 (18.8, 24.7)</td>
-      <td class="gt_row gt_center">24.7 (22.8, 26.7)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">calcium</td>
-      <td class="gt_row gt_center">979</td>
-      <td class="gt_row gt_center">2.00 (1.90, 2.08)</td>
-      <td class="gt_row gt_center">2.17 (2.10, 2.25)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Amino-terminal brain natriuretic peptide precursor(NT-proBNP)</td>
-      <td class="gt_row gt_center">475</td>
-      <td class="gt_row gt_center">1,467 (516, 4,578)</td>
-      <td class="gt_row gt_center">64 (23, 166)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Lactate dehydrogenase</td>
-      <td class="gt_row gt_center">934</td>
-      <td class="gt_row gt_center">593 (431, 840)</td>
-      <td class="gt_row gt_center">220 (189, 278)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">platelet large cell ratio</td>
-      <td class="gt_row gt_center">862</td>
-      <td class="gt_row gt_center">35 (30, 42)</td>
-      <td class="gt_row gt_center">28 (23, 33)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Interleukin 6</td>
-      <td class="gt_row gt_center">272</td>
-      <td class="gt_row gt_center">66 (30, 142)</td>
-      <td class="gt_row gt_center">8 (2, 21)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Fibrin degradation products</td>
-      <td class="gt_row gt_center">330</td>
-      <td class="gt_row gt_center">114 (18, 150)</td>
-      <td class="gt_row gt_center">4 (4, 4)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">monocytes count</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">0.36 (0.20, 0.58)</td>
-      <td class="gt_row gt_center">0.43 (0.32, 0.58)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">PLT distribution width</td>
-      <td class="gt_row gt_center">862</td>
-      <td class="gt_row gt_center">13.60 (12.10, 15.93)</td>
-      <td class="gt_row gt_center">11.70 (10.70, 13.00)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">globulin</td>
-      <td class="gt_row gt_center">930</td>
-      <td class="gt_row gt_center">34.1 (30.2, 38.2)</td>
-      <td class="gt_row gt_center">31.8 (29.5, 35.2)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">γ-glutamyl transpeptidase</td>
-      <td class="gt_row gt_center">930</td>
-      <td class="gt_row gt_center">42 (27, 79)</td>
-      <td class="gt_row gt_center">29 (19, 46)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">International standard ratio</td>
-      <td class="gt_row gt_center">659</td>
-      <td class="gt_row gt_center">1.31 (1.17, 1.48)</td>
-      <td class="gt_row gt_center">1.04 (0.99, 1.09)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">basophil count(#)</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">0.010 (0.010, 0.030)</td>
-      <td class="gt_row gt_center">0.010 (0.010, 0.020)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">2019-nCoV nucleic acid detection</td>
-      <td class="gt_row gt_center">501</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center"></td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">-1</td>
-      <td class="gt_row gt_center"></td>
-      <td class="gt_row gt_center">57 (100%)</td>
-      <td class="gt_row gt_center">444 (100%)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">mean corpuscular hemoglobin</td>
-      <td class="gt_row gt_center">957</td>
-      <td class="gt_row gt_center">31.20 (29.90, 32.70)</td>
-      <td class="gt_row gt_center">30.70 (29.60, 31.90)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Activation of partial thromboplastin time</td>
-      <td class="gt_row gt_center">568</td>
-      <td class="gt_row gt_center">40 (36, 45)</td>
-      <td class="gt_row gt_center">39 (35, 43)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">High sensitivity C-reactive protein</td>
-      <td class="gt_row gt_center">737</td>
-      <td class="gt_row gt_center">114 (65, 191)</td>
-      <td class="gt_row gt_center">7 (2, 35)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">HIV antibody quantification</td>
-      <td class="gt_row gt_center">278</td>
-      <td class="gt_row gt_center">0.08 (0.07, 0.11)</td>
-      <td class="gt_row gt_center">0.09 (0.08, 0.11)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">serum sodium</td>
-      <td class="gt_row gt_center">975</td>
-      <td class="gt_row gt_center">142 (138, 148)</td>
-      <td class="gt_row gt_center">140 (138, 141)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">thrombocytocrit</td>
-      <td class="gt_row gt_center">862</td>
-      <td class="gt_row gt_center">0.15 (0.10, 0.21)</td>
-      <td class="gt_row gt_center">0.24 (0.19, 0.30)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">ESR</td>
-      <td class="gt_row gt_center">383</td>
-      <td class="gt_row gt_center">36 (16, 59)</td>
-      <td class="gt_row gt_center">26 (13, 40)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">glutamic-pyruvic transaminase</td>
-      <td class="gt_row gt_center">931</td>
-      <td class="gt_row gt_center">26 (18, 44)</td>
-      <td class="gt_row gt_center">21 (15, 36)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">eGFR</td>
-      <td class="gt_row gt_center">936</td>
-      <td class="gt_row gt_center">72 (43, 91)</td>
-      <td class="gt_row gt_center">100 (85, 114)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">creatinine</td>
-      <td class="gt_row gt_center">936</td>
-      <td class="gt_row gt_center">88 (68, 130)</td>
-      <td class="gt_row gt_center">64 (54, 83)</td>
-    </tr>
-  </tbody>
-  
-  <tfoot>
-    <tr class="gt_footnotes">
-      <td colspan="4">
-        <p class="gt_footnote">
-          <sup class="gt_footnote_marks">
-            <em>1</em>
-          </sup>
-           
-          Statistics presented: Median (IQR); n (%)
-          <br />
-        </p>
-      </td>
-    </tr>
-  </tfoot>
-</table></div><!--/html_preserve-->
-
 ### Finding correlation
 
-Finding correlation between outcome and other variables. Ignoring `Admission time`, `PATIENT_ID`, `RE_DATE` and `Discharge time`, and dropping `outcome`, which correlation with itself is equal to `1.0`.
+Finding correlation between outcome and other variables.
 
 
 ```r
-cor_df <-df
+cor_df <-cleaned_df
 
 cor_df$outcome<-ifelse(cor_df$outcome=='Death', 1, 0)
 cor_df$gender<-ifelse(cor_df$gender=='Male', 1, 0)
@@ -1392,7 +2055,7 @@ cor_df$gender<-ifelse(cor_df$gender=='Male', 1, 0)
 cor_df <- cor_df %>% rename(isMale=gender)
 cor_df <- cor_df %>% rename(Death=outcome)
 
-cor_df <- cor_df %>% select (-c(`Admission time`, PATIENT_ID, RE_DATE, `Discharge time` ))
+cor_df <- cor_df %>% select (-PATIENT_ID)
 
 corrMatrix <- cor(cor_df[sapply(cor_df, is.numeric)], use='pairwise.complete.obs')
 
@@ -1406,45 +2069,36 @@ correlation_df %>% rownames_to_column('variable') %>% filter(variable != 'Death'
 
 <div class="kable-table">
 
-|variable                            | Outcome correlation|
-|:-----------------------------------|-------------------:|
-|neutrophils(%)                      |           0.7258383|
-|(%)lymphocyte                       |           0.7230203|
-|albumin                             |           0.6892432|
-|Prothrombin activity                |           0.6562405|
-|High sensitivity C-reactive protein |           0.6524696|
-|D-D dimer                           |           0.6368244|
-|Lactate dehydrogenase               |           0.6230357|
-|neutrophils count                   |           0.6071749|
-|Fibrin degradation products         |           0.6044110|
-|age                                 |           0.5860651|
+|variable              | Outcome correlation|
+|:---------------------|-------------------:|
+|(%)lymphocyte         |           0.7608148|
+|neutrophils(%)        |           0.7594852|
+|albumin               |           0.7164566|
+|Lactate dehydrogenase |           0.6892054|
+|neutrophils count     |           0.6300651|
+|Platelet count        |           0.5817254|
+|age                   |           0.5569920|
+|eosinophils(%)        |           0.5511621|
+|HCO3-                 |           0.5371294|
+|monocytes(%)          |           0.5097846|
 
 </div>
 
 ### Use of correlation
 
-In following section, we will use 3 biomarkers that are most correlated to outcome and visualize theirs mean values among each patient at 3D graph. So we take only these patients who had all of these 3 biomarkers tested at least once. If somebody was tested more than once, then mean value of all tests for each biomarker is calculated.
+In following section, we will use 3 biomarkers that are most correlated to outcome and visualize theirs mean values among each patient at 3D graph. So we take only these patients who had all of these 3 biomarkers tested at least once. If somebody was tested more than once, then the last value will be taken.
 
 
 ```r
-#TODO: Take for correlation cleaned_df and check if it's consistent with predictive model
-
-new_df  <- df
-
-new_df <- new_df %>% select(PATIENT_ID, `neutrophils(%)`, `(%)lymphocyte`, albumin, outcome) %>%
-    group_by(PATIENT_ID, outcome) %>%
-    summarise(Neutrophils_mean = mean(`neutrophils(%)`, na.rm = TRUE), Lymphocyte_mean = mean(`(%)lymphocyte`, na.rm = TRUE), albumin_mean = mean(`albumin`, na.rm = TRUE))
-
-new_df <- new_df %>% filter(!is.nan(Neutrophils_mean) & !is.nan(Lymphocyte_mean) & !is.nan(albumin_mean))
-
+corr_visualize_df  <- cleaned_df
 
 mycolors <- c('royalblue1', 'darkcyan')
-new_df$color <- mycolors[ as.numeric(new_df$outcome) ]
+corr_visualize_df$color <- mycolors[ as.numeric(corr_visualize_df$outcome) ]
 
 par(mar=c(0,0,0,0))
 plot3d( 
-    x=new_df$Neutrophils_mean, y=new_df$Lymphocyte_mean, z=new_df$albumin_mean, 
-    col = new_df$color, 
+    x=corr_visualize_df$`neutrophils(%)`, y=corr_visualize_df$`(%)lymphocyte`, z=corr_visualize_df$albumin, 
+    col = corr_visualize_df$color, 
     type = 's', 
     radius = 1,
     legend=TRUE,
@@ -1454,406 +2108,6 @@ legend3d("topright", legend = c('Death', 'Survival'), pch = 10, col = mycolors, 
 writeWebGL( filename="3d_correlation_mean.html" ,  width=600, height=600)
 ```
 
-Data after cleaning and transformation:
-
-
-```r
-tbl_summary(
-    new_df %>% ungroup() %>%rename(`Neutrophils(%)` = Neutrophils_mean, `Lymphocyte(%)` = Lymphocyte_mean, `Albumin`= albumin_mean) %>% select(-PATIENT_ID, -color),
-    by = outcome
-) %>%
-    add_n() %>%
-    modify_header(label = "**Mean value of**") %>%
-    add_overall() %>%
-    bold_labels() 
-```
-
-<!--html_preserve--><style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-#oacdjucfqi .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#oacdjucfqi .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 4px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#oacdjucfqi .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#oacdjucfqi .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#oacdjucfqi .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#oacdjucfqi .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#oacdjucfqi .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#oacdjucfqi .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#oacdjucfqi .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#oacdjucfqi .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#oacdjucfqi .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#oacdjucfqi .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#oacdjucfqi .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#oacdjucfqi .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#oacdjucfqi .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#oacdjucfqi .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#oacdjucfqi .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#oacdjucfqi .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#oacdjucfqi .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#oacdjucfqi .gt_left {
-  text-align: left;
-}
-
-#oacdjucfqi .gt_center {
-  text-align: center;
-}
-
-#oacdjucfqi .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#oacdjucfqi .gt_font_normal {
-  font-weight: normal;
-}
-
-#oacdjucfqi .gt_font_bold {
-  font-weight: bold;
-}
-
-#oacdjucfqi .gt_font_italic {
-  font-style: italic;
-}
-
-#oacdjucfqi .gt_super {
-  font-size: 65%;
-}
-
-#oacdjucfqi .gt_footnote_marks {
-  font-style: italic;
-  font-size: 65%;
-}
-</style>
-<div id="oacdjucfqi" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><strong>Mean value of</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Overall</strong>, N = 354<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>N</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Death</strong>, N = 162<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Survival</strong>, N = 192<sup class="gt_footnote_marks">1</sup></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Neutrophils(%)</td>
-      <td class="gt_row gt_center">77 (63, 91)</td>
-      <td class="gt_row gt_center">354</td>
-      <td class="gt_row gt_center">91 (87, 94)</td>
-      <td class="gt_row gt_center">66 (56, 72)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Lymphocyte(%)</td>
-      <td class="gt_row gt_center">15 (5, 26)</td>
-      <td class="gt_row gt_center">354</td>
-      <td class="gt_row gt_center">5 (3, 8)</td>
-      <td class="gt_row gt_center">25 (18, 31)</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left" style="font-weight: bold;">Albumin</td>
-      <td class="gt_row gt_center">33.1 (29.1, 37.0)</td>
-      <td class="gt_row gt_center">354</td>
-      <td class="gt_row gt_center">28.9 (26.3, 31.2)</td>
-      <td class="gt_row gt_center">36.5 (33.9, 39.4)</td>
-    </tr>
-  </tbody>
-  
-  <tfoot>
-    <tr class="gt_footnotes">
-      <td colspan="5">
-        <p class="gt_footnote">
-          <sup class="gt_footnote_marks">
-            <em>1</em>
-          </sup>
-           
-          Statistics presented: Median (IQR)
-          <br />
-        </p>
-      </td>
-    </tr>
-  </tfoot>
-</table></div><!--/html_preserve-->
 
 
 ```r
@@ -6671,7 +6925,7 @@ rgltimerClass = function(Tick, startTime, interval, stopTime, stepSize, value, r
   div.width = 600;
   div.height = 600;
   rgl.initialize(div,
-                         {"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":false,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0]},"rootSubscene":6,"objects":{"12":{"id":12,"type":"spheres","material":{},"vertices":[[68.36,22.72,34.48],[80.625,13.65,35.95],[67.16666,26.5,35.76667],[71.15,18.25,34],[59.76667,30.66667,39.85],[60,27.25,35],[80.63333,12.36667,34.33333],[47.26,39.58,39.72],[59.16667,27.53333,37.7],[74.1,17.1,33.63334],[71.95,21.85,41.05],[46.56667,40.46667,45.76667],[62.96667,27.63333,35.6],[72.575,21.525,31.85],[51.7,38.15,37],[59.7,26.3,40.1],[58,34.15,41.23333],[73.3,16.53333,30.9],[50.85,32.225,31.675],[75.8,18.175,33.55],[66.65,24.2,38.65],[56.85,34.3,39.1],[80.06667,13.16667,28.2],[57.025,36,32.475],[51.68,38.64,39.24],[48.925,39.625,38.925],[62.4,29.95,41.95],[47.2,41.05,43.15],[75.9,16.1,33.9],[79.5,12.9,40.1],[50.7,37,37.5],[60.63334,30.8,40.93333],[84.74,9.96,32.5],[52.35,31.25,33.8],[56.45,31.35,32.5],[71.95,14.75,33.7],[77.55,8.95,30.1],[88.65,4.9,39],[67.65,20.6,36.85],[48.35,39.05,43.75],[67.6,18.2,31.7],[69.95,14.7,32.35],[54.85,28.25,41.1],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.35,39.2,40.6],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[61.95,25.25,29.475],[70.7,24.76667,32.4],[53.675,38.85,40.66667],[70,18.8,36.03333],[73.375,18.35,31.825],[67.96,23.2,35.9],[59.11666,29.15,36.45],[65.3,29,34.16667],[55.23333,35.86666,38.76667],[72.7,19.1,36.15],[71.38,19.42,36.4],[61.4,26.66667,37.8],[49.75,39.675,37.05],[1.8,52.35,33.2],[76.1,14.5,32.1],[61.83333,23.33333,36.2],[52.85,34.75,42.9],[80.75,14.45,34.775],[58.7,33.7,40.3],[71.72,19.82,34.3],[73.1,20.6,35.85],[79.8,10.6,34.55],[56.2,34.05,33.85],[79.62,12.94,32.225],[72.25,20.425,36.7],[44.33333,43.3,38.7],[55.35,32.8,36.45],[74.4,16.83333,38.63334],[75.4,17.9,37.6],[65.1,23.9,43.9],[49.5,33.7,40],[82.3,12.65,40.53333],[70.56667,18.73333,39.85],[64.875,26.7,33.8],[53.55,38.9,38.7],[81.25,11.3,36.05],[68.25,23.25,33.8],[42.75,41.75,42.8],[72,20.4,41.66667],[48.5,38.85,37.5],[62.75,24.6,36.96667],[61,28.6,40.75],[52.2,34.4,40.6],[66.1,25.96667,31.15],[70.93333,14.66667,36.2],[67.06667,21.8,31.325],[67.7,23.6,32.8],[70.63333,15.56667,32.8],[74.1,15.8,35.5],[49.95,38.25,38.75],[54.46667,35.8,35.8],[73.25,17.45,35.4],[80.15,11,33.65],[57.7,28.1,36.2],[68.3,21.3,42.45],[78.5,14.7,30.6],[75.4,14.675,35.45],[55.75,33.85,40.25],[56.15,30.35,38.65],[70,18,34.2],[75.8,19.6,41.9],[70,18.5,34.83333],[69.65,22.25,36.65],[80.675,13.525,29.875],[65.7,25.9,33.15],[61,27.175,35.56667],[59.56667,29.8,38.83333],[88.1,6.4,31.4],[67.3,25.175,35.95],[53.1,36.5,32.4],[54.3,35.4,32],[67.9,21.75,35.1],[54.4,30.8,35.45],[63,26.6,35.2],[64.3,26.6,38.35],[59.36666,31.1,36.1],[66.85,22.7,33.15],[56.65,32.75,36.75],[70.74,19.8,34.175],[76.7,16.65,37.275],[71.73333,20.76667,33.475],[66.93333,24.33333,38.66667],[63.35,26.4,35.8],[66.9,24.4,39.4],[68.9,20.53333,33.5],[70.36667,21.43333,34.9],[76.1,17.7,36.45],[69,24.33333,36.2],[71.575,21.9,33.725],[60.1,29.4,35],[66,22.6,35],[54.6,31.9,36.95],[46.65,40.05,39.5],[40.1,48.1,38.5],[60.2,29.5,30.1],[75.45,19.05,36.3],[54,37.13334,41.25],[69.3,18.83333,40.2],[75.75,16.45,29.9],[56.1,30.15,35.95],[68.4,21.1,40.76667],[68.1,23.2,41.9],[65.23333,26.96667,37],[63.1,28.8,36.15],[53.52,36.44,36.68],[66.3,23,41.75],[64.7,22.06667,37.53333],[62.275,27.1,38.3],[44.4,44.15,38.65],[48.2,38.15,36.26],[72.4,19.575,34.025],[61.76667,26.03333,37.5],[66.63333,26.16667,39.43333],[67.85,23,42.1],[78.58572,14.92857,36.77143],[80.8,13.55,40.8],[62.6,25.3,39.7],[82.7,13,33.95],[68.5,25.45,38.55],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.3],[63.5,28.4,41.3],[87.85,5.45,36.25],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.45,42.53333],[60.9,30.6,44.5],[95.1,4.1,32.7],[87.13333,5.633333,29.52],[51.4,40,36],[91.01667,6.683333,29.01667],[70.5,18.2,33.1],[86.2,8.225,30.875],[87.66666,5.966667,31.1],[79.33334,10.26667,29.23333],[92.91666,5.15,28.92],[94.33334,3.233333,26.5],[86.8,6.25,31.8],[89.15,7.15,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[93.72,2.88,26.42],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,29.6],[95.5,2,26.9],[92.18,3.92,23.9],[88.57143,5.385714,26.575],[96.6,1.35,27.65],[90.725,4.075,30.65],[93.76667,2.2,25.575],[68.18,22.58,23.075],[91.2,3.7,27.5],[89.15,6.683333,29.08333],[92.2,4.7,34.8],[93.55,4.7,30.15],[87.1,8.6,24.1],[93,4.1,28.03333],[93.04,3.62,27.18333],[88.6,8.8,28.2],[94.54285,2.657143,24.67143],[69.45,16.75,38.65],[93.91111,2.877778,28.07778],[91.625,4.85,32.84],[88.4,5.333333,28.16667],[86.9,10,27.9],[94.78,1.58,22.31667],[91.6,4.575,27.6],[87.68,5.68,25.93333],[95.56667,1.466667,24.78],[89.425,6.125,30.7],[88.12,7.88,31.3],[94.88571,3.657143,24.86],[94.53333,3.166667,28.73333],[80.3,12.2,29.55],[86.375,5,28.925],[82.675,13.325,25.26667],[91.73333,6.5,30.96667],[81.75,14.625,31.16667],[95.225,1.95,29.2625],[90.55556,6.655556,26.46],[95.25,1.95,32.15],[94.33334,3.966667,22.76],[83.45,11.025,33.65],[88.85,5.5,26.675],[92.69167,2.825,23.50769],[64.7,26.7,29.4],[81.65,12.45,29.5],[88.85,4.1,31.1],[88.3,7.266667,31.3],[91.2,4.5,28.1],[84.26,11.98,26.92],[86.9,4.9,28.4],[90.7,3.833333,29],[90.1,7.1,21.5],[96.1,1.4,34.85],[90.3,4.7,31.9],[90.13333,5.833333,30.975],[95.3,2.25,28.8],[89.3,4.2,31.4],[88.4,9.6,26.55],[95.6,3.9,28.35],[92.96667,3.733333,28.9],[96.6,1.8,29.9],[90.7,6.52,27],[96.36667,1.3,28.05],[85.5,10.48,25.6],[93.15,1.5,23.95],[87.4,9.1,31.1],[92.1,3.766667,27.43333],[90.975,4.5,26.825],[79.8,9.65,32.25],[92.925,4.2,25.35],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[92.22222,5.433333,25.52222],[67.9,20.6,36.4],[87.3,7.15,31.25],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[93.7,2.05,33.6],[89.9,6.65,31.15],[93.83334,3.333333,23.91429],[95.46667,2.066667,32.3],[95.825,1.525,31.1],[91.6,6.1,27.9],[94.48,2.2,23.21],[97.1,1.95,28.13333],[89.575,7.375,31.8],[93,3,23.8],[78.85,15.9,31.4],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[85.7625,10.9125,23.65],[90.6,4.6,27],[93.85,3.65,18.55],[93,3.6,28.5],[98.8,0.15,23.2],[86.8,7.1,33],[93.65,2.85,24.4],[96,2.7,31.5],[87.12,4.74,32.64],[87.4,10.4,34.2],[89.95,5.15,24.2],[80.9,10.3,24.8],[92.75,3.4,30.95],[93.5,3.3,37.3],[95.8,1.9,31.9],[88.1,6.6,27.6],[91.7,5.35,27.4],[85.775,7.3,37.9],[93.2,3.95,29.26667],[96.1,2.1,34],[75.2,9.7,39.5],[89.26,4.78,31.25],[87.45715,8.1,25.25714],[92.8,4.033333,24.45],[93.3,2.65,30.85],[92.775,3.425,24],[70.7,15.6,38.6],[96.1,2,26.2],[94.2,3.56,22.18333],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[89.46667,4.8,26.66667],[93.05,2.4,22.7],[87.6,9.566667,25.6],[94,3.3,28.2],[90.4,5.9,32.06667],[96.375,1.8,26.2],[94.8,3.7,28.9],[94.375,3.725,25.6],[91.9,4.4,35.8],[91.6,5.225,22.7],[94.1,3.4,30],[89.24,7.3,30.1],[93.9,5.5,31.3],[91.25,4.375,22.93333],[79.5,15,30.7],[93.56,1.65,21.12222],[89,6.3,23.9],[95.15,2.3,27.26667],[87.7,8.3,26.93333]],"colors":[[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1]],"radii":[[1]],"centers":[[68.36,22.72,34.48],[80.625,13.65,35.95],[67.16666,26.5,35.76667],[71.15,18.25,34],[59.76667,30.66667,39.85],[60,27.25,35],[80.63333,12.36667,34.33333],[47.26,39.58,39.72],[59.16667,27.53333,37.7],[74.1,17.1,33.63334],[71.95,21.85,41.05],[46.56667,40.46667,45.76667],[62.96667,27.63333,35.6],[72.575,21.525,31.85],[51.7,38.15,37],[59.7,26.3,40.1],[58,34.15,41.23333],[73.3,16.53333,30.9],[50.85,32.225,31.675],[75.8,18.175,33.55],[66.65,24.2,38.65],[56.85,34.3,39.1],[80.06667,13.16667,28.2],[57.025,36,32.475],[51.68,38.64,39.24],[48.925,39.625,38.925],[62.4,29.95,41.95],[47.2,41.05,43.15],[75.9,16.1,33.9],[79.5,12.9,40.1],[50.7,37,37.5],[60.63334,30.8,40.93333],[84.74,9.96,32.5],[52.35,31.25,33.8],[56.45,31.35,32.5],[71.95,14.75,33.7],[77.55,8.95,30.1],[88.65,4.9,39],[67.65,20.6,36.85],[48.35,39.05,43.75],[67.6,18.2,31.7],[69.95,14.7,32.35],[54.85,28.25,41.1],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.35,39.2,40.6],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[61.95,25.25,29.475],[70.7,24.76667,32.4],[53.675,38.85,40.66667],[70,18.8,36.03333],[73.375,18.35,31.825],[67.96,23.2,35.9],[59.11666,29.15,36.45],[65.3,29,34.16667],[55.23333,35.86666,38.76667],[72.7,19.1,36.15],[71.38,19.42,36.4],[61.4,26.66667,37.8],[49.75,39.675,37.05],[1.8,52.35,33.2],[76.1,14.5,32.1],[61.83333,23.33333,36.2],[52.85,34.75,42.9],[80.75,14.45,34.775],[58.7,33.7,40.3],[71.72,19.82,34.3],[73.1,20.6,35.85],[79.8,10.6,34.55],[56.2,34.05,33.85],[79.62,12.94,32.225],[72.25,20.425,36.7],[44.33333,43.3,38.7],[55.35,32.8,36.45],[74.4,16.83333,38.63334],[75.4,17.9,37.6],[65.1,23.9,43.9],[49.5,33.7,40],[82.3,12.65,40.53333],[70.56667,18.73333,39.85],[64.875,26.7,33.8],[53.55,38.9,38.7],[81.25,11.3,36.05],[68.25,23.25,33.8],[42.75,41.75,42.8],[72,20.4,41.66667],[48.5,38.85,37.5],[62.75,24.6,36.96667],[61,28.6,40.75],[52.2,34.4,40.6],[66.1,25.96667,31.15],[70.93333,14.66667,36.2],[67.06667,21.8,31.325],[67.7,23.6,32.8],[70.63333,15.56667,32.8],[74.1,15.8,35.5],[49.95,38.25,38.75],[54.46667,35.8,35.8],[73.25,17.45,35.4],[80.15,11,33.65],[57.7,28.1,36.2],[68.3,21.3,42.45],[78.5,14.7,30.6],[75.4,14.675,35.45],[55.75,33.85,40.25],[56.15,30.35,38.65],[70,18,34.2],[75.8,19.6,41.9],[70,18.5,34.83333],[69.65,22.25,36.65],[80.675,13.525,29.875],[65.7,25.9,33.15],[61,27.175,35.56667],[59.56667,29.8,38.83333],[88.1,6.4,31.4],[67.3,25.175,35.95],[53.1,36.5,32.4],[54.3,35.4,32],[67.9,21.75,35.1],[54.4,30.8,35.45],[63,26.6,35.2],[64.3,26.6,38.35],[59.36666,31.1,36.1],[66.85,22.7,33.15],[56.65,32.75,36.75],[70.74,19.8,34.175],[76.7,16.65,37.275],[71.73333,20.76667,33.475],[66.93333,24.33333,38.66667],[63.35,26.4,35.8],[66.9,24.4,39.4],[68.9,20.53333,33.5],[70.36667,21.43333,34.9],[76.1,17.7,36.45],[69,24.33333,36.2],[71.575,21.9,33.725],[60.1,29.4,35],[66,22.6,35],[54.6,31.9,36.95],[46.65,40.05,39.5],[40.1,48.1,38.5],[60.2,29.5,30.1],[75.45,19.05,36.3],[54,37.13334,41.25],[69.3,18.83333,40.2],[75.75,16.45,29.9],[56.1,30.15,35.95],[68.4,21.1,40.76667],[68.1,23.2,41.9],[65.23333,26.96667,37],[63.1,28.8,36.15],[53.52,36.44,36.68],[66.3,23,41.75],[64.7,22.06667,37.53333],[62.275,27.1,38.3],[44.4,44.15,38.65],[48.2,38.15,36.26],[72.4,19.575,34.025],[61.76667,26.03333,37.5],[66.63333,26.16667,39.43333],[67.85,23,42.1],[78.58572,14.92857,36.77143],[80.8,13.55,40.8],[62.6,25.3,39.7],[82.7,13,33.95],[68.5,25.45,38.55],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.3],[63.5,28.4,41.3],[87.85,5.45,36.25],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.45,42.53333],[60.9,30.6,44.5],[95.1,4.1,32.7],[87.13333,5.633333,29.52],[51.4,40,36],[91.01667,6.683333,29.01667],[70.5,18.2,33.1],[86.2,8.225,30.875],[87.66666,5.966667,31.1],[79.33334,10.26667,29.23333],[92.91666,5.15,28.92],[94.33334,3.233333,26.5],[86.8,6.25,31.8],[89.15,7.15,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[93.72,2.88,26.42],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,29.6],[95.5,2,26.9],[92.18,3.92,23.9],[88.57143,5.385714,26.575],[96.6,1.35,27.65],[90.725,4.075,30.65],[93.76667,2.2,25.575],[68.18,22.58,23.075],[91.2,3.7,27.5],[89.15,6.683333,29.08333],[92.2,4.7,34.8],[93.55,4.7,30.15],[87.1,8.6,24.1],[93,4.1,28.03333],[93.04,3.62,27.18333],[88.6,8.8,28.2],[94.54285,2.657143,24.67143],[69.45,16.75,38.65],[93.91111,2.877778,28.07778],[91.625,4.85,32.84],[88.4,5.333333,28.16667],[86.9,10,27.9],[94.78,1.58,22.31667],[91.6,4.575,27.6],[87.68,5.68,25.93333],[95.56667,1.466667,24.78],[89.425,6.125,30.7],[88.12,7.88,31.3],[94.88571,3.657143,24.86],[94.53333,3.166667,28.73333],[80.3,12.2,29.55],[86.375,5,28.925],[82.675,13.325,25.26667],[91.73333,6.5,30.96667],[81.75,14.625,31.16667],[95.225,1.95,29.2625],[90.55556,6.655556,26.46],[95.25,1.95,32.15],[94.33334,3.966667,22.76],[83.45,11.025,33.65],[88.85,5.5,26.675],[92.69167,2.825,23.50769],[64.7,26.7,29.4],[81.65,12.45,29.5],[88.85,4.1,31.1],[88.3,7.266667,31.3],[91.2,4.5,28.1],[84.26,11.98,26.92],[86.9,4.9,28.4],[90.7,3.833333,29],[90.1,7.1,21.5],[96.1,1.4,34.85],[90.3,4.7,31.9],[90.13333,5.833333,30.975],[95.3,2.25,28.8],[89.3,4.2,31.4],[88.4,9.6,26.55],[95.6,3.9,28.35],[92.96667,3.733333,28.9],[96.6,1.8,29.9],[90.7,6.52,27],[96.36667,1.3,28.05],[85.5,10.48,25.6],[93.15,1.5,23.95],[87.4,9.1,31.1],[92.1,3.766667,27.43333],[90.975,4.5,26.825],[79.8,9.65,32.25],[92.925,4.2,25.35],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[92.22222,5.433333,25.52222],[67.9,20.6,36.4],[87.3,7.15,31.25],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[93.7,2.05,33.6],[89.9,6.65,31.15],[93.83334,3.333333,23.91429],[95.46667,2.066667,32.3],[95.825,1.525,31.1],[91.6,6.1,27.9],[94.48,2.2,23.21],[97.1,1.95,28.13333],[89.575,7.375,31.8],[93,3,23.8],[78.85,15.9,31.4],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[85.7625,10.9125,23.65],[90.6,4.6,27],[93.85,3.65,18.55],[93,3.6,28.5],[98.8,0.15,23.2],[86.8,7.1,33],[93.65,2.85,24.4],[96,2.7,31.5],[87.12,4.74,32.64],[87.4,10.4,34.2],[89.95,5.15,24.2],[80.9,10.3,24.8],[92.75,3.4,30.95],[93.5,3.3,37.3],[95.8,1.9,31.9],[88.1,6.6,27.6],[91.7,5.35,27.4],[85.775,7.3,37.9],[93.2,3.95,29.26667],[96.1,2.1,34],[75.2,9.7,39.5],[89.26,4.78,31.25],[87.45715,8.1,25.25714],[92.8,4.033333,24.45],[93.3,2.65,30.85],[92.775,3.425,24],[70.7,15.6,38.6],[96.1,2,26.2],[94.2,3.56,22.18333],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[89.46667,4.8,26.66667],[93.05,2.4,22.7],[87.6,9.566667,25.6],[94,3.3,28.2],[90.4,5.9,32.06667],[96.375,1.8,26.2],[94.8,3.7,28.9],[94.375,3.725,25.6],[91.9,4.4,35.8],[91.6,5.225,22.7],[94.1,3.4,30],[89.24,7.3,30.1],[93.9,5.5,31.3],[91.25,4.375,22.93333],[79.5,15,30.7],[93.56,1.65,21.12222],[89,6.3,23.9],[95.15,2.3,27.26667],[87.7,8.3,26.93333]],"ignoreExtent":false,"flags":3},"14":{"id":14,"type":"text","material":{"lit":false},"vertices":[[50.3,-9.763639,13.27982]],"colors":[[0,0,0,1]],"texts":[["Neutrophils(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[50.3,-9.763639,13.27982]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"15":{"id":15,"type":"text","material":{"lit":false},"vertices":[[-16.6219,26.25,13.27982]],"colors":[[0,0,0,1]],"texts":[["Lymphocyte(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.6219,26.25,13.27982]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"16":{"id":16,"type":"text","material":{"lit":false},"vertices":[[-16.6219,-9.763639,32.425]],"colors":[[0,0,0,1]],"texts":[["Albumin"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.6219,-9.763639,32.425]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"18":{"id":18,"type":"quads","material":{"lit":false,"back":"lines","uri":"data:image/png;base64,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"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true,"flags":8198},"10":{"id":10,"type":"light","vertices":[[0,0,1]],"colors":[[1,1,1,1],[1,1,1,1],[1,1,1,1]],"viewpoint":true,"finite":false},"9":{"id":9,"type":"background","material":{"fog":true},"colors":[[0.2980392,0.2980392,0.2980392,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"11":{"id":11,"type":"background","material":{"lit":false,"back":"lines"},"colors":[[1,1,1,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"17":{"id":17,"type":"background","material":{"lit":false,"back":"lines","uriId":18},"colors":[[1,1,1,1]],"ids":[[18]],"types":[["quads"]],"centers":[[0,0,0]],"objects":[{"id":{"id":18},"type":{"type":"quads"},"material":{"color":"#FFFFFF","lit":false,"texture":"/tmp/RtmpBTc3go/file13561b623a78.png","back":"lines"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true}],"sphere":false,"fogtype":"none","flags":0},"13":{"id":13,"type":"bboxdeco","material":{"front":"lines","back":"lines"},"vertices":[[20,"NA","NA"],[40,"NA","NA"],[60,"NA","NA"],[80,"NA","NA"],[100,"NA","NA"],["NA",0,"NA"],["NA",10,"NA"],["NA",20,"NA"],["NA",30,"NA"],["NA",40,"NA"],["NA",50,"NA"],["NA","NA",20],["NA","NA",25],["NA","NA",30],["NA","NA",35],["NA","NA",40],["NA","NA",45]],"colors":[[0,0,0,1]],"draw_front":true,"newIds":[26,27,28,29,30,31,32]},"6":{"id":6,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":6,"mouseMode":{"left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,286.4459],"modelMatrix":[[0.6761268,0,0,-34.00918],[0,0.4297156,2.220868,-83.29167],[0,-1.180634,0.8083299,-281.6644],[0,0,0,1]],"projMatrix":[[3.732051,0,0,0],[0,3.732051,0,0],[0,0,-3.863703,-1032.604],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,0.3420201,0.9396926,0],[0,-0.9396926,0.3420201,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[0.6761268,1.256404,2.363398],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":1,"bbox":[0.3209875,100.279,-0.6459222,53.14592,18.12688,46.72312],"windowRect":[492,1241,748,1497],"family":"sans","font":1,"cex":1,"useFreeType":true,"fontname":"/home/pienta/R/x86_64-pc-linux-gnu-library/3.4/rgl/fonts/FreeSans.ttf","maxClipPlanes":8,"glVersion":3,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[17,13,12,14,15,16,10,26,27,28,29,30,31,32],"subscenes":[],"flags":2643},"26":{"id":26,"type":"lines","material":{"lit":false},"vertices":[[20,-1.4528,17.69794],[100,-1.4528,17.69794],[20,-1.4528,17.69794],[20,-2.83794,16.96158],[40,-1.4528,17.69794],[40,-2.83794,16.96158],[60,-1.4528,17.69794],[60,-2.83794,16.96158],[80,-1.4528,17.69794],[80,-2.83794,16.96158],[100,-1.4528,17.69794],[100,-2.83794,16.96158]],"colors":[[0,0,0,1]],"centers":[[60,-1.4528,17.69794],[20,-2.14537,17.32976],[40,-2.14537,17.32976],[60,-2.14537,17.32976],[80,-2.14537,17.32976],[100,-2.14537,17.32976]],"ignoreExtent":true,"origId":13,"flags":64},"27":{"id":27,"type":"text","material":{"lit":false},"vertices":[[20,-5.60822,15.48888],[40,-5.60822,15.48888],[60,-5.60822,15.48888],[80,-5.60822,15.48888],[100,-5.60822,15.48888]],"colors":[[0,0,0,1]],"texts":[["20"],["40"],["60"],["80"],["100"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[20,-5.60822,15.48888],[40,-5.60822,15.48888],[60,-5.60822,15.48888],[80,-5.60822,15.48888],[100,-5.60822,15.48888]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"28":{"id":28,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,0,17.69794],[-1.178383,50,17.69794],[-1.178383,0,17.69794],[-3.752302,0,16.96158],[-1.178383,10,17.69794],[-3.752302,10,16.96158],[-1.178383,20,17.69794],[-3.752302,20,16.96158],[-1.178383,30,17.69794],[-3.752302,30,16.96158],[-1.178383,40,17.69794],[-3.752302,40,16.96158],[-1.178383,50,17.69794],[-3.752302,50,16.96158]],"colors":[[0,0,0,1]],"centers":[[-1.178383,25,17.69794],[-2.465343,0,17.32976],[-2.465343,10,17.32976],[-2.465343,20,17.32976],[-2.465343,30,17.32976],[-2.465343,40,17.32976],[-2.465343,50,17.32976]],"ignoreExtent":true,"origId":13,"flags":64},"29":{"id":29,"type":"text","material":{"lit":false},"vertices":[[-8.900141,0,15.48888],[-8.900141,10,15.48888],[-8.900141,20,15.48888],[-8.900141,30,15.48888],[-8.900141,40,15.48888],[-8.900141,50,15.48888]],"colors":[[0,0,0,1]],"texts":[["0"],["10"],["20"],["30"],["40"],["50"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.900141,0,15.48888],[-8.900141,10,15.48888],[-8.900141,20,15.48888],[-8.900141,30,15.48888],[-8.900141,40,15.48888],[-8.900141,50,15.48888]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"30":{"id":30,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,-1.4528,20],[-1.178383,-1.4528,45],[-1.178383,-1.4528,20],[-3.752302,-2.83794,20],[-1.178383,-1.4528,25],[-3.752302,-2.83794,25],[-1.178383,-1.4528,30],[-3.752302,-2.83794,30],[-1.178383,-1.4528,35],[-3.752302,-2.83794,35],[-1.178383,-1.4528,40],[-3.752302,-2.83794,40],[-1.178383,-1.4528,45],[-3.752302,-2.83794,45]],"colors":[[0,0,0,1]],"centers":[[-1.178383,-1.4528,32.5],[-2.465343,-2.14537,20],[-2.465343,-2.14537,25],[-2.465343,-2.14537,30],[-2.465343,-2.14537,35],[-2.465343,-2.14537,40],[-2.465343,-2.14537,45]],"ignoreExtent":true,"origId":13,"flags":64},"31":{"id":31,"type":"text","material":{"lit":false},"vertices":[[-8.900141,-5.60822,20],[-8.900141,-5.60822,25],[-8.900141,-5.60822,30],[-8.900141,-5.60822,35],[-8.900141,-5.60822,40],[-8.900141,-5.60822,45]],"colors":[[0,0,0,1]],"texts":[["20"],["25"],["30"],["35"],["40"],["45"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.900141,-5.60822,20],[-8.900141,-5.60822,25],[-8.900141,-5.60822,30],[-8.900141,-5.60822,35],[-8.900141,-5.60822,40],[-8.900141,-5.60822,45]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"32":{"id":32,"type":"lines","material":{"lit":false},"vertices":[[-1.178383,-1.4528,17.69794],[-1.178383,53.9528,17.69794],[-1.178383,-1.4528,47.15206],[-1.178383,53.9528,47.15206],[-1.178383,-1.4528,17.69794],[-1.178383,-1.4528,47.15206],[-1.178383,53.9528,17.69794],[-1.178383,53.9528,47.15206],[-1.178383,-1.4528,17.69794],[101.7784,-1.4528,17.69794],[-1.178383,-1.4528,47.15206],[101.7784,-1.4528,47.15206],[-1.178383,53.9528,17.69794],[101.7784,53.9528,17.69794],[-1.178383,53.9528,47.15206],[101.7784,53.9528,47.15206],[101.7784,-1.4528,17.69794],[101.7784,53.9528,17.69794],[101.7784,-1.4528,47.15206],[101.7784,53.9528,47.15206],[101.7784,-1.4528,17.69794],[101.7784,-1.4528,47.15206],[101.7784,53.9528,17.69794],[101.7784,53.9528,47.15206]],"colors":[[0,0,0,1]],"centers":[[-1.178383,26.25,17.69794],[-1.178383,26.25,47.15206],[-1.178383,-1.4528,32.425],[-1.178383,53.9528,32.425],[50.3,-1.4528,17.69794],[50.3,-1.4528,47.15206],[50.3,53.9528,17.69794],[50.3,53.9528,47.15206],[101.7784,26.25,17.69794],[101.7784,26.25,47.15206],[101.7784,-1.4528,32.425],[101.7784,53.9528,32.425]],"ignoreExtent":true,"origId":13,"flags":64}},"snapshot":"data:image/png;base64,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","width":600,"height":600,"sphereVerts":{"vb":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1],[0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0]],"it":[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270],[17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288],[18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271]],"material":[],"normals":null,"texcoords":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1]],"meshColor":"vertices"},"context":{"shiny":false,"rmarkdown":"html_document"},"crosstalk":{"key":[],"group":[],"id":[],"options":[]}});
+                         {"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":false,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0]},"rootSubscene":6,"objects":{"12":{"id":12,"type":"spheres","material":{},"vertices":[[64.3,25.9,37.6],[84.7,9.2,37.2],[66.4,27.3,38.4],[72.1,16.5,34.1],[65.5,23.6,39.5],[58.1,31,30.6],[78.3,13.3,28.6],[49.4,37.2,39.1],[66.8,21.9,39.5],[66.3,24.5,33.3],[85.4,10.8,39],[46.2,42.9,47.6],[70.3,19.7,33.3],[68.8,23.1,34.5],[45,43.7,34.5],[53.3,31.1,40.1],[62.8,29.4,39.1],[65.4,21.8,30],[40.1,40.9,28.6],[69,23.7,30.6],[62.5,28.1,34.8],[55.3,34.2,37.5],[72,17,26.9],[46.2,44.5,32.7],[72.1,19.8,44.1],[46.7,39.7,38.2],[61.3,31.8,40.3],[48.2,42.6,43.1],[68.4,23.4,33.9],[79.9,11.7,41.5],[52.4,36.2,36.7],[51.5,35,40.3],[84.1,8.7,35.5],[56.2,27.9,33.8],[53.7,32,33.7],[70.3,16.8,35.2],[70.8,13,30.1],[87.4,5.6,39.3],[59.1,25.1,36],[47.6,38.7,42.8],[60.8,25.6,31.4],[71.5,15,29.9],[52.7,28.6,40.8],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.1,38.3,39.3],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[35.4,44.4,34.1],[52.1,40.2,34.3],[41.1,48.5,41.5],[59.1,25.5,35.4],[53.3,37.3,35.9],[70.2,19.4,38.2],[79.4,13.5,35.4],[78.6,18.2,30.9],[63.6,30.9,39.8],[72.3,19.9,36.2],[61,29.2,39.3],[55.1,31.9,37.3],[44.3,44.5,39.3],[1.9,44.7,33.2],[76.1,14.5,32.1],[67.7,17.9,37.4],[60.3,29.1,42.9],[59.1,33,36.9],[58.7,33.7,40.3],[53.9,35,32.2],[64.3,27.2,33.4],[75.7,13.3,35.6],[41,48.4,30.6],[75.5,13.4,33],[64.8,24.6,37.5],[38.9,46.9,39.3],[48.4,37.9,36.2],[76.8,15,43.9],[75.4,17.9,37.6],[65.1,23.9,43.9],[48.4,31.9,39.4],[78.2,12.7,39.3],[71.7,15.8,39.3],[66.6,24.7,35.5],[48.7,41.9,38.8],[87,7.3,37],[55.6,34.4,38.8],[37.7,45.7,40.5],[73.1,18.6,38.9],[51.8,37.1,39.1],[56.3,27.1,34.6],[61,28.6,40.4],[50.3,33.7,42.9],[63.2,28.4,30.3],[63.2,17.3,37.7],[53.5,32.6,35.1],[67.7,23.6,32.8],[71.7,12.8,33.2],[65.5,20.6,40.9],[56.2,32.5,41.9],[64.3,25,35.1],[68.3,22.5,36.8],[85,7.2,32.4],[54,32.7,37.9],[70.3,18.9,41.9],[80.1,11.7,35.4],[80.9,12,35.7],[54.9,34.6,43.1],[54,32.2,40.7],[60,27.2,34.7],[75.8,19.6,41.9],[69.6,17.5,32.6],[68.2,23.7,38.3],[75.6,17.7,30.6],[61.4,27.5,33.8],[60.5,29.1,36.9],[60.2,29.4,39.8],[88.1,6.4,31.4],[48.7,40.6,35.8],[53.1,36.5,32.4],[54.3,35.4,32],[63.6,22.8,35.7],[42.6,40.2,36.8],[66.5,24.4,38],[55.3,35.5,38.1],[70.7,23,39],[69,19.9,33.3],[51.5,35.7,38.7],[71.3,19.8,35.8],[61.2,29.3,38.8],[63.9,28.5,32.8],[67.2,23.9,36.6],[63,25.4,35.8],[65.7,25,38.2],[59.2,29.5,39.9],[79,11.7,30.7],[66.4,24.9,39.2],[83.9,11.1,32.2],[85.2,10,32.3],[56.2,32.5,35.4],[66,22.6,35],[55.2,30.8,37.6],[46.6,39.8,39.5],[43.6,46,38.5],[60.2,29.5,30.1],[64.4,26.8,31.1],[66.7,23.9,44.6],[63.9,23.1,36.4],[67.4,23.4,37.2],[52.4,33,33.3],[59.9,25.2,36.8],[68.1,23.2,41.9],[65.1,26.2,34.5],[77.8,17.2,36],[53.5,36,33.4],[67.8,21.2,44],[64.2,23.5,36.8],[63.1,28.2,36.1],[59.9,33.3,35.6],[41.6,41.7,38.5],[67,25,34.9],[63.3,25.1,38.5],[73.2,21.8,37],[68.5,21.5,38.8],[67.8,24.7,36.6],[90.3,7.7,38.1],[57.1,29.5,39.6],[89.2,6.5,28.7],[81.3,14.2,37.5],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.8],[63.5,28.4,41.3],[88.3,5.7,37.4],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.9,39.2],[60.9,30.6,44.5],[95.1,4.1,32.7],[82,6.1,32],[51.4,40,36],[87.8,7.6,34.2],[70.5,18.2,33.1],[92.5,3.7,28.3],[91.1,2.3,28.7],[86.3,5.6,32.1],[94.9,3.5,32.8],[95,2.7,26.3],[90.7,3.5,34.2],[92.8,4.6,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[97,0.7,15.3],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,28.9],[95.5,2,26.9],[91.3,7,26.9],[92.6,2.4,26.1],[95.9,1.7,24],[95,1.5,29.3],[93,3.7,18.3],[63.7,30,27.4],[94.1,2.8,26.8],[97.7,0.9,24.6],[91.2,5,35.1],[92.2,5.9,27.3],[87.1,8.6,24.1],[90.8,4.6,26.9],[94.1,3.3,20.1],[88.6,8.8,28.2],[94.3,3.3,21.1],[82.5,10.3,36.4],[94.3,2.4,21.8],[95.3,2.4,31.6],[87.3,6,28.7],[86.9,10,27.9],[93.7,1.5,17.6],[91.9,3.4,22.9],[90.4,7.1,20.1],[96.4,1.4,26.4],[92.9,4.2,23.3],[95.4,2.5,25.5],[87.3,11.3,19.1],[96.4,2.3,27.5],[76.4,18.8,22.9],[87.6,5,22.2],[81.7,15.7,16.4],[96.2,2.8,26.4],[89.6,6.5,31.6],[95.8,1.7,26.1],[85.7,12.6,24.1],[95,1.8,32.7],[94.2,3.7,23.7],[81.5,12.4,31.6],[95.6,3,25.8],[87.8,5.6,19.8],[64.7,26.7,29.4],[86.3,8.2,29.5],[90.5,3.5,32.2],[96.9,2,25.6],[91.2,4.5,28.1],[82.1,13.4,27.2],[86.9,4.9,28.4],[90.2,3.8,26.7],[90.1,7.1,21.5],[96.1,1.4,30.8],[90.3,4.7,31.9],[94.9,2.4,35.6],[95.8,1.8,25],[89.3,4.2,31.4],[95.5,2.6,23.5],[93.2,6.1,29.2],[95.2,2.2,27.4],[96.6,1.8,29.9],[86.6,8.6,23.6],[96.6,0.7,26.9],[90.1,7.2,23],[94.3,0.8,23.4],[87.4,9.1,31.1],[97,1.7,24.5],[93.8,2.1,26.1],[84.7,6,30.2],[93.1,5,23.2],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[89.4,8.8,22.2],[67.9,20.6,36.4],[94.6,2.6,31.3],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[95.3,0.9,33.6],[92.5,4.9,32.6],[93.7,3.7,20.7],[98,1.1,34.1],[97,1.1,29.8],[91.6,6.1,27.9],[91.7,3,25.4],[97.8,1.1,24.6],[88.1,6.2,27.9],[93,3,23.8],[83.6,11.8,31],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[91.5,5.9,20.1],[90.6,4.6,27],[93.1,3.6,18.6],[93,3.6,28.5],[98.9,0.3,22],[86.8,7.1,33],[92.8,3.3,25.3],[96,2.7,31.5],[94.6,2.6,35.6],[87.4,10.4,34.2],[89.5,5.6,24.2],[80.9,10.3,24.8],[95.9,1.4,30.1],[93.5,3.3,37.3],[93.8,2.9,30.7],[88.1,6.6,27.6],[93.9,3.7,27.4],[92.7,1.6,38.4],[95.1,2.2,26.9],[96.1,2.1,34],[75.2,9.7,39.5],[90,4,33.3],[85.5,11.7,26.1],[94.7,2.4,23.2],[94.9,1.2,30.6],[93.4,4,23.1],[70.7,15.6,38.6],[96.1,2,26.2],[96.5,1.7,24.8],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[90.8,2.9,27.7],[95.7,1.3,21.3],[79.8,17.1,28.2],[94,3.3,28.2],[91.7,6.2,30.6],[98.2,1,23],[94.8,3.7,28.9],[94.2,3.4,24],[91.9,4.4,35.8],[92.6,3.4,13.6],[94.1,3.4,30],[96.1,1.9,27.6],[93.9,5.5,31.3],[93.1,2.7,23.6],[79.5,15,30.7],[98.1,0.6,16.7],[89,6.3,23.9],[94.5,2.3,27.4],[91.7,6.7,21.3]],"colors":[[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0,0.5450981,0.5450981,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1],[0.282353,0.4627451,1,1]],"radii":[[1]],"centers":[[64.3,25.9,37.6],[84.7,9.2,37.2],[66.4,27.3,38.4],[72.1,16.5,34.1],[65.5,23.6,39.5],[58.1,31,30.6],[78.3,13.3,28.6],[49.4,37.2,39.1],[66.8,21.9,39.5],[66.3,24.5,33.3],[85.4,10.8,39],[46.2,42.9,47.6],[70.3,19.7,33.3],[68.8,23.1,34.5],[45,43.7,34.5],[53.3,31.1,40.1],[62.8,29.4,39.1],[65.4,21.8,30],[40.1,40.9,28.6],[69,23.7,30.6],[62.5,28.1,34.8],[55.3,34.2,37.5],[72,17,26.9],[46.2,44.5,32.7],[72.1,19.8,44.1],[46.7,39.7,38.2],[61.3,31.8,40.3],[48.2,42.6,43.1],[68.4,23.4,33.9],[79.9,11.7,41.5],[52.4,36.2,36.7],[51.5,35,40.3],[84.1,8.7,35.5],[56.2,27.9,33.8],[53.7,32,33.7],[70.3,16.8,35.2],[70.8,13,30.1],[87.4,5.6,39.3],[59.1,25.1,36],[47.6,38.7,42.8],[60.8,25.6,31.4],[71.5,15,29.9],[52.7,28.6,40.8],[66.2,19.6,38.1],[55.2,35.1,41],[56.5,32.6,46.3],[59.8,30.3,38.8],[50.1,38.3,39.3],[60.9,25.5,37.9],[60.7,27.5,39.9],[70.2,18,43.2],[45,37.4,37.9],[65.3,24.7,38.6],[61.9,27.6,38.4],[61.8,31.6,39.5],[51.7,39.4,40.1],[52.3,37.6,41.5],[35.4,44.4,34.1],[52.1,40.2,34.3],[41.1,48.5,41.5],[59.1,25.5,35.4],[53.3,37.3,35.9],[70.2,19.4,38.2],[79.4,13.5,35.4],[78.6,18.2,30.9],[63.6,30.9,39.8],[72.3,19.9,36.2],[61,29.2,39.3],[55.1,31.9,37.3],[44.3,44.5,39.3],[1.9,44.7,33.2],[76.1,14.5,32.1],[67.7,17.9,37.4],[60.3,29.1,42.9],[59.1,33,36.9],[58.7,33.7,40.3],[53.9,35,32.2],[64.3,27.2,33.4],[75.7,13.3,35.6],[41,48.4,30.6],[75.5,13.4,33],[64.8,24.6,37.5],[38.9,46.9,39.3],[48.4,37.9,36.2],[76.8,15,43.9],[75.4,17.9,37.6],[65.1,23.9,43.9],[48.4,31.9,39.4],[78.2,12.7,39.3],[71.7,15.8,39.3],[66.6,24.7,35.5],[48.7,41.9,38.8],[87,7.3,37],[55.6,34.4,38.8],[37.7,45.7,40.5],[73.1,18.6,38.9],[51.8,37.1,39.1],[56.3,27.1,34.6],[61,28.6,40.4],[50.3,33.7,42.9],[63.2,28.4,30.3],[63.2,17.3,37.7],[53.5,32.6,35.1],[67.7,23.6,32.8],[71.7,12.8,33.2],[65.5,20.6,40.9],[56.2,32.5,41.9],[64.3,25,35.1],[68.3,22.5,36.8],[85,7.2,32.4],[54,32.7,37.9],[70.3,18.9,41.9],[80.1,11.7,35.4],[80.9,12,35.7],[54.9,34.6,43.1],[54,32.2,40.7],[60,27.2,34.7],[75.8,19.6,41.9],[69.6,17.5,32.6],[68.2,23.7,38.3],[75.6,17.7,30.6],[61.4,27.5,33.8],[60.5,29.1,36.9],[60.2,29.4,39.8],[88.1,6.4,31.4],[48.7,40.6,35.8],[53.1,36.5,32.4],[54.3,35.4,32],[63.6,22.8,35.7],[42.6,40.2,36.8],[66.5,24.4,38],[55.3,35.5,38.1],[70.7,23,39],[69,19.9,33.3],[51.5,35.7,38.7],[71.3,19.8,35.8],[61.2,29.3,38.8],[63.9,28.5,32.8],[67.2,23.9,36.6],[63,25.4,35.8],[65.7,25,38.2],[59.2,29.5,39.9],[79,11.7,30.7],[66.4,24.9,39.2],[83.9,11.1,32.2],[85.2,10,32.3],[56.2,32.5,35.4],[66,22.6,35],[55.2,30.8,37.6],[46.6,39.8,39.5],[43.6,46,38.5],[60.2,29.5,30.1],[64.4,26.8,31.1],[66.7,23.9,44.6],[63.9,23.1,36.4],[67.4,23.4,37.2],[52.4,33,33.3],[59.9,25.2,36.8],[68.1,23.2,41.9],[65.1,26.2,34.5],[77.8,17.2,36],[53.5,36,33.4],[67.8,21.2,44],[64.2,23.5,36.8],[63.1,28.2,36.1],[59.9,33.3,35.6],[41.6,41.7,38.5],[67,25,34.9],[63.3,25.1,38.5],[73.2,21.8,37],[68.5,21.5,38.8],[67.8,24.7,36.6],[90.3,7.7,38.1],[57.1,29.5,39.6],[89.2,6.5,28.7],[81.3,14.2,37.5],[55.8,34.3,40],[56.1,31.1,31.6],[57.1,30.5,38.7],[73.1,14.7,35.8],[63.5,28.4,41.3],[88.3,5.7,37.4],[85.5,8.9,29.6],[71.2,20.7,45.5],[61.5,30.9,39.2],[60.9,30.6,44.5],[95.1,4.1,32.7],[82,6.1,32],[51.4,40,36],[87.8,7.6,34.2],[70.5,18.2,33.1],[92.5,3.7,28.3],[91.1,2.3,28.7],[86.3,5.6,32.1],[94.9,3.5,32.8],[95,2.7,26.3],[90.7,3.5,34.2],[92.8,4.6,31],[88.5,7.7,27.1],[83.1,12.7,29.6],[97,0.7,15.3],[86.8,9.2,29.5],[64.5,15.2,35.5],[18.2,44.3,35.4],[95.7,2.1,26.7],[95.8,2.3,28.9],[95.5,2,26.9],[91.3,7,26.9],[92.6,2.4,26.1],[95.9,1.7,24],[95,1.5,29.3],[93,3.7,18.3],[63.7,30,27.4],[94.1,2.8,26.8],[97.7,0.9,24.6],[91.2,5,35.1],[92.2,5.9,27.3],[87.1,8.6,24.1],[90.8,4.6,26.9],[94.1,3.3,20.1],[88.6,8.8,28.2],[94.3,3.3,21.1],[82.5,10.3,36.4],[94.3,2.4,21.8],[95.3,2.4,31.6],[87.3,6,28.7],[86.9,10,27.9],[93.7,1.5,17.6],[91.9,3.4,22.9],[90.4,7.1,20.1],[96.4,1.4,26.4],[92.9,4.2,23.3],[95.4,2.5,25.5],[87.3,11.3,19.1],[96.4,2.3,27.5],[76.4,18.8,22.9],[87.6,5,22.2],[81.7,15.7,16.4],[96.2,2.8,26.4],[89.6,6.5,31.6],[95.8,1.7,26.1],[85.7,12.6,24.1],[95,1.8,32.7],[94.2,3.7,23.7],[81.5,12.4,31.6],[95.6,3,25.8],[87.8,5.6,19.8],[64.7,26.7,29.4],[86.3,8.2,29.5],[90.5,3.5,32.2],[96.9,2,25.6],[91.2,4.5,28.1],[82.1,13.4,27.2],[86.9,4.9,28.4],[90.2,3.8,26.7],[90.1,7.1,21.5],[96.1,1.4,30.8],[90.3,4.7,31.9],[94.9,2.4,35.6],[95.8,1.8,25],[89.3,4.2,31.4],[95.5,2.6,23.5],[93.2,6.1,29.2],[95.2,2.2,27.4],[96.6,1.8,29.9],[86.6,8.6,23.6],[96.6,0.7,26.9],[90.1,7.2,23],[94.3,0.8,23.4],[87.4,9.1,31.1],[97,1.7,24.5],[93.8,2.1,26.1],[84.7,6,30.2],[93.1,5,23.2],[84.2,13,35.2],[92.6,4.8,34.1],[92,3.2,25.6],[89.4,8.8,22.2],[67.9,20.6,36.4],[94.6,2.6,31.3],[90.7,2.7,35.8],[64.9,18.5,32.4],[92.2,5.3,31.8],[87.9,10.7,29.3],[95.3,0.9,33.6],[92.5,4.9,32.6],[93.7,3.7,20.7],[98,1.1,34.1],[97,1.1,29.8],[91.6,6.1,27.9],[91.7,3,25.4],[97.8,1.1,24.6],[88.1,6.2,27.9],[93,3,23.8],[83.6,11.8,31],[93.1,2.7,26.9],[81,11.1,34.2],[55.1,25,23.2],[81.4,7.5,30.1],[77.3,18.9,30.3],[94.5,3.1,30.1],[91.5,5.9,20.1],[90.6,4.6,27],[93.1,3.6,18.6],[93,3.6,28.5],[98.9,0.3,22],[86.8,7.1,33],[92.8,3.3,25.3],[96,2.7,31.5],[94.6,2.6,35.6],[87.4,10.4,34.2],[89.5,5.6,24.2],[80.9,10.3,24.8],[95.9,1.4,30.1],[93.5,3.3,37.3],[93.8,2.9,30.7],[88.1,6.6,27.6],[93.9,3.7,27.4],[92.7,1.6,38.4],[95.1,2.2,26.9],[96.1,2.1,34],[75.2,9.7,39.5],[90,4,33.3],[85.5,11.7,26.1],[94.7,2.4,23.2],[94.9,1.2,30.6],[93.4,4,23.1],[70.7,15.6,38.6],[96.1,2,26.2],[96.5,1.7,24.8],[94,3.8,29.1],[91,6.2,29.1],[94.9,1.3,31.7],[95.1,2.2,30.1],[82,11.5,33.1],[90.8,2.9,27.7],[95.7,1.3,21.3],[79.8,17.1,28.2],[94,3.3,28.2],[91.7,6.2,30.6],[98.2,1,23],[94.8,3.7,28.9],[94.2,3.4,24],[91.9,4.4,35.8],[92.6,3.4,13.6],[94.1,3.4,30],[96.1,1.9,27.6],[93.9,5.5,31.3],[93.1,2.7,23.6],[79.5,15,30.7],[98.1,0.6,16.7],[89,6.3,23.9],[94.5,2.3,27.4],[91.7,6.7,21.3]],"ignoreExtent":false,"flags":3},"14":{"id":14,"type":"text","material":{"lit":false},"vertices":[[50.4,-8.854571,7.142419]],"colors":[[0,0,0,1]],"texts":[["Neutrophils(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[50.4,-8.854571,7.142419]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"15":{"id":15,"type":"text","material":{"lit":false},"vertices":[[-16.5231,24.4,7.142419]],"colors":[[0,0,0,1]],"texts":[["Lymphocyte(%)"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.5231,24.4,7.142419]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"16":{"id":16,"type":"text","material":{"lit":false},"vertices":[[-16.5231,-8.854571,30.6]],"colors":[[0,0,0,1]],"texts":[["Albumin"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-16.5231,-8.854571,30.6]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"flags":2064},"18":{"id":18,"type":"quads","material":{"lit":false,"back":"lines","uri":"data:image/png;base64,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"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true,"flags":8198},"10":{"id":10,"type":"light","vertices":[[0,0,1]],"colors":[[1,1,1,1],[1,1,1,1],[1,1,1,1]],"viewpoint":true,"finite":false},"9":{"id":9,"type":"background","material":{"fog":true},"colors":[[0.2980392,0.2980392,0.2980392,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"11":{"id":11,"type":"background","material":{"lit":false,"back":"lines"},"colors":[[1,1,1,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","flags":0},"17":{"id":17,"type":"background","material":{"lit":false,"back":"lines","uriId":18},"colors":[[1,1,1,1]],"ids":[[18]],"types":[["quads"]],"centers":[[0,0,0]],"objects":[{"id":{"id":18},"type":{"type":"quads"},"material":{"color":"#FFFFFF","lit":false,"texture":"/tmp/Rtmp5VERvC/file28812c0285ab.png","back":"lines"},"vertices":[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],"colors":[[1,1,1,1]],"texcoords":[[0,0],[1,0],[1,1],[0,1]],"centers":[[0,0,1]],"ignoreExtent":true}],"sphere":false,"fogtype":"none","flags":0},"13":{"id":13,"type":"bboxdeco","material":{"front":"lines","back":"lines"},"vertices":[[20,"NA","NA"],[40,"NA","NA"],[60,"NA","NA"],[80,"NA","NA"],[100,"NA","NA"],["NA",0,"NA"],["NA",10,"NA"],["NA",20,"NA"],["NA",30,"NA"],["NA",40,"NA"],["NA","NA",20],["NA","NA",30],["NA","NA",40]],"colors":[[0,0,0,1]],"draw_front":true,"newIds":[26,27,28,29,30,31,32]},"6":{"id":6,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":6,"mouseMode":{"left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,286.2772],"modelMatrix":[[0.6757163,0,0,-34.0561],[0,0.4650941,1.81152,-66.78081],[0,-1.277836,0.6593394,-275.2737],[0,0,0,1]],"projMatrix":[[3.732051,0,0,0],[0,3.732051,0,0],[0,0,-3.863703,-1031.996],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,0.3420201,0.9396926,0],[0,-0.9396926,0.3420201,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[0.6757163,1.359844,1.927779],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":1,"bbox":[0.420089,100.3799,-0.4353784,49.23538,13.08127,48.11873],"windowRect":[454,1203,710,1459],"family":"sans","font":1,"cex":1,"useFreeType":true,"fontname":"/home/pienta/R/x86_64-pc-linux-gnu-library/3.4/rgl/fonts/FreeSans.ttf","maxClipPlanes":8,"glVersion":3,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[17,13,12,14,15,16,10,26,27,28,29,30,31,32],"subscenes":[],"flags":2643},"26":{"id":26,"type":"lines","material":{"lit":false},"vertices":[[20,-1.18044,12.55571],[100,-1.18044,12.55571],[20,-1.18044,12.55571],[20,-2.459462,11.65349],[40,-1.18044,12.55571],[40,-2.459462,11.65349],[60,-1.18044,12.55571],[60,-2.459462,11.65349],[80,-1.18044,12.55571],[80,-2.459462,11.65349],[100,-1.18044,12.55571],[100,-2.459462,11.65349]],"colors":[[0,0,0,1]],"centers":[[60,-1.18044,12.55571],[20,-1.819951,12.1046],[40,-1.819951,12.1046],[60,-1.819951,12.1046],[80,-1.819951,12.1046],[100,-1.819951,12.1046]],"ignoreExtent":true,"origId":13,"flags":64},"27":{"id":27,"type":"text","material":{"lit":false},"vertices":[[20,-5.017506,9.849063],[40,-5.017506,9.849063],[60,-5.017506,9.849063],[80,-5.017506,9.849063],[100,-5.017506,9.849063]],"colors":[[0,0,0,1]],"texts":[["20"],["40"],["60"],["80"],["100"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[20,-5.017506,9.849063],[40,-5.017506,9.849063],[60,-5.017506,9.849063],[80,-5.017506,9.849063],[100,-5.017506,9.849063]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"28":{"id":28,"type":"lines","material":{"lit":false},"vertices":[[-1.079308,0,12.55571],[-1.079308,40,12.55571],[-1.079308,0,12.55571],[-3.653274,0,11.65349],[-1.079308,10,12.55571],[-3.653274,10,11.65349],[-1.079308,20,12.55571],[-3.653274,20,11.65349],[-1.079308,30,12.55571],[-3.653274,30,11.65349],[-1.079308,40,12.55571],[-3.653274,40,11.65349]],"colors":[[0,0,0,1]],"centers":[[-1.079308,20,12.55571],[-2.366291,0,12.1046],[-2.366291,10,12.1046],[-2.366291,20,12.1046],[-2.366291,30,12.1046],[-2.366291,40,12.1046]],"ignoreExtent":true,"origId":13,"flags":64},"29":{"id":29,"type":"text","material":{"lit":false},"vertices":[[-8.801205,0,9.849063],[-8.801205,10,9.849063],[-8.801205,20,9.849063],[-8.801205,30,9.849063],[-8.801205,40,9.849063]],"colors":[[0,0,0,1]],"texts":[["0"],["10"],["20"],["30"],["40"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.801205,0,9.849063],[-8.801205,10,9.849063],[-8.801205,20,9.849063],[-8.801205,30,9.849063],[-8.801205,40,9.849063]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"30":{"id":30,"type":"lines","material":{"lit":false},"vertices":[[-1.079308,-1.18044,20],[-1.079308,-1.18044,40],[-1.079308,-1.18044,20],[-3.653274,-2.459462,20],[-1.079308,-1.18044,30],[-3.653274,-2.459462,30],[-1.079308,-1.18044,40],[-3.653274,-2.459462,40]],"colors":[[0,0,0,1]],"centers":[[-1.079308,-1.18044,30],[-2.366291,-1.819951,20],[-2.366291,-1.819951,30],[-2.366291,-1.819951,40]],"ignoreExtent":true,"origId":13,"flags":64},"31":{"id":31,"type":"text","material":{"lit":false},"vertices":[[-8.801205,-5.017506,20],[-8.801205,-5.017506,30],[-8.801205,-5.017506,40]],"colors":[[0,0,0,1]],"texts":[["20"],["30"],["40"]],"cex":[[1]],"adj":[[0.5,0.5]],"centers":[[-8.801205,-5.017506,20],[-8.801205,-5.017506,30],[-8.801205,-5.017506,40]],"family":[["sans"]],"font":[[1]],"ignoreExtent":true,"origId":13,"flags":2064},"32":{"id":32,"type":"lines","material":{"lit":false},"vertices":[[-1.079308,-1.18044,12.55571],[-1.079308,49.98044,12.55571],[-1.079308,-1.18044,48.64429],[-1.079308,49.98044,48.64429],[-1.079308,-1.18044,12.55571],[-1.079308,-1.18044,48.64429],[-1.079308,49.98044,12.55571],[-1.079308,49.98044,48.64429],[-1.079308,-1.18044,12.55571],[101.8793,-1.18044,12.55571],[-1.079308,-1.18044,48.64429],[101.8793,-1.18044,48.64429],[-1.079308,49.98044,12.55571],[101.8793,49.98044,12.55571],[-1.079308,49.98044,48.64429],[101.8793,49.98044,48.64429],[101.8793,-1.18044,12.55571],[101.8793,49.98044,12.55571],[101.8793,-1.18044,48.64429],[101.8793,49.98044,48.64429],[101.8793,-1.18044,12.55571],[101.8793,-1.18044,48.64429],[101.8793,49.98044,12.55571],[101.8793,49.98044,48.64429]],"colors":[[0,0,0,1]],"centers":[[-1.079308,24.4,12.55571],[-1.079308,24.4,48.64429],[-1.079308,-1.18044,30.6],[-1.079308,49.98044,30.6],[50.4,-1.18044,12.55571],[50.4,-1.18044,48.64429],[50.4,49.98044,12.55571],[50.4,49.98044,48.64429],[101.8793,24.4,12.55571],[101.8793,24.4,48.64429],[101.8793,-1.18044,30.6],[101.8793,49.98044,30.6]],"ignoreExtent":true,"origId":13,"flags":64}},"snapshot":"data:image/png;base64,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","width":600,"height":600,"sphereVerts":{"vb":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1],[0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1950903,-0.3826834,-0.5555702,-0.7071068,-0.8314696,-0.9238795,-0.9807853,-1,-0.9807853,-0.9238795,-0.8314696,-0.7071068,-0.5555702,-0.3826834,-0.1950903,-0,-0,-0.18024,-0.3535534,-0.51328,-0.6532815,-0.7681778,-0.8535534,-0.9061274,-0.9238795,-0.9061274,-0.8535534,-0.7681778,-0.6532815,-0.51328,-0.3535534,-0.18024,-0,-0,-0.1379497,-0.2705981,-0.3928475,-0.5,-0.5879378,-0.6532815,-0.6935199,-0.7071068,-0.6935199,-0.6532815,-0.5879378,-0.5,-0.3928475,-0.2705981,-0.1379497,-0,-0,-0.07465783,-0.1464466,-0.2126075,-0.2705981,-0.3181896,-0.3535534,-0.3753303,-0.3826834,-0.3753303,-0.3535534,-0.3181896,-0.2705981,-0.2126075,-0.1464466,-0.07465783,-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.07465783,0.1464466,0.2126075,0.2705981,0.3181896,0.3535534,0.3753303,0.3826834,0.3753303,0.3535534,0.3181896,0.2705981,0.2126075,0.1464466,0.07465783,0,0,0.1379497,0.2705981,0.3928475,0.5,0.5879378,0.6532815,0.6935199,0.7071068,0.6935199,0.6532815,0.5879378,0.5,0.3928475,0.2705981,0.1379497,0,0,0.18024,0.3535534,0.51328,0.6532815,0.7681778,0.8535534,0.9061274,0.9238795,0.9061274,0.8535534,0.7681778,0.6532815,0.51328,0.3535534,0.18024,0,0,0.1950903,0.3826834,0.5555702,0.7071068,0.8314696,0.9238795,0.9807853,1,0.9807853,0.9238795,0.8314696,0.7071068,0.5555702,0.3826834,0.1950903,0]],"it":[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270],[17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288],[18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271]],"material":[],"normals":null,"texcoords":[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.0625,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.1875,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.3125,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.4375,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.5625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.625,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.6875,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.8125,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.875,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,0.9375,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1,0,0.0625,0.125,0.1875,0.25,0.3125,0.375,0.4375,0.5,0.5625,0.625,0.6875,0.75,0.8125,0.875,0.9375,1]],"meshColor":"vertices"},"context":{"shiny":false,"rmarkdown":"html_document"},"crosstalk":{"key":[],"group":[],"id":[],"options":[]}});
   rgl.prefix = "";
 </script>
 
@@ -6690,6 +6944,7 @@ rgltimerClass = function(Tick, startTime, interval, stopTime, stepSize, value, r
 
 ## Common biomarkers' change in time
 
+In following section there are 3 animations that show how most common biomarkers' tests results (which means that these biomarkers were tested most often among all the patients) varied during hospitalization.
 
 ```r
 biomarker_popularity <- df %>% group_by(PATIENT_ID, outcome) %>% summarise_at(vars(`Hypersensitive cardiac troponinI`:creatinine), function(x) sum(!is.na(x)))
@@ -6701,24 +6956,6 @@ most_tested_survival <- biomarker_popularity %>% select(sum_of_single_test, outc
 foo <- rbind(most_tested_death, most_tested_survival)
 
 patients_tests <- merge(foo %>% ungroup() %>% select(PATIENT_ID), df %>% ungroup() %>% select(PATIENT_ID, RE_DATE,`neutrophils(%)`,  `(%)lymphocyte`, albumin, outcome),  by="PATIENT_ID") %>% filter(!is.na(`neutrophils(%)`) |  !is.na(`(%)lymphocyte`) | !is.na(albumin))
-
-neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
-
-neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
-  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
-    geom_line() +
-    geom_point() +
-  facet_grid(rows=vars(outcome)) +
-    ggtitle("Neutrophils (%) during patient hospitalization") +
-    theme_ipsum() +
-    ylab("Neutrophils (%)") +
-    transition_reveal(RE_DATE)
-```
-
-![](COVID-19-analysis_files/figure-html/most_common_biomarkers-1.gif)<!-- -->
-
-```r
-#anim_save("neutrophils_seq.gif")
 
 lymphocyte_seq <- patients_tests %>% filter(!is.na(`(%)lymphocyte`)) 
 
@@ -6733,10 +6970,28 @@ lymphocyte_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
     transition_reveal(RE_DATE)
 ```
 
-![](COVID-19-analysis_files/figure-html/most_common_biomarkers-2.gif)<!-- -->
+![](COVID-19-analysis_files/figure-html/most_common_biomarkers-1.gif)<!-- -->
 
 ```r
 #anim_save("lymphocyte_seq.gif")
+
+neutrophils_seq <- patients_tests %>% filter(!is.na(`neutrophils(%)`)) 
+
+neutrophils_seq %>% mutate(PATIENT_ID=as.factor(PATIENT_ID)) %>%
+  ggplot( aes(x=RE_DATE, y=`neutrophils(%)`, group=PATIENT_ID, color=PATIENT_ID)) +
+    geom_line() +
+    geom_point() +
+  facet_grid(rows=vars(outcome)) +
+    ggtitle("Neutrophils (%) during patient hospitalization") +
+    theme_ipsum() +
+    ylab("Neutrophils (%)") +
+    transition_reveal(RE_DATE)
+```
+
+![](COVID-19-analysis_files/figure-html/most_common_biomarkers-2.gif)<!-- -->
+
+```r
+#anim_save("neutrophils_seq.gif")
 
 albumin_seq <- patients_tests %>% filter(!is.na(albumin)) 
 
@@ -6803,7 +7058,7 @@ In order to build an appropriate model, there is a need for the data cleaning. T
   </b>
 </ul>  
 
-With condition of existing at least one of listed above biomarkers tests, 19 patients should be ignored in building model process.
+With condition of existing at least one of listed above biomarkers tests, 21 patients should be ignored in building model process.
 
 
 ```r
@@ -6868,9 +7123,10 @@ confusionMatrix(data = rfClasses, testing$outcome)
 ##        'Positive' Class : Death           
 ## 
 ```
+</br>
+99% of accuracy means that the model works very well. That gives only one false positive, which is definitely better than a false negative. There is no need to improve the model.
 
-
-### Imporance of attributes
+### Importance of attributes
 
 
 ```r
